@@ -3,20 +3,21 @@
 from setuptools import setup, Extension
 
 setup(
-    name='pycsdr',
+    name="pycsdr",
     version="0.18.0-dev",
 
     package_data={
-        '': ['**.txt', '**.md', '**.py', '**.h', '**.hpp', '**.c', '**.cpp'],
+        "": ["**.txt", "**.md", "**.py", "**.h", "**.hpp", "**.c", "**.cpp"],
     },
 
     ext_modules=[
         Extension(
-            name='pycsdr',
+            name="pycsdr",
             sources=[
-                'src/socket_client.c',
+                "src/pycsdr_module.c",
+                "src/socket_client.c",
             ],
-            include_dirs=['src'],
+            include_dirs=["src"],
         )
     ],
 )
