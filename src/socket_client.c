@@ -12,6 +12,7 @@ int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
 
 int SocketClient_clear(SocketClient* self) {
     close(self->socket);
+    Py_DECREF(self->buffer);
     return 0;
 }
 
@@ -39,6 +40,7 @@ void* SocketClient_reader(void* ctx) {
     int available;
     while (self->run) {
         available = Buffer_getAvailable(self->buffer);
+        if (available > 256) available = 256;
         read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer), available, 0);
         if (read_bytes <= 0) {
             self->run = false;
@@ -57,6 +59,7 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
         return -1;
 
     self->buffer = (Buffer*) PyObject_CallObject((PyObject*) &BufferType, NULL);
+    Py_INCREF(self->buffer);
 
     struct sockaddr_in remote;
 

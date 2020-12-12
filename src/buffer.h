@@ -11,8 +11,8 @@ typedef struct {
     uint32_t write_pos;
 } Buffer;
 
-#define DEFAULT_BUFFER_SIZE 65535
-
+// 256kb
+#define DEFAULT_BUFFER_SIZE 262144
 
 int Buffer_traverse(Buffer* self, visitproc visit, void* arg);
 int Buffer_clear(Buffer* self);
