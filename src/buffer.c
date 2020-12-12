@@ -38,6 +38,9 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
 
     self->buffer = malloc(self->size);
 
+    pthread_cond_init(&self->wait_condition, NULL);
+    pthread_mutex_init(&self->wait_mutex, NULL);
+
     return 0;
 }
 
@@ -60,7 +63,7 @@ PyTypeObject BufferType = {
     .tp_methods = Buffer_methods,
 };
 
-uint32_t Buffer_getAvailable(Buffer* self) {
+uint32_t Buffer_getWriteable(Buffer* self) {
     return self->size - self->write_pos;
 }
 
@@ -69,5 +72,31 @@ void* Buffer_getWritePointer(Buffer* self) {
 }
 
 void Buffer_advance(Buffer* self, uint32_t how_much) {
+    pthread_mutex_lock(&self->wait_mutex);
     self->write_pos = (self->write_pos + how_much) % self->size;
+    pthread_cond_broadcast(&self->wait_condition);
+    pthread_mutex_unlock(&self->wait_mutex);
+}
+
+static uint32_t Buffer_getAvailable(Buffer* self, uint32_t read_pos) {
+    if (read_pos <= self->write_pos) {
+        return self->write_pos - read_pos;
+    } else {
+        return self->size - read_pos;
+    }
+}
+
+uint32_t Buffer_wait(Buffer* self, uint32_t read_pos) {
+    uint32_t available;
+    pthread_mutex_lock(&self->wait_mutex);
+    if ((available = Buffer_getAvailable(self, read_pos)) <= 0) {
+        pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
+        available = Buffer_getAvailable(self, read_pos);
+    }
+    pthread_mutex_unlock(&self->wait_mutex);
+    return available;
+}
+
+void* Buffer_getReadPointer(Buffer* self, uint32_t read_pos) {
+    return self->buffer + read_pos;
 }

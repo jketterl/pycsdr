@@ -11,6 +11,9 @@ int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
 }
 
 int SocketClient_clear(SocketClient* self) {
+    self->run = false;
+    void* retval = NULL;
+    pthread_join(self->reader, retval);
     close(self->socket);
     Py_DECREF(self->buffer);
     return 0;
@@ -39,7 +42,7 @@ void* SocketClient_reader(void* ctx) {
     int read_bytes;
     int available;
     while (self->run) {
-        available = Buffer_getAvailable(self->buffer);
+        available = Buffer_getWriteable(self->buffer);
         if (available > 256) available = 256;
         read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer), available, 0);
         if (read_bytes <= 0) {
@@ -93,10 +96,17 @@ PyObject* SocketClient_getBuffer(SocketClient* self, PyObject* Py_UNUSED(ignored
     return (PyObject*) self->buffer;
 }
 
+PyObject* SocketClient_read(SocketClient* self, PyObject* Py_UNUSED(ignored)) {
+    uint32_t available = Buffer_wait(self->buffer, self->read_pos);
+    return PyBytes_FromStringAndSize(Buffer_getReadPointer(self->buffer, self->read_pos), available);
+}
+
 PyMethodDef SocketClient_methods[] = {
     {"getBuffer", (PyCFunction) SocketClient_getBuffer, METH_NOARGS,
      "get the output buffer"
     },
+    {"read", (PyCFunction) SocketClient_read, METH_NOARGS,
+     "read bytes from the socket connection"},
     {NULL}  /* Sentinel */
 };
 
