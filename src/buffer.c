@@ -21,6 +21,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     if (self != NULL) {
         self->buffer = NULL;
         self->write_pos = 0;
+        self->read_pos = 0;
     }
     return (PyObject*) self;
 }
@@ -44,7 +45,14 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
+PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
+    uint32_t available = Buffer_wait(self, self->read_pos);
+    return PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available);
+}
+
 PyMethodDef Buffer_methods[] = {
+    {"read", (PyCFunction) Buffer_read, METH_NOARGS,
+     "read bytes from the buffer"},
     {NULL}  /* Sentinel */
 };
 
@@ -99,4 +107,55 @@ uint32_t Buffer_wait(Buffer* self, uint32_t read_pos) {
 
 void* Buffer_getReadPointer(Buffer* self, uint32_t read_pos) {
     return self->buffer + read_pos;
+}
+
+uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t read_pos, uint32_t n) {
+    uint32_t available;
+    uint32_t read = 0;
+    while (read < n) {
+        pthread_mutex_lock(&self->wait_mutex);
+        available = Buffer_getAvailable(self, read_pos);
+        if (!available) {
+            pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
+            available = Buffer_getAvailable(self, read_pos);
+        }
+        pthread_mutex_unlock(&self->wait_mutex);
+
+        if (available > n - read) available = n - read;
+        memcpy(dst + read, Buffer_getReadPointer(self, read_pos), available);
+        read += available;
+        read_pos = read_pos + available % self->size;
+    }
+    return read_pos;
+}
+
+uint32_t Buffer_skip_n(Buffer* self, uint32_t read_pos, uint32_t n) {
+    uint32_t available;
+    uint32_t read = 0;
+    while (read < n) {
+        pthread_mutex_lock(&self->wait_mutex);
+        available = Buffer_getAvailable(self, read_pos);
+        if (!available) {
+            pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
+            available = Buffer_getAvailable(self, read_pos);
+        }
+        pthread_mutex_unlock(&self->wait_mutex);
+
+        if (available > n - read) available = n - read;
+        read += available;
+        read_pos = read_pos + available % self->size;
+    }
+    return read_pos;
+}
+
+void Buffer_write(Buffer* self, void* src, uint32_t len) {
+    uint32_t remaining = len;
+    uint32_t writeable;
+    while (remaining > 0) {
+        writeable = Buffer_getWriteable(self);
+        if (writeable > remaining) writeable = remaining;
+        memcpy(Buffer_getWritePointer(self), src, writeable);
+        Buffer_advance(self, writeable);
+        remaining -= writeable;
+    }
 }

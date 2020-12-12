@@ -17,8 +17,10 @@ setup(
                 "src/pycsdr_module.c",
                 "src/socket_client.c",
                 "src/buffer.c",
+                "src/fft_cc.c",
             ],
             include_dirs=["src"],
+            libraries=['csdr', 'fftw3f']
         )
     ],
 )

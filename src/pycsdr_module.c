@@ -3,6 +3,7 @@
 
 #include "socket_client.h"
 #include "buffer.h"
+#include "fft_cc.h"
 
 static PyModuleDef pycsdrmodule = {
     PyModuleDef_HEAD_INIT,
@@ -20,6 +21,9 @@ PyInit_pycsdr(void) {
     if (PyType_Ready(&BufferType) < 0)
         return NULL;
 
+    if (PyType_Ready(&FftType) < 0)
+        return NULL;
+
     m = PyModule_Create(&pycsdrmodule);
     if (m == NULL)
         return NULL;
@@ -29,6 +33,9 @@ PyInit_pycsdr(void) {
 
     Py_INCREF(&BufferType);
     PyModule_AddObject(m, "Buffer", (PyObject*) &BufferType);
+
+    Py_INCREF(&FftType);
+    PyModule_AddObject(m, "Fft", (PyObject*) &FftType);
 
     return m;
 }

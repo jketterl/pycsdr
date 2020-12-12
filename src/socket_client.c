@@ -96,17 +96,10 @@ PyObject* SocketClient_getBuffer(SocketClient* self, PyObject* Py_UNUSED(ignored
     return (PyObject*) self->buffer;
 }
 
-PyObject* SocketClient_read(SocketClient* self, PyObject* Py_UNUSED(ignored)) {
-    uint32_t available = Buffer_wait(self->buffer, self->read_pos);
-    return PyBytes_FromStringAndSize(Buffer_getReadPointer(self->buffer, self->read_pos), available);
-}
-
 PyMethodDef SocketClient_methods[] = {
     {"getBuffer", (PyCFunction) SocketClient_getBuffer, METH_NOARGS,
      "get the output buffer"
     },
-    {"read", (PyCFunction) SocketClient_read, METH_NOARGS,
-     "read bytes from the socket connection"},
     {NULL}  /* Sentinel */
 };
 
