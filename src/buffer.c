@@ -20,6 +20,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     self = (Buffer*) type->tp_alloc(type, 0);
     if (self != NULL) {
         self->buffer = NULL;
+        self->write_pos = 0;
     }
     return (PyObject*) self;
 }
@@ -58,3 +59,15 @@ PyTypeObject BufferType = {
     .tp_clear = (inquiry) Buffer_clear,
     .tp_methods = Buffer_methods,
 };
+
+uint32_t Buffer_getAvailable(Buffer* self) {
+    return self->size - self->write_pos;
+}
+
+void* Buffer_getWritePointer(Buffer* self) {
+    return self->buffer + self->write_pos;
+}
+
+void Buffer_advance(Buffer* self, uint32_t how_much) {
+    self->write_pos = (self->write_pos + how_much) % self->size;
+}

@@ -2,6 +2,8 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#include <stdbool.h>
+#include <pthread.h>
 
 #include "buffer.h"
 
@@ -10,6 +12,8 @@ typedef struct {
     int port;
     int socket;
     Buffer* buffer;
+    bool run;
+    pthread_t reader;
 } SocketClient;
 
 int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg);

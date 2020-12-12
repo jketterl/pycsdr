@@ -4,6 +4,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <stdio.h>
+
 int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
     return 0;
 }
@@ -26,8 +28,25 @@ PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
         self->port = 0;
         self->socket = 0;
         self->buffer = NULL;
+        self->run = true;
     }
     return (PyObject*) self;
+}
+
+void* SocketClient_reader(void* ctx) {
+    SocketClient* self = (SocketClient*) ctx;
+    int read_bytes;
+    int available;
+    while (self->run) {
+        available = Buffer_getAvailable(self->buffer);
+        read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer), available, 0);
+        if (read_bytes <= 0) {
+            self->run = false;
+        } else {
+            Buffer_advance(self->buffer, read_bytes);
+        }
+    }
+    return NULL;
 }
 
 int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
@@ -52,6 +71,11 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
     remote.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     if (connect(self->socket, (struct sockaddr *)&remote, sizeof(remote)) < 0) {
+        PyErr_SetFromErrno(PyExc_OSError);
+        return -1;
+    }
+
+    if (pthread_create(&self->reader, NULL, SocketClient_reader, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return -1;
     }
