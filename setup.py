@@ -16,6 +16,7 @@ setup(
             sources=[
                 "src/pycsdr_module.c",
                 "src/socket_client.c",
+                "src/buffer.c",
             ],
             include_dirs=["src"],
         )
