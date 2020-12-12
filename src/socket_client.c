@@ -4,8 +4,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "stdio.h"
-
 int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
     return 0;
 }
@@ -27,6 +25,7 @@ PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     if (self != NULL) {
         self->port = 0;
         self->socket = 0;
+        self->buffer = NULL;
     }
     return (PyObject*) self;
 }
@@ -37,6 +36,8 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
                                      &self->port))
         return -1;
+
+    self->buffer = (Buffer*) PyObject_CallObject((PyObject*) &BufferType, NULL);
 
     struct sockaddr_in remote;
 
@@ -58,14 +59,16 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-PyObject* SocketClient_getBytes(SocketClient* self, PyObject* Py_UNUSED(ignored)) {
-    //return PyUnicode_FromFormat("%S %S", self->first, self->last);
-    Py_RETURN_NONE;
+PyObject* SocketClient_getBuffer(SocketClient* self, PyObject* Py_UNUSED(ignored)) {
+    if (self->buffer == NULL) {
+        Py_RETURN_NONE;
+    }
+    return (PyObject*) self->buffer;
 }
 
 PyMethodDef SocketClient_methods[] = {
-    {"getBytes", (PyCFunction) SocketClient_getBytes, METH_NOARGS,
-     "Return the number of bytes read"
+    {"getBuffer", (PyCFunction) SocketClient_getBuffer, METH_NOARGS,
+     "get the output buffer"
     },
     {NULL}  /* Sentinel */
 };
