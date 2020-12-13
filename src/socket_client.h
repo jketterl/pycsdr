@@ -7,6 +7,9 @@
 
 #include "buffer.h"
 
+// we expect 32bit float IQ samples coming in on the socket
+#define SOCKET_ITEM_SIZE 8
+
 typedef struct {
     PyObject_HEAD
     int port;

@@ -45,14 +45,16 @@ void* SocketClient_reader(void* ctx) {
     Py_INCREF(self);
     int read_bytes;
     int available;
+    int offset = 0;
     while (self->run) {
         available = Buffer_getWriteable(self->buffer);
         if (available > 1024) available = 1024;
-        read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer), available * 8, 0);
+        read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer) + offset, available * SOCKET_ITEM_SIZE - offset, 0);
         if (read_bytes <= 0) {
             self->run = false;
         } else {
-            Buffer_advance(self->buffer, read_bytes);
+            offset = (offset + read_bytes) % SOCKET_ITEM_SIZE;
+            Buffer_advance(self->buffer, (offset + read_bytes) / SOCKET_ITEM_SIZE);
         }
     }
     Py_DECREF(self);
@@ -69,7 +71,7 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
     // we expect 32-bit float IQ samples
     PyObject* bufferArgs = Py_BuildValue("()");
     if (bufferArgs == NULL) return -1;
-    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", 8);
+    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", SOCKET_ITEM_SIZE);
     if (bufferKwargs == NULL) return -1;
     self->buffer = (Buffer*) PyObject_Call((PyObject*) &BufferType, bufferArgs, bufferKwargs);
     Py_DECREF(args);

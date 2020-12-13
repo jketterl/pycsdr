@@ -107,9 +107,8 @@ static uint32_t Buffer_getAvailable(Buffer* self, uint32_t read_pos) {
 uint32_t Buffer_wait(Buffer* self, uint32_t read_pos) {
     uint32_t available;
     pthread_mutex_lock(&self->wait_mutex);
-    if ((available = Buffer_getAvailable(self, read_pos)) <= 0) {
+    while ((available = Buffer_getAvailable(self, read_pos)) <= 0) {
         pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
-        available = Buffer_getAvailable(self, read_pos);
     }
     pthread_mutex_unlock(&self->wait_mutex);
     return available;
@@ -126,7 +125,7 @@ uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t read_pos, uint32_t n) {
         available = Buffer_wait(self, read_pos);
 
         if (available > n - read) available = n - read;
-        memcpy(dst + read, Buffer_getReadPointer(self, read_pos), available * self->item_size);
+        memcpy(dst + read * self->item_size, Buffer_getReadPointer(self, read_pos), available * self->item_size);
         read += available;
         read_pos = (read_pos + available) % self->size;
     }
@@ -152,7 +151,7 @@ void Buffer_write(Buffer* self, void* src, uint32_t len) {
     while (remaining > 0) {
         writeable = Buffer_getWriteable(self);
         if (writeable > remaining) writeable = remaining;
-        memcpy(Buffer_getWritePointer(self), src + ((len - remaining) * self->item_size), writeable);
+        memcpy(Buffer_getWritePointer(self), src + ((len - remaining) * self->item_size), writeable * self->item_size);
         Buffer_advance(self, writeable);
         remaining -= writeable;
     }
