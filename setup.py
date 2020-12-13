@@ -18,6 +18,7 @@ setup(
                 "src/socket_client.c",
                 "src/buffer.c",
                 "src/fft_cc.c",
+                "src/log_average_power_cf.c",
             ],
             include_dirs=["src"],
             libraries=['csdr', 'fftw3f']
