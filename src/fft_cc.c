@@ -5,6 +5,11 @@ int Fft_traverse(Fft* self, visitproc visit, void* arg) {
 }
 
 int Fft_clear(Fft* self) {
+    self->run = false;
+    void* retval = NULL;
+    pthread_join(self->worker, retval);
+    Py_DECREF(self->inputBuffer);
+    Py_DECREF(self->buffer);
     return 0;
 }
 
@@ -30,6 +35,7 @@ PyObject* Fft_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 
 void* Fft_worker(void* ctx) {
     Fft* self = (Fft*) ctx;
+    Py_INCREF(self);
     window_t window = WINDOW_DEFAULT;
     complexf* input = (complexf*) fftwf_malloc(sizeof(complexf) * self->size);
     complexf* windowed = (complexf*) fftwf_malloc(sizeof(complexf) * self->size);
@@ -42,21 +48,19 @@ void* Fft_worker(void* ctx) {
     while (self->run) {
         if (self->every_n_samples > self->size) {
             self->read_pos = Buffer_read_n(self->inputBuffer, input, self->read_pos, sizeof(complexf) * self->size);
+            //skipping samples before next FFT
             self->read_pos = Buffer_skip_n(self->inputBuffer, self->read_pos, sizeof(complexf) * self->every_n_samples - self->size);
-            //skipping samples before next FFT (but fseek doesn't work for pipes)
-            //for (int seek_remain = self->every_n_samples - self->size; seek_remain > 0; seek_remain -= the_bufsize) {
-                //fread(temp_f, sizeof(complexf), MIN_M(the_bufsize,seek_remain), stdin);
-            //}
         } else {
             //overlapped FFT
-            for (int i=0; i < self->size - self->every_n_samples; i++) input[i] = input[i + self->every_n_samples];
-            self->read_pos = Buffer_read_n(self->inputBuffer, input + self->size, self->read_pos, sizeof(complexf) * self->every_n_samples);
-            //fread(input + self->size - self->every_n_samples, sizeof(complexf), self->every_n_samples, stdin);
+            for (int i = 0; i < self->size - self->every_n_samples; i++) input[i] = input[i + self->every_n_samples];
+            self->read_pos = Buffer_read_n(self->inputBuffer, input + self->size - self->every_n_samples, self->read_pos, sizeof(complexf) * self->every_n_samples);
         }
         apply_precalculated_window_c(input, windowed, self->size, windowt);
         fftwf_execute(plan);
-        Buffer_write(self->buffer, output, self->size);
+        Buffer_write(self->buffer, output, sizeof(complexf) * self->size);
     }
+
+    Py_DECREF(self);
     return NULL;
 }
 
@@ -78,6 +82,8 @@ PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds) {
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->inputBuffer))
         return NULL;
+
+    Py_INCREF(self->inputBuffer);
 
     if (pthread_create(&self->worker, NULL, Fft_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);

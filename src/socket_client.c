@@ -13,7 +13,7 @@ int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
 int SocketClient_clear(SocketClient* self) {
     self->run = false;
     void* retval = NULL;
-    pthread_join(self->reader, retval);
+    if (self->reader != 0) pthread_join(self->reader, retval);
     close(self->socket);
     Py_DECREF(self->buffer);
     return 0;
@@ -33,17 +33,19 @@ PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
         self->socket = 0;
         self->buffer = NULL;
         self->run = true;
+        self->reader = 0;
     }
     return (PyObject*) self;
 }
 
 void* SocketClient_reader(void* ctx) {
     SocketClient* self = (SocketClient*) ctx;
+    Py_INCREF(self);
     int read_bytes;
     int available;
     while (self->run) {
         available = Buffer_getWriteable(self->buffer);
-        if (available > 256) available = 256;
+        if (available > 10240) available = 10240;
         read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer), available, 0);
         if (read_bytes <= 0) {
             self->run = false;
@@ -51,6 +53,7 @@ void* SocketClient_reader(void* ctx) {
             Buffer_advance(self->buffer, read_bytes);
         }
     }
+    Py_DECREF(self);
     return NULL;
 }
 

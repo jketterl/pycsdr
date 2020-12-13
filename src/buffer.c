@@ -47,7 +47,9 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
 
 PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     uint32_t available = Buffer_wait(self, self->read_pos);
-    return PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available);
+    PyObject* bytes = PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available);
+    self->read_pos = (self->read_pos + available) % self->size;
+    return bytes;
 }
 
 PyMethodDef Buffer_methods[] = {
@@ -113,18 +115,12 @@ uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t read_pos, uint32_t n) {
     uint32_t available;
     uint32_t read = 0;
     while (read < n) {
-        pthread_mutex_lock(&self->wait_mutex);
-        available = Buffer_getAvailable(self, read_pos);
-        if (!available) {
-            pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
-            available = Buffer_getAvailable(self, read_pos);
-        }
-        pthread_mutex_unlock(&self->wait_mutex);
+        available = Buffer_wait(self, read_pos);
 
         if (available > n - read) available = n - read;
         memcpy(dst + read, Buffer_getReadPointer(self, read_pos), available);
         read += available;
-        read_pos = read_pos + available % self->size;
+        read_pos = (read_pos + available) % self->size;
     }
     return read_pos;
 }
@@ -133,17 +129,11 @@ uint32_t Buffer_skip_n(Buffer* self, uint32_t read_pos, uint32_t n) {
     uint32_t available;
     uint32_t read = 0;
     while (read < n) {
-        pthread_mutex_lock(&self->wait_mutex);
-        available = Buffer_getAvailable(self, read_pos);
-        if (!available) {
-            pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
-            available = Buffer_getAvailable(self, read_pos);
-        }
-        pthread_mutex_unlock(&self->wait_mutex);
+        available = Buffer_wait(self, read_pos);
 
         if (available > n - read) available = n - read;
         read += available;
-        read_pos = read_pos + available % self->size;
+        read_pos = (read_pos + available) % self->size;
     }
     return read_pos;
 }
@@ -154,7 +144,7 @@ void Buffer_write(Buffer* self, void* src, uint32_t len) {
     while (remaining > 0) {
         writeable = Buffer_getWriteable(self);
         if (writeable > remaining) writeable = remaining;
-        memcpy(Buffer_getWritePointer(self), src, writeable);
+        memcpy(Buffer_getWritePointer(self), src + (len - remaining), writeable);
         Buffer_advance(self, writeable);
         remaining -= writeable;
     }
