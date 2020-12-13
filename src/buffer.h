@@ -9,6 +9,7 @@ typedef struct {
     PyObject_HEAD
     uint32_t size;
     void* buffer;
+    uint8_t item_size;
     uint32_t write_pos;
     uint32_t read_pos;
     pthread_cond_t wait_condition;
@@ -25,6 +26,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
 int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds);
 PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored));
 
+uint8_t Buffer_getItemSize(Buffer* self);
 uint32_t Buffer_getWriteable(Buffer* self);
 void* Buffer_getWritePointer(Buffer* self);
 void Buffer_advance(Buffer* self, uint32_t how_much);

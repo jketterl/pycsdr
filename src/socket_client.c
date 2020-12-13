@@ -14,8 +14,10 @@ int SocketClient_clear(SocketClient* self) {
     self->run = false;
     void* retval = NULL;
     if (self->reader != 0) pthread_join(self->reader, retval);
+    self->reader = 0;
     close(self->socket);
-    Py_DECREF(self->buffer);
+    if (self->buffer != NULL) Py_DECREF(self->buffer);
+    self->buffer = NULL;
     return 0;
 }
 
@@ -45,8 +47,8 @@ void* SocketClient_reader(void* ctx) {
     int available;
     while (self->run) {
         available = Buffer_getWriteable(self->buffer);
-        if (available > 10240) available = 10240;
-        read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer), available, 0);
+        if (available > 1024) available = 1024;
+        read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer), available * 8, 0);
         if (read_bytes <= 0) {
             self->run = false;
         } else {
@@ -64,7 +66,16 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
                                      &self->port))
         return -1;
 
-    self->buffer = (Buffer*) PyObject_CallObject((PyObject*) &BufferType, NULL);
+    // we expect 32-bit float IQ samples
+    PyObject* bufferArgs = Py_BuildValue("()");
+    if (bufferArgs == NULL) return -1;
+    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", 8);
+    if (bufferKwargs == NULL) return -1;
+    self->buffer = (Buffer*) PyObject_Call((PyObject*) &BufferType, bufferArgs, bufferKwargs);
+    Py_DECREF(args);
+    Py_DECREF(bufferKwargs);
+
+    if (self->buffer == NULL) return -1;
     Py_INCREF(self->buffer);
 
     struct sockaddr_in remote;

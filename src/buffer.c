@@ -5,7 +5,8 @@ int Buffer_traverse(Buffer* self, visitproc visit, void* arg) {
 }
 
 int Buffer_clear(Buffer* self) {
-    free(self->buffer);
+    if (self->buffer != NULL) free(self->buffer);
+    self->buffer = NULL;
     return 0;
 }
 
@@ -20,6 +21,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     self = (Buffer*) type->tp_alloc(type, 0);
     if (self != NULL) {
         self->buffer = NULL;
+        self->item_size = 1;
         self->write_pos = 0;
         self->read_pos = 0;
     }
@@ -27,17 +29,19 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 }
 
 int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
-    static char* kwlist[] = {"size", NULL};
+    static char* kwlist[] = {"size", "item_size", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist,
-                                     &self->size))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|ii", kwlist,
+                                     &self->size, &self->item_size))
         return -1;
 
     if (self->size == 0) {
         self->size = DEFAULT_BUFFER_SIZE;
     }
 
-    self->buffer = malloc(self->size);
+    fprintf(stderr, "new buffer with item_size = %i and size = %i\n", self->item_size, self->size);
+
+    self->buffer = malloc(self->size * self->item_size);
 
     pthread_cond_init(&self->wait_condition, NULL);
     pthread_mutex_init(&self->wait_mutex, NULL);
@@ -47,7 +51,7 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
 
 PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     uint32_t available = Buffer_wait(self, self->read_pos);
-    PyObject* bytes = PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available);
+    PyObject* bytes = PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available * self->item_size);
     self->read_pos = (self->read_pos + available) % self->size;
     return bytes;
 }
@@ -73,12 +77,16 @@ PyTypeObject BufferType = {
     .tp_methods = Buffer_methods,
 };
 
+uint8_t Buffer_getItemSize(Buffer* self) {
+    return self->item_size;
+}
+
 uint32_t Buffer_getWriteable(Buffer* self) {
     return self->size - self->write_pos;
 }
 
 void* Buffer_getWritePointer(Buffer* self) {
-    return self->buffer + self->write_pos;
+    return self->buffer + self->write_pos * self->item_size;
 }
 
 void Buffer_advance(Buffer* self, uint32_t how_much) {
@@ -108,7 +116,7 @@ uint32_t Buffer_wait(Buffer* self, uint32_t read_pos) {
 }
 
 void* Buffer_getReadPointer(Buffer* self, uint32_t read_pos) {
-    return self->buffer + read_pos;
+    return self->buffer + read_pos * self->item_size;
 }
 
 uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t read_pos, uint32_t n) {
@@ -118,7 +126,7 @@ uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t read_pos, uint32_t n) {
         available = Buffer_wait(self, read_pos);
 
         if (available > n - read) available = n - read;
-        memcpy(dst + read, Buffer_getReadPointer(self, read_pos), available);
+        memcpy(dst + read, Buffer_getReadPointer(self, read_pos), available * self->item_size);
         read += available;
         read_pos = (read_pos + available) % self->size;
     }
@@ -144,7 +152,7 @@ void Buffer_write(Buffer* self, void* src, uint32_t len) {
     while (remaining > 0) {
         writeable = Buffer_getWriteable(self);
         if (writeable > remaining) writeable = remaining;
-        memcpy(Buffer_getWritePointer(self), src + (len - remaining), writeable);
+        memcpy(Buffer_getWritePointer(self), src + ((len - remaining) * self->item_size), writeable);
         Buffer_advance(self, writeable);
         remaining -= writeable;
     }
