@@ -45,7 +45,7 @@ void* Fft_worker(void* ctx) {
     complexf* windowed = (complexf*) fftwf_malloc(sizeof(complexf) * self->size);
     complexf* output = (complexf*) fftwf_malloc(sizeof(complexf) * self->size);
 
-	fftwf_plan plan = fftwf_plan_dft_1d(self->size, (fftwf_complex*) input, (fftwf_complex*) output, FFTW_FORWARD, FFTW_ESTIMATE);
+	fftwf_plan plan = fftwf_plan_dft_1d(self->size, (fftwf_complex*) windowed, (fftwf_complex*) output, FFTW_FORWARD, FFTW_ESTIMATE);
 
 	float* windowt = precalculate_window(self->size, window);
 
