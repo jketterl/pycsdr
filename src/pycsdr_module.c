@@ -5,6 +5,7 @@
 #include "buffer.h"
 #include "fft_cc.h"
 #include "log_average_power_cf.h"
+#include "fft_exchange_sides_ff.h"
 
 static PyModuleDef pycsdrmodule = {
     PyModuleDef_HEAD_INIT,
@@ -28,6 +29,9 @@ PyInit_pycsdr(void) {
     if (PyType_Ready(&LogAveragePowerType) < 0)
         return NULL;
 
+    if (PyType_Ready(&FftExchangeSidesType) < 0)
+        return NULL;
+
     m = PyModule_Create(&pycsdrmodule);
     if (m == NULL)
         return NULL;
@@ -43,6 +47,9 @@ PyInit_pycsdr(void) {
 
     Py_INCREF(&LogAveragePowerType);
     PyModule_AddObject(m, "LogAveragePower", (PyObject*) &LogAveragePowerType);
+
+    Py_INCREF(&FftExchangeSidesType);
+    PyModule_AddObject(m, "FftExchangeSides", (PyObject*) &FftExchangeSidesType);
 
     return m;
 }
