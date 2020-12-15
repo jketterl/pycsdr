@@ -75,6 +75,11 @@ int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
                                      &self->size, &self->every_n_samples))
         return -1;
 
+    if (log2n(self->size) == -1) {
+        PyErr_SetString(PyExc_ValueError, "fft_size should be power of 2");
+        return -1;
+    }
+
     // we output 32-bit float IQ samples
     PyObject* bufferArgs = Py_BuildValue("()");
     if (bufferArgs == NULL) return -1;
