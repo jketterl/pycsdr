@@ -47,11 +47,8 @@ void* LogAveragePower_worker(void* ctx) {
 
     float add_db = self->add_db - 10.0 * log10(self->avg_number);
     while (self->run) {
-        int i, n;
-        for (i = 0; i < self->fft_size; i++) {
-            output[i] = 0;
-        }
-        for(n = 0; n < self->avg_number; n++) {
+        memset(output, 0, sizeof(float) * self->fft_size);
+        for (int i = 0; i < self->avg_number; i++) {
             self->read_pos = Buffer_read_n(self->inputBuffer, input, self->read_pos, self->fft_size);
             accumulate_power_cf(input, output, self->fft_size);
         }
