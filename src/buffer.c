@@ -50,7 +50,10 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
 }
 
 PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
-    uint32_t available = Buffer_wait(self, self->read_pos);
+    uint32_t available;
+    Py_BEGIN_ALLOW_THREADS
+    available = Buffer_wait(self, self->read_pos);
+    Py_END_ALLOW_THREADS
     PyObject* bytes = PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available * self->item_size);
     self->read_pos = (self->read_pos + available) % self->size;
     return bytes;
