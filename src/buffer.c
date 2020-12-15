@@ -7,6 +7,8 @@ int Buffer_traverse(Buffer* self, visitproc visit, void* arg) {
 int Buffer_clear(Buffer* self) {
     if (self->buffer != NULL) free(self->buffer);
     self->buffer = NULL;
+    pthread_cond_destroy(&self->wait_condition);
+    pthread_mutex_destroy(&self->wait_mutex);
     return 0;
 }
 
@@ -38,8 +40,6 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     if (self->size == 0) {
         self->size = DEFAULT_BUFFER_SIZE;
     }
-
-    fprintf(stderr, "new buffer with item_size = %i and size = %i\n", self->item_size, self->size);
 
     self->buffer = malloc(self->size * self->item_size);
 
