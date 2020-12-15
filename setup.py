@@ -19,6 +19,7 @@ setup(
                 "src/buffer.c",
                 "src/fft_cc.c",
                 "src/log_average_power_cf.c",
+                "src/fft_exchange_sides_ff.c",
             ],
             include_dirs=["src"],
             libraries=['csdr', 'fftw3f']
