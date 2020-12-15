@@ -63,7 +63,7 @@ void* LogAveragePower_worker(void* ctx) {
 int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"add_db", "fft_size", "avg_number", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|iii", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "fii", kwlist,
                                      &self->add_db, &self->fft_size, &self->avg_number))
         return -1;
 
