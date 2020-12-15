@@ -101,6 +101,8 @@ PyObject* LogAveragePower_setInput(LogAveragePower* self, PyObject* args, PyObje
         return NULL;
     }
 
+    pthread_setname_np(self->worker, "pycsdr LogAvera");
+
     Py_RETURN_NONE;
 }
 

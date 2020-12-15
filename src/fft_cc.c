@@ -114,6 +114,8 @@ PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds) {
         return NULL;
     }
 
+    pthread_setname_np(self->worker, "pycsdr Fft");
+
     Py_RETURN_NONE;
 }
 

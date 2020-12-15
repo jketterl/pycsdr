@@ -102,6 +102,8 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
+    pthread_setname_np(self->reader, "pycsdr SocketCl");
+
     return 0;
 }
 
