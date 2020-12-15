@@ -39,7 +39,6 @@ PyObject* Fft_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 
 void* Fft_worker(void* ctx) {
     Fft* self = (Fft*) ctx;
-    Py_INCREF(self);
     window_t window = WINDOW_DEFAULT;
     complexf* input = (complexf*) fftwf_malloc(sizeof(complexf) * self->size);
     complexf* windowed = (complexf*) fftwf_malloc(sizeof(complexf) * self->size);
@@ -109,6 +108,7 @@ PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds) {
 
     Py_INCREF(self->inputBuffer);
 
+    Py_INCREF(self);
     if (pthread_create(&self->worker, NULL, Fft_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;

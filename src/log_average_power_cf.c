@@ -40,7 +40,6 @@ PyObject* LogAveragePower_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 
 void* LogAveragePower_worker(void* ctx) {
     LogAveragePower* self = (LogAveragePower*) ctx;
-    Py_INCREF(self);
 
     complexf* input = malloc(sizeof(complexf) * self->fft_size);
     float* output = malloc(sizeof(float) * self->fft_size);
@@ -96,6 +95,7 @@ PyObject* LogAveragePower_setInput(LogAveragePower* self, PyObject* args, PyObje
 
     Py_INCREF(self->inputBuffer);
 
+    Py_INCREF(self);
     if (pthread_create(&self->worker, NULL, LogAveragePower_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
