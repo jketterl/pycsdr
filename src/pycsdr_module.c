@@ -6,6 +6,7 @@
 #include "fft_cc.h"
 #include "log_average_power_cf.h"
 #include "fft_exchange_sides_ff.h"
+#include "compress_fft_adpcm_f_u8.h"
 
 static PyModuleDef pycsdrmodule = {
     PyModuleDef_HEAD_INIT,
@@ -32,6 +33,9 @@ PyInit_pycsdr(void) {
     if (PyType_Ready(&FftExchangeSidesType) < 0)
         return NULL;
 
+    if (PyType_Ready(&CompressFftAdpcmType) < 0)
+        return NULL;
+
     m = PyModule_Create(&pycsdrmodule);
     if (m == NULL)
         return NULL;
@@ -50,6 +54,9 @@ PyInit_pycsdr(void) {
 
     Py_INCREF(&FftExchangeSidesType);
     PyModule_AddObject(m, "FftExchangeSides", (PyObject*) &FftExchangeSidesType);
+
+    Py_INCREF(&CompressFftAdpcmType);
+    PyModule_AddObject(m, "CompressFftAdpcm", (PyObject*) &CompressFftAdpcmType);
 
     return m;
 }
