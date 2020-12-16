@@ -58,7 +58,7 @@ PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     if (!self->run && available == 0) {
         Py_RETURN_NONE;
     } else {
-        PyObject* bytes = PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available * self->item_size);
+        PyObject* bytes = PyMemoryView_FromMemory(Buffer_getReadPointer(self, self->read_pos), available * self->item_size, PyBUF_READ);
         self->read_pos = (self->read_pos + available) % self->size;
         return bytes;
     }
