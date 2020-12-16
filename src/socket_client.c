@@ -4,8 +4,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <stdio.h>
-
 int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
     return 0;
 }
@@ -51,12 +49,13 @@ void* SocketClient_worker(void* ctx) {
         read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer) + offset, available * SOCKET_ITEM_SIZE - offset, 0);
         if (read_bytes <= 0) {
             self->run = false;
-            Buffer_shutdown(self->buffer);
         } else {
             offset = (offset + read_bytes) % SOCKET_ITEM_SIZE;
             Buffer_advance(self->buffer, (offset + read_bytes) / SOCKET_ITEM_SIZE);
         }
     }
+
+    Buffer_shutdown(self->buffer);
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);

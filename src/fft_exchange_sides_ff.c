@@ -56,9 +56,8 @@ void* FftExchangeSides_worker(void* ctx) {
     Buffer_shutdown(self->buffer);
 
     PyGILState_STATE gstate = PyGILState_Ensure();
-    Py_DECREF(self);
-    Py_DECREF(self->buffer);
     Py_DECREF(self->inputBuffer);
+    Py_DECREF(self);
     PyGILState_Release(gstate);
     return NULL;
 }
