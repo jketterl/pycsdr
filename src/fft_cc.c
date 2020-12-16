@@ -139,12 +139,20 @@ PyObject* Fft_getBuffer(Fft* self, PyObject* Py_UNUSED(ignored)) {
     return (PyObject*) self->buffer;
 }
 
+PyObject* Fft_stop(Fft* self, PyObject* Py_UNUSED(ignored)) {
+    self->run = false;
+    Py_RETURN_NONE;
+}
+
 PyMethodDef Fft_methods[] = {
     {"getBuffer", (PyCFunction) Fft_getBuffer, METH_NOARGS,
      "get the output buffer"
     },
     {"setInput", (PyCFunction) Fft_setInput, METH_VARARGS | METH_KEYWORDS,
      "set the input buffer"
+    },
+    {"stop", (PyCFunction) Fft_stop, METH_NOARGS,
+     "stop processing"
     },
     {NULL}  /* Sentinel */
 };

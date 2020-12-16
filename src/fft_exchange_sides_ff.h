@@ -26,5 +26,6 @@ PyObject* FftExchangeSides_new(PyTypeObject* type, PyObject* args, PyObject* kwd
 int FftExchangeSides_init(FftExchangeSides* self, PyObject* args, PyObject* kwds);
 PyObject* FftExchangeSides_getBuffer(FftExchangeSides* self, PyObject* Py_UNUSED(ignored));
 PyObject* FftExchangeSides_setInput(FftExchangeSides* self, PyObject* args, PyObject* kwds);
+PyObject* FftExchangeSides_stop(FftExchangeSides* self, PyObject* Py_UNUSED(ignored));
 
 extern PyTypeObject FftExchangeSidesType;

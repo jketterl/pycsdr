@@ -118,12 +118,20 @@ PyObject* FftExchangeSides_getBuffer(FftExchangeSides* self, PyObject* Py_UNUSED
     return (PyObject*) self->buffer;
 }
 
+PyObject* FftExchangeSides_stop(FftExchangeSides* self, PyObject* Py_UNUSED(ignored)) {
+    self->run = false;
+    Py_RETURN_NONE;
+}
+
 PyMethodDef FftExchangeSides_methods[] = {
     {"getBuffer", (PyCFunction) FftExchangeSides_getBuffer, METH_NOARGS,
      "get the output buffer"
     },
     {"setInput", (PyCFunction) FftExchangeSides_setInput, METH_VARARGS | METH_KEYWORDS,
      "set the input buffer"
+    },
+    {"stop", (PyCFunction) FftExchangeSides_stop, METH_NOARGS,
+     "stop processing"
     },
     {NULL}  /* Sentinel */
 };

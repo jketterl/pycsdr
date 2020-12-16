@@ -28,5 +28,6 @@ PyObject* LogAveragePower_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject* kwds);
 PyObject* LogAveragePower_getBuffer(LogAveragePower* self, PyObject* Py_UNUSED(ignored));
 PyObject* LogAveragePower_setInput(LogAveragePower* self, PyObject* args, PyObject* kwds);
+PyObject* LogAveragePower_stop(LogAveragePower* self, PyObject* Py_UNUSED(ignored));
 
 extern PyTypeObject LogAveragePowerType;

@@ -119,9 +119,17 @@ PyObject* SocketClient_getBuffer(SocketClient* self, PyObject* Py_UNUSED(ignored
     return (PyObject*) self->buffer;
 }
 
+PyObject* SocketClient_stop(SocketClient* self, PyObject* Py_UNUSED(ignored)) {
+    self->run = false;
+    Py_RETURN_NONE;
+}
+
 PyMethodDef SocketClient_methods[] = {
     {"getBuffer", (PyCFunction) SocketClient_getBuffer, METH_NOARGS,
      "get the output buffer"
+    },
+    {"stop", (PyCFunction) SocketClient_stop, METH_NOARGS,
+     "stop processing"
     },
     {NULL}  /* Sentinel */
 };

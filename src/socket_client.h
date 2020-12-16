@@ -25,5 +25,6 @@ void SocketClient_dealloc(SocketClient* self);
 PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
 int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds);
 PyObject* SocketClient_getBuffer(SocketClient* self, PyObject* Py_UNUSED(ignored));
+PyObject* SocketClient_stop(SocketClient* self, PyObject* Py_UNUSED(ignored));
 
 extern PyTypeObject SocketClientType;

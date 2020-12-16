@@ -125,12 +125,20 @@ PyObject* LogAveragePower_getBuffer(LogAveragePower* self, PyObject* Py_UNUSED(i
     return (PyObject*) self->buffer;
 }
 
+PyObject* LogAveragePower_stop(LogAveragePower* self, PyObject* Py_UNUSED(ignored)) {
+    self->run = false;
+    Py_RETURN_NONE;
+}
+
 PyMethodDef LogAveragePower_methods[] = {
     {"getBuffer", (PyCFunction) LogAveragePower_getBuffer, METH_NOARGS,
      "get the output buffer"
     },
     {"setInput", (PyCFunction) LogAveragePower_setInput, METH_VARARGS | METH_KEYWORDS,
      "set the input buffer"
+    },
+    {"stop", (PyCFunction) LogAveragePower_stop, METH_NOARGS,
+     "stop processing"
     },
     {NULL}  /* Sentinel */
 };
