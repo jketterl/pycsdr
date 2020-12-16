@@ -4,6 +4,7 @@
 #include <Python.h>
 #include <stdint.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 typedef struct {
     PyObject_HEAD
@@ -14,6 +15,7 @@ typedef struct {
     uint32_t read_pos;
     pthread_cond_t wait_condition;
     pthread_mutex_t wait_mutex;
+    bool run;
 } Buffer;
 
 // 256kb
@@ -32,8 +34,9 @@ void* Buffer_getWritePointer(Buffer* self);
 void Buffer_advance(Buffer* self, uint32_t how_much);
 uint32_t Buffer_wait(Buffer* self, uint32_t read_pos);
 void* Buffer_getReadPointer(Buffer* self, uint32_t read_pos);
-uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t read_pos, uint32_t n);
-uint32_t Buffer_skip_n(Buffer* self, uint32_t read_pos, uint32_t n);
+uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t* read_pos, uint32_t n);
+uint32_t Buffer_skip_n(Buffer* self, uint32_t* read_pos, uint32_t n);
 void Buffer_write(Buffer* self, void* src, uint32_t len);
+void Buffer_shutdown(Buffer* self);
 
 extern PyTypeObject BufferType;

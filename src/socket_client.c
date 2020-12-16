@@ -42,7 +42,6 @@ PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 
 void* SocketClient_worker(void* ctx) {
     SocketClient* self = (SocketClient*) ctx;
-    Py_INCREF(self);
     int read_bytes;
     int available;
     int offset = 0;
@@ -52,6 +51,7 @@ void* SocketClient_worker(void* ctx) {
         read_bytes = recv(self->socket, Buffer_getWritePointer(self->buffer) + offset, available * SOCKET_ITEM_SIZE - offset, 0);
         if (read_bytes <= 0) {
             self->run = false;
+            Buffer_shutdown(self->buffer);
         } else {
             offset = (offset + read_bytes) % SOCKET_ITEM_SIZE;
             Buffer_advance(self->buffer, (offset + read_bytes) / SOCKET_ITEM_SIZE);
@@ -100,6 +100,7 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
+    Py_INCREF(self);
     if (pthread_create(&self->worker, NULL, SocketClient_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return -1;
@@ -114,6 +115,7 @@ PyObject* SocketClient_getBuffer(SocketClient* self, PyObject* Py_UNUSED(ignored
     if (self->buffer == NULL) {
         Py_RETURN_NONE;
     }
+    Py_INCREF(self->buffer);
     return (PyObject*) self->buffer;
 }
 

@@ -26,6 +26,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
         self->item_size = 1;
         self->write_pos = 0;
         self->read_pos = 0;
+        self->run = true;
     }
     return (PyObject*) self;
 }
@@ -54,9 +55,13 @@ PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     Py_BEGIN_ALLOW_THREADS
     available = Buffer_wait(self, self->read_pos);
     Py_END_ALLOW_THREADS
-    PyObject* bytes = PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available * self->item_size);
-    self->read_pos = (self->read_pos + available) % self->size;
-    return bytes;
+    if (!self->run && available == 0) {
+        Py_RETURN_NONE;
+    } else {
+        PyObject* bytes = PyBytes_FromStringAndSize(Buffer_getReadPointer(self, self->read_pos), available * self->item_size);
+        self->read_pos = (self->read_pos + available) % self->size;
+        return bytes;
+    }
 }
 
 PyMethodDef Buffer_methods[] = {
@@ -110,7 +115,7 @@ static uint32_t Buffer_getAvailable(Buffer* self, uint32_t read_pos) {
 uint32_t Buffer_wait(Buffer* self, uint32_t read_pos) {
     uint32_t available;
     pthread_mutex_lock(&self->wait_mutex);
-    while ((available = Buffer_getAvailable(self, read_pos)) <= 0) {
+    while (self->run && (available = Buffer_getAvailable(self, read_pos)) <= 0) {
         pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
     }
     pthread_mutex_unlock(&self->wait_mutex);
@@ -121,41 +126,49 @@ void* Buffer_getReadPointer(Buffer* self, uint32_t read_pos) {
     return self->buffer + read_pos * self->item_size;
 }
 
-uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t read_pos, uint32_t n) {
+uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t* read_pos, uint32_t n) {
     uint32_t available;
     uint32_t read = 0;
-    while (read < n) {
-        available = Buffer_wait(self, read_pos);
+    while (self->run && read < n) {
+        available = Buffer_wait(self, *read_pos);
 
         if (available > n - read) available = n - read;
-        memcpy(dst + read * self->item_size, Buffer_getReadPointer(self, read_pos), available * self->item_size);
+        memcpy(dst + read * self->item_size, Buffer_getReadPointer(self, *read_pos), available * self->item_size);
         read += available;
-        read_pos = (read_pos + available) % self->size;
+        *read_pos = (*read_pos + available) % self->size;
     }
-    return read_pos;
+    return read;
 }
 
-uint32_t Buffer_skip_n(Buffer* self, uint32_t read_pos, uint32_t n) {
+uint32_t Buffer_skip_n(Buffer* self, uint32_t* read_pos, uint32_t n) {
     uint32_t available;
     uint32_t read = 0;
-    while (read < n) {
-        available = Buffer_wait(self, read_pos);
+    while (self->run && read < n) {
+        available = Buffer_wait(self, *read_pos);
 
         if (available > n - read) available = n - read;
         read += available;
-        read_pos = (read_pos + available) % self->size;
+        *read_pos = (*read_pos + available) % self->size;
     }
-    return read_pos;
+    return read;
 }
 
 void Buffer_write(Buffer* self, void* src, uint32_t len) {
     uint32_t remaining = len;
     uint32_t writeable;
-    while (remaining > 0) {
+    while (self->run && remaining > 0) {
         writeable = Buffer_getWriteable(self);
         if (writeable > remaining) writeable = remaining;
         memcpy(Buffer_getWritePointer(self), src + ((len - remaining) * self->item_size), writeable * self->item_size);
         Buffer_advance(self, writeable);
         remaining -= writeable;
     }
+}
+
+void Buffer_shutdown(Buffer* self) {
+    self->run = false;
+    // wake up everybody waiting
+    pthread_mutex_lock(&self->wait_mutex);
+    pthread_cond_broadcast(&self->wait_condition);
+    pthread_mutex_unlock(&self->wait_mutex);
 }

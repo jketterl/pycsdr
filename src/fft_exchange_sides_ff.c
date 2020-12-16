@@ -40,16 +40,25 @@ void* FftExchangeSides_worker(void* ctx) {
     FftExchangeSides* self = (FftExchangeSides*) ctx;
 
     float* input = malloc(sizeof(float) * self->fft_size);
-    uint32_t half = self->fft_size / 2;
 
+    uint32_t read;
     while (self->run) {
-        self->read_pos = Buffer_read_n(self->inputBuffer, input + half, self->read_pos, half);
-        self->read_pos = Buffer_read_n(self->inputBuffer, input, self->read_pos, half);
-        Buffer_write(self->buffer, input, self->fft_size);
+        uint32_t half = self->fft_size / 2;
+        read = Buffer_read_n(self->inputBuffer, input + half, &self->read_pos, half);
+        read += Buffer_read_n(self->inputBuffer, input, &self->read_pos, half);
+        if (read == 0) {
+            self->run = false;
+        } else {
+            Buffer_write(self->buffer, input, self->fft_size);
+        }
     }
+
+    Buffer_shutdown(self->buffer);
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);
+    Py_DECREF(self->buffer);
+    Py_DECREF(self->inputBuffer);
     PyGILState_Release(gstate);
     return NULL;
 }

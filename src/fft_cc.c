@@ -48,23 +48,33 @@ void* Fft_worker(void* ctx) {
 
 	float* windowt = precalculate_window(self->size, window);
 
+	uint32_t read;
+
     while (self->run) {
         if (self->every_n_samples > self->size) {
-            self->read_pos = Buffer_read_n(self->inputBuffer, input, self->read_pos, self->size);
+            read = Buffer_read_n(self->inputBuffer, input, &self->read_pos, self->size);
             //skipping samples before next FFT
-            self->read_pos = Buffer_skip_n(self->inputBuffer, self->read_pos, self->every_n_samples - self->size);
+            read += Buffer_skip_n(self->inputBuffer, &self->read_pos, self->every_n_samples - self->size);
         } else {
             //overlapped FFT
             for (int i = 0; i < self->size - self->every_n_samples; i++) input[i] = input[i + self->every_n_samples];
-            self->read_pos = Buffer_read_n(self->inputBuffer, input + self->size - self->every_n_samples, self->read_pos, self->every_n_samples);
+            read = Buffer_read_n(self->inputBuffer, input + self->size - self->every_n_samples, &self->read_pos, self->every_n_samples);
         }
-        apply_precalculated_window_c(input, windowed, self->size, windowt);
-        fftwf_execute(plan);
-        Buffer_write(self->buffer, output, self->size);
+        if (read == 0) {
+            self->run = false;
+        } else {
+            apply_precalculated_window_c(input, windowed, self->size, windowt);
+            fftwf_execute(plan);
+            Buffer_write(self->buffer, output, self->size);
+        }
     }
+
+    Buffer_shutdown(self->buffer);
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);
+    Py_DECREF(self->buffer);
+    Py_DECREF(self->inputBuffer);
     PyGILState_Release(gstate);
     return NULL;
 }

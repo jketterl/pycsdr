@@ -45,18 +45,27 @@ void* LogAveragePower_worker(void* ctx) {
     float* output = malloc(sizeof(float) * self->fft_size);
 
     float add_db = self->add_db - 10.0 * log10(self->avg_number);
+    uint32_t read;
     while (self->run) {
         memset(output, 0, sizeof(float) * self->fft_size);
         for (int i = 0; i < self->avg_number; i++) {
-            self->read_pos = Buffer_read_n(self->inputBuffer, input, self->read_pos, self->fft_size);
+            read = Buffer_read_n(self->inputBuffer, input, &self->read_pos, self->fft_size);
             accumulate_power_cf(input, output, self->fft_size);
         }
-        log_ff(output, output, self->fft_size, add_db);
-        Buffer_write(self->buffer, output, self->fft_size);
+        if (read == 0) {
+            self->run = false;
+        } else {
+            log_ff(output, output, self->fft_size, add_db);
+            Buffer_write(self->buffer, output, self->fft_size);
+        }
     }
+
+    Buffer_shutdown(self->buffer);
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);
+    Py_DECREF(self->buffer);
+    Py_DECREF(self->inputBuffer);
     PyGILState_Release(gstate);
     return NULL;
 }
