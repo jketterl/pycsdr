@@ -48,7 +48,9 @@ void* FftExchangeSides_worker(void* ctx) {
         Buffer_write(self->buffer, input, self->fft_size);
     }
 
+    PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);
+    PyGILState_Release(gstate);
     return NULL;
 }
 

@@ -63,7 +63,9 @@ void* Fft_worker(void* ctx) {
         Buffer_write(self->buffer, output, self->size);
     }
 
+    PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);
+    PyGILState_Release(gstate);
     return NULL;
 }
 

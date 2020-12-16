@@ -55,7 +55,9 @@ void* LogAveragePower_worker(void* ctx) {
         Buffer_write(self->buffer, output, self->fft_size);
     }
 
+    PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);
+    PyGILState_Release(gstate);
     return NULL;
 }
 
