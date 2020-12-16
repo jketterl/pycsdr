@@ -13,8 +13,8 @@ int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
 int SocketClient_clear(SocketClient* self) {
     self->run = false;
     void* retval = NULL;
-    if (self->reader != 0) pthread_join(self->reader, retval);
-    self->reader = 0;
+    if (self->worker != 0) pthread_join(self->worker, retval);
+    self->worker = 0;
     close(self->socket);
     if (self->buffer != NULL) Py_DECREF(self->buffer);
     self->buffer = NULL;
@@ -35,12 +35,12 @@ PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
         self->socket = 0;
         self->buffer = NULL;
         self->run = true;
-        self->reader = 0;
+        self->worker = 0;
     }
     return (PyObject*) self;
 }
 
-void* SocketClient_reader(void* ctx) {
+void* SocketClient_worker(void* ctx) {
     SocketClient* self = (SocketClient*) ctx;
     Py_INCREF(self);
     int read_bytes;
@@ -97,12 +97,12 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
-    if (pthread_create(&self->reader, NULL, SocketClient_reader, self) != 0) {
+    if (pthread_create(&self->worker, NULL, SocketClient_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return -1;
     }
 
-    pthread_setname_np(self->reader, "pycsdr SocketCl");
+    pthread_setname_np(self->worker, "pycsdr SocketCl");
 
     return 0;
 }

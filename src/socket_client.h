@@ -16,7 +16,7 @@ typedef struct {
     int socket;
     Buffer* buffer;
     bool run;
-    pthread_t reader;
+    pthread_t worker;
 } SocketClient;
 
 int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg);
