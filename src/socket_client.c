@@ -57,7 +57,10 @@ void* SocketClient_worker(void* ctx) {
             Buffer_advance(self->buffer, (offset + read_bytes) / SOCKET_ITEM_SIZE);
         }
     }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self);
+    PyGILState_Release(gstate);
     return NULL;
 }
 
