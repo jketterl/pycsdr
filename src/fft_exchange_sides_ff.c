@@ -39,18 +39,23 @@ PyObject* FftExchangeSides_new(PyTypeObject* type, PyObject* args, PyObject* kwd
 void* FftExchangeSides_worker(void* ctx) {
     FftExchangeSides* self = (FftExchangeSides*) ctx;
 
-    float* input = malloc(sizeof(float) * self->fft_size);
-
-    uint32_t read;
+    uint32_t available;
     while (self->run) {
         uint32_t half = self->fft_size / 2;
-        read = Buffer_read_n(self->inputBuffer, input + half, &self->read_pos, half);
-        read += Buffer_read_n(self->inputBuffer, input, &self->read_pos, half);
-        if (read == 0) {
+        // get a buffer to write to (ensuring minimum space)
+        float* output = Buffer_getWritePointer_n(self->buffer, self->fft_size);
+        // wait until minimum amount of samples is available on input buffer
+        available = Buffer_wait_n(self->inputBuffer, self->read_pos, self->fft_size);
+        if (available == 0) {
             self->run = false;
-        } else {
-            Buffer_write(self->buffer, input, self->fft_size);
+            break;
         }
+        // switching copy
+        memcpy(output, Buffer_getReadPointer(self->inputBuffer, self->read_pos + half), half * sizeof(float));
+        memcpy(output + half, Buffer_getReadPointer(self->inputBuffer, self->read_pos), half * sizeof(float));
+        // advance the buffers after consuming and producing data
+        Buffer_advanceReadPos(self->inputBuffer, &self->read_pos, self->fft_size);
+        Buffer_advance(self->buffer, self->fft_size);
     }
 
     Buffer_shutdown(self->buffer);
