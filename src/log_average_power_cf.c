@@ -42,7 +42,7 @@ void* LogAveragePower_worker(void* ctx) {
     LogAveragePower* self = (LogAveragePower*) ctx;
 
     float add_db = self->add_db - 10.0 * log10(self->avg_number);
-    uint32_t read;
+    uint32_t available;
     while (self->run) {
         // get an area to write to from the output buffer
         float* output = Buffer_getWritePointer_n(self->buffer, self->fft_size);
@@ -50,8 +50,8 @@ void* LogAveragePower_worker(void* ctx) {
         memset(output, 0, sizeof(float) * self->fft_size);
         for (int i = 0; i < self->avg_number; i++) {
             // wait for input samples
-            read = Buffer_wait_n(self->inputBuffer, self->read_pos, self->fft_size);
-            if (read == 0) {
+            available = Buffer_wait_n(self->inputBuffer, self->read_pos, self->fft_size);
+            if (available == 0) {
                 self->run = false;
                 break;
             }
