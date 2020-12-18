@@ -97,6 +97,15 @@ void* Buffer_getWritePointer(Buffer* self) {
     return self->buffer + self->write_pos * self->item_size;
 }
 
+void* Buffer_getWritePointer_n(Buffer* self, uint32_t n) {
+    if (self->write_pos + n <= self->size) {
+        return Buffer_getWritePointer(self);
+    }
+    // TODO: set buffer read end marker
+    fprintf(stderr, "WARNING: unsafe buffer rollover; write_pos: %i, requested: %i\n", self->write_pos, n);
+    return self->buffer;
+}
+
 void Buffer_advance(Buffer* self, uint32_t how_much) {
     pthread_mutex_lock(&self->wait_mutex);
     self->write_pos = (self->write_pos + how_much) % self->size;

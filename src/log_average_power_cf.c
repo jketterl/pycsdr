@@ -41,13 +41,15 @@ PyObject* LogAveragePower_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 void* LogAveragePower_worker(void* ctx) {
     LogAveragePower* self = (LogAveragePower*) ctx;
 
-    float* output = malloc(sizeof(float) * self->fft_size);
-
     float add_db = self->add_db - 10.0 * log10(self->avg_number);
     uint32_t read;
     while (self->run) {
+        // get an area to write to from the output buffer
+        float* output = Buffer_getWritePointer_n(self->buffer, self->fft_size);
+        // zero it
         memset(output, 0, sizeof(float) * self->fft_size);
         for (int i = 0; i < self->avg_number; i++) {
+            // wait for input samples
             read = Buffer_wait_n(self->inputBuffer, self->read_pos, self->fft_size);
             if (read == 0) {
                 self->run = false;
@@ -57,7 +59,8 @@ void* LogAveragePower_worker(void* ctx) {
             Buffer_advanceReadPos(self->inputBuffer, &self->read_pos, self->fft_size);
         }
         log_ff(output, output, self->fft_size, add_db);
-        Buffer_write(self->buffer, output, self->fft_size);
+        // inform output buffer that data is ready
+        Buffer_advance(self->buffer, self->fft_size);
     }
 
     Buffer_shutdown(self->buffer);

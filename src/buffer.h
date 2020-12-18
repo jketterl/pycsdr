@@ -31,6 +31,7 @@ PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored));
 uint8_t Buffer_getItemSize(Buffer* self);
 uint32_t Buffer_getWriteable(Buffer* self);
 void* Buffer_getWritePointer(Buffer* self);
+void* Buffer_getWritePointer_n(Buffer* self, uint32_t n);
 void Buffer_advance(Buffer* self, uint32_t how_much);
 void Buffer_advanceReadPos(Buffer* self, uint32_t* read_pos, uint32_t how_much);
 uint32_t Buffer_wait(Buffer* self, uint32_t read_pos);
