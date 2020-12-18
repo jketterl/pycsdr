@@ -41,7 +41,6 @@ PyObject* LogAveragePower_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 void* LogAveragePower_worker(void* ctx) {
     LogAveragePower* self = (LogAveragePower*) ctx;
 
-    complexf* input = malloc(sizeof(complexf) * self->fft_size);
     float* output = malloc(sizeof(float) * self->fft_size);
 
     float add_db = self->add_db - 10.0 * log10(self->avg_number);
@@ -49,15 +48,16 @@ void* LogAveragePower_worker(void* ctx) {
     while (self->run) {
         memset(output, 0, sizeof(float) * self->fft_size);
         for (int i = 0; i < self->avg_number; i++) {
-            read = Buffer_read_n(self->inputBuffer, input, &self->read_pos, self->fft_size);
-            accumulate_power_cf(input, output, self->fft_size);
+            read = Buffer_wait_n(self->inputBuffer, self->read_pos, self->fft_size);
+            if (read == 0) {
+                self->run = false;
+                break;
+            }
+            accumulate_power_cf((complexf*) Buffer_getReadPointer(self->inputBuffer, self->read_pos), output, self->fft_size);
+            Buffer_advanceReadPos(self->inputBuffer, &self->read_pos, self->fft_size);
         }
-        if (read == 0) {
-            self->run = false;
-        } else {
-            log_ff(output, output, self->fft_size, add_db);
-            Buffer_write(self->buffer, output, self->fft_size);
-        }
+        log_ff(output, output, self->fft_size, add_db);
+        Buffer_write(self->buffer, output, self->fft_size);
     }
 
     Buffer_shutdown(self->buffer);

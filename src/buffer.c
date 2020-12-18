@@ -104,6 +104,10 @@ void Buffer_advance(Buffer* self, uint32_t how_much) {
     pthread_mutex_unlock(&self->wait_mutex);
 }
 
+void Buffer_advanceReadPos(Buffer* self, uint32_t* read_pos, uint32_t how_much) {
+    *read_pos = (*read_pos + how_much) % self->size;
+}
+
 static uint32_t Buffer_getAvailable(Buffer* self, uint32_t read_pos) {
     if (read_pos <= self->write_pos) {
         return self->write_pos - read_pos;
@@ -113,9 +117,13 @@ static uint32_t Buffer_getAvailable(Buffer* self, uint32_t read_pos) {
 }
 
 uint32_t Buffer_wait(Buffer* self, uint32_t read_pos) {
-    uint32_t available;
+    return Buffer_wait_n(self, read_pos, 1);
+}
+
+uint32_t Buffer_wait_n(Buffer* self, uint32_t read_pos, uint32_t n) {
+    uint32_t available = 0;
     pthread_mutex_lock(&self->wait_mutex);
-    while (self->run && (available = Buffer_getAvailable(self, read_pos)) <= 0) {
+    while (self->run && (available = Buffer_getAvailable(self, read_pos)) < n) {
         pthread_cond_wait(&self->wait_condition, &self->wait_mutex);
     }
     pthread_mutex_unlock(&self->wait_mutex);
