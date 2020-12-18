@@ -98,7 +98,7 @@ void* Buffer_getWritePointer(Buffer* self) {
 }
 
 void* Buffer_getWritePointer_n(Buffer* self, uint32_t n) {
-    if (self->write_pos + n <= self->size) {
+    if (Buffer_getWriteable(self) >= n) {
         return Buffer_getWritePointer(self);
     }
     // TODO: set buffer read end marker
