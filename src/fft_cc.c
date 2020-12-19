@@ -76,6 +76,7 @@ void* Fft_worker(void* ctx) {
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self->inputBuffer);
+    self->inputBuffer = NULL;
     PyGILState_Release(gstate);
     return NULL;
 }
