@@ -76,7 +76,6 @@ void* Fft_worker(void* ctx) {
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self->inputBuffer);
-    Py_DECREF(self);
     PyGILState_Release(gstate);
     return NULL;
 }
@@ -127,7 +126,6 @@ PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds) {
 
     Py_INCREF(self->inputBuffer);
 
-    Py_INCREF(self);
     if (pthread_create(&self->worker, NULL, Fft_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;

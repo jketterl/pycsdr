@@ -65,7 +65,6 @@ void* FftExchangeSides_worker(void* ctx) {
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self->inputBuffer);
-    Py_DECREF(self);
     PyGILState_Release(gstate);
     return NULL;
 }
@@ -111,7 +110,6 @@ PyObject* FftExchangeSides_setInput(FftExchangeSides* self, PyObject* args, PyOb
 
     Py_INCREF(self->inputBuffer);
 
-    Py_INCREF(self);
     if (pthread_create(&self->worker, NULL, FftExchangeSides_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;

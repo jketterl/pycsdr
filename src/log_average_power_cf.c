@@ -70,7 +70,6 @@ void* LogAveragePower_worker(void* ctx) {
 
     PyGILState_STATE gstate = PyGILState_Ensure();
     Py_DECREF(self->inputBuffer);
-    Py_DECREF(self);
     PyGILState_Release(gstate);
     return NULL;
 }
@@ -116,7 +115,6 @@ PyObject* LogAveragePower_setInput(LogAveragePower* self, PyObject* args, PyObje
 
     Py_INCREF(self->inputBuffer);
 
-    Py_INCREF(self);
     if (pthread_create(&self->worker, NULL, LogAveragePower_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;

@@ -59,9 +59,6 @@ void* SocketClient_worker(void* ctx) {
 
     Buffer_shutdown(self->buffer);
 
-    PyGILState_STATE gstate = PyGILState_Ensure();
-    Py_DECREF(self);
-    PyGILState_Release(gstate);
     return NULL;
 }
 
@@ -101,7 +98,6 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
-    Py_INCREF(self);
     if (pthread_create(&self->worker, NULL, SocketClient_worker, self) != 0) {
         PyErr_SetFromErrno(PyExc_OSError);
         return -1;
