@@ -75,14 +75,14 @@ void* CompressFftAdpcm_worker(void* ctx) {
 int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"fft_size", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
                                      &self->fft_size))
         return -1;
 
     // we output 8-bit unsigned char samples
     PyObject* bufferArgs = Py_BuildValue("()");
     if (bufferArgs == NULL) return -1;
-    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", sizeof(unsigned char));
+    PyObject* bufferKwargs = Py_BuildValue("{s:B}", "item_size", sizeof(unsigned char));
     if (bufferKwargs == NULL) return -1;
     self->buffer = (Buffer*) PyObject_Call((PyObject*) &BufferType, bufferArgs, bufferKwargs);
     Py_DECREF(args);

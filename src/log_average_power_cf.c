@@ -77,14 +77,14 @@ void* LogAveragePower_worker(void* ctx) {
 int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"add_db", "fft_size", "avg_number", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "fii", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "fHH", kwlist,
                                      &self->add_db, &self->fft_size, &self->avg_number))
         return -1;
 
     // we output 32-bit float real samples
     PyObject* bufferArgs = Py_BuildValue("()");
     if (bufferArgs == NULL) return -1;
-    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", sizeof(float));
+    PyObject* bufferKwargs = Py_BuildValue("{s:B}", "item_size", sizeof(float));
     if (bufferKwargs == NULL) return -1;
     self->buffer = (Buffer*) PyObject_Call((PyObject*) &BufferType, bufferArgs, bufferKwargs);
     Py_DECREF(args);
@@ -141,7 +141,7 @@ PyObject* LogAveragePower_stop(LogAveragePower* self, PyObject* Py_UNUSED(ignore
 PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"avg_number", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
                                      &self->avg_number))
         return NULL;
 

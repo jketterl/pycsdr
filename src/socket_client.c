@@ -71,7 +71,7 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
     // we expect 32-bit float IQ samples
     PyObject* bufferArgs = Py_BuildValue("()");
     if (bufferArgs == NULL) return -1;
-    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", SOCKET_ITEM_SIZE);
+    PyObject* bufferKwargs = Py_BuildValue("{s:B}", "item_size", SOCKET_ITEM_SIZE);
     if (bufferKwargs == NULL) return -1;
     self->buffer = (Buffer*) PyObject_Call((PyObject*) &BufferType, bufferArgs, bufferKwargs);
     Py_DECREF(args);

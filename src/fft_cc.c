@@ -83,7 +83,7 @@ void* Fft_worker(void* ctx) {
 int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"size", "every_n_samples", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "ii", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "HH", kwlist,
                                      &self->size, &self->every_n_samples))
         return -1;
 
@@ -95,7 +95,7 @@ int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
     // we output 32-bit float IQ samples
     PyObject* bufferArgs = Py_BuildValue("()");
     if (bufferArgs == NULL) return -1;
-    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", 8);
+    PyObject* bufferKwargs = Py_BuildValue("{s:B}", "item_size", 8);
     if (bufferKwargs == NULL) return -1;
     self->buffer = (Buffer*) PyObject_Call((PyObject*) &BufferType, bufferArgs, bufferKwargs);
     Py_DECREF(args);
@@ -152,7 +152,7 @@ PyObject* Fft_stop(Fft* self, PyObject* Py_UNUSED(ignored)) {
 PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds){
     static char* kwlist[] = {"every_n_samples", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
                                      &self->every_n_samples))
         return NULL;
 

@@ -29,7 +29,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"size", "item_size", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|ii", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|IB", kwlist,
                                      &self->size, &self->item_size))
         return -1;
 

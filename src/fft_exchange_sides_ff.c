@@ -72,14 +72,14 @@ void* FftExchangeSides_worker(void* ctx) {
 int FftExchangeSides_init(FftExchangeSides* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"fft_size", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
                                      &self->fft_size))
         return -1;
 
     // we output 32-bit float real samples
     PyObject* bufferArgs = Py_BuildValue("()");
     if (bufferArgs == NULL) return -1;
-    PyObject* bufferKwargs = Py_BuildValue("{s:i}", "item_size", sizeof(float));
+    PyObject* bufferKwargs = Py_BuildValue("{s:B}", "item_size", sizeof(float));
     if (bufferKwargs == NULL) return -1;
     self->buffer = (Buffer*) PyObject_Call((PyObject*) &BufferType, bufferArgs, bufferKwargs);
     Py_DECREF(args);
