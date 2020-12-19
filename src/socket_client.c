@@ -30,7 +30,6 @@ PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     SocketClient* self;
     self = (SocketClient*) type->tp_alloc(type, 0);
     if (self != NULL) {
-        Py_INCREF(self);
         self->port = 0;
         self->socket = 0;
         self->buffer = NULL;

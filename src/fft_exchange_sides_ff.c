@@ -28,7 +28,6 @@ PyObject* FftExchangeSides_new(PyTypeObject* type, PyObject* args, PyObject* kwd
     FftExchangeSides* self;
     self = (FftExchangeSides*) type->tp_alloc(type, 0);
     if (self != NULL) {
-        Py_INCREF(self);
         self->buffer = NULL;
         self->inputBuffer = NULL;
         self->read_pos = 0;

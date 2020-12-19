@@ -28,7 +28,6 @@ PyObject* LogAveragePower_new(PyTypeObject* type, PyObject* args, PyObject* kwds
     LogAveragePower* self;
     self = (LogAveragePower*) type->tp_alloc(type, 0);
     if (self != NULL) {
-        Py_INCREF(self);
         self->buffer = NULL;
         self->inputBuffer = NULL;
         self->read_pos = 0;

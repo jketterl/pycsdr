@@ -17,7 +17,6 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     Buffer* self;
     self = (Buffer*) type->tp_alloc(type, 0);
     if (self != NULL) {
-        Py_INCREF(self);
         self->buffer = NULL;
         self->item_size = 1;
         self->write_pos = 0;
