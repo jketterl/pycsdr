@@ -138,6 +138,16 @@ PyObject* LogAveragePower_stop(LogAveragePower* self, PyObject* Py_UNUSED(ignore
     Py_RETURN_NONE;
 }
 
+PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, PyObject* kwds) {
+    static char* kwlist[] = {"avg_number", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
+                                     &self->avg_number))
+        return NULL;
+
+    Py_RETURN_NONE;
+}
+
 PyMethodDef LogAveragePower_methods[] = {
     {"getBuffer", (PyCFunction) LogAveragePower_getBuffer, METH_NOARGS,
      "get the output buffer"
@@ -147,6 +157,9 @@ PyMethodDef LogAveragePower_methods[] = {
     },
     {"stop", (PyCFunction) LogAveragePower_stop, METH_NOARGS,
      "stop processing"
+    },
+    {"setFftAverages", (PyCFunction) LogAveragePower_setFftAverages, METH_VARARGS | METH_KEYWORDS,
+     "set fft averageing factor"
     },
     {NULL}  /* Sentinel */
 };

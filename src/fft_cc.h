@@ -30,5 +30,6 @@ int Fft_init(Fft* self, PyObject* args, PyObject* kwds);
 PyObject* Fft_getBuffer(Fft* self, PyObject* Py_UNUSED(ignored));
 PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds);
 PyObject* Fft_stop(Fft* self, PyObject* Py_UNUSED(ignored));
+PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds);
 
 extern PyTypeObject FftType;

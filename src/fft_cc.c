@@ -149,6 +149,16 @@ PyObject* Fft_stop(Fft* self, PyObject* Py_UNUSED(ignored)) {
     Py_RETURN_NONE;
 }
 
+PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds){
+    static char* kwlist[] = {"every_n_samples", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
+                                     &self->every_n_samples))
+        return NULL;
+
+    Py_RETURN_NONE;
+}
+
 PyMethodDef Fft_methods[] = {
     {"getBuffer", (PyCFunction) Fft_getBuffer, METH_NOARGS,
      "get the output buffer"
@@ -158,6 +168,9 @@ PyMethodDef Fft_methods[] = {
     },
     {"stop", (PyCFunction) Fft_stop, METH_NOARGS,
      "stop processing"
+    },
+    {"setEveryNSamples", (PyCFunction) Fft_setEveryNSamples, METH_VARARGS | METH_KEYWORDS,
+     "set repetition interval in samples"
     },
     {NULL}  /* Sentinel */
 };
