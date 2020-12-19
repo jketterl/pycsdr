@@ -1,9 +1,5 @@
 #include "buffer.h"
 
-int Buffer_traverse(Buffer* self, visitproc visit, void* arg) {
-    return 0;
-}
-
 int Buffer_clear(Buffer* self) {
     if (self->buffer != NULL) free(self->buffer);
     self->buffer = NULL;
@@ -13,7 +9,6 @@ int Buffer_clear(Buffer* self) {
 }
 
 void Buffer_dealloc(Buffer* self) {
-    PyObject_GC_UnTrack(self);
     Buffer_clear(self);
     Py_TYPE(self)->tp_free((PyObject*) self);
 }
@@ -22,6 +17,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     Buffer* self;
     self = (Buffer*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(self);
         self->buffer = NULL;
         self->item_size = 1;
         self->write_pos = 0;
@@ -76,11 +72,10 @@ PyTypeObject BufferType = {
     .tp_doc = "Custom objects",
     .tp_basicsize = sizeof(Buffer),
     .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
     .tp_new = Buffer_new,
     .tp_init = (initproc) Buffer_init,
     .tp_dealloc = (destructor) Buffer_dealloc,
-    .tp_traverse = (traverseproc) Buffer_traverse,
     .tp_clear = (inquiry) Buffer_clear,
     .tp_methods = Buffer_methods,
 };

@@ -1,6 +1,8 @@
 #include "compress_fft_adpcm_f_u8.h"
 
 int CompressFftAdpcm_traverse(CompressFftAdpcm* self, visitproc visit, void* arg) {
+    Py_VISIT(self->buffer);
+    Py_VISIT(self->inputBuffer);
     return 0;
 }
 
@@ -26,6 +28,7 @@ PyObject* CompressFftAdpcm_new(PyTypeObject* type, PyObject* args, PyObject* kwd
     CompressFftAdpcm* self;
     self = (CompressFftAdpcm*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(self);
         self->buffer = NULL;
         self->inputBuffer = NULL;
         self->read_pos = 0;
@@ -93,6 +96,11 @@ int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds
 }
 
 PyObject* CompressFftAdpcm_setInput(CompressFftAdpcm* self, PyObject* args, PyObject* kwds) {
+    if (self->inputBuffer != NULL) {
+        PyErr_SetString(PyExc_ValueError, "cannot set buffer twice");
+        return NULL;
+    }
+
     static char* kwlist[] = {"input", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->inputBuffer))

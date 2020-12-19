@@ -1,6 +1,8 @@
 #include "fft_cc.h"
 
 int Fft_traverse(Fft* self, visitproc visit, void* arg) {
+    Py_VISIT(self->buffer);
+    Py_VISIT(self->inputBuffer);
     return 0;
 }
 
@@ -26,6 +28,7 @@ PyObject* Fft_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     Fft* self;
     self = (Fft*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(self);
         self->buffer = NULL;
         self->inputBuffer = NULL;
         self->read_pos = 0;
@@ -106,6 +109,11 @@ int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
 }
 
 PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds) {
+    if (self->inputBuffer != NULL) {
+        PyErr_SetString(PyExc_ValueError, "cannot set buffer twice");
+        return NULL;
+    }
+
     static char* kwlist[] = {"input", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->inputBuffer))

@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 
 int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
+    Py_VISIT(self->buffer);
     return 0;
 }
 
@@ -29,6 +30,7 @@ PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     SocketClient* self;
     self = (SocketClient*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(self);
         self->port = 0;
         self->socket = 0;
         self->buffer = NULL;

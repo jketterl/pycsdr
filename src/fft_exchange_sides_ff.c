@@ -1,6 +1,8 @@
 #include "fft_exchange_sides_ff.h"
 
 int FftExchangeSides_traverse(FftExchangeSides* self, visitproc visit, void* arg) {
+    Py_VISIT(self->buffer);
+    Py_VISIT(self->inputBuffer);
     return 0;
 }
 
@@ -26,6 +28,7 @@ PyObject* FftExchangeSides_new(PyTypeObject* type, PyObject* args, PyObject* kwd
     FftExchangeSides* self;
     self = (FftExchangeSides*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(self);
         self->buffer = NULL;
         self->inputBuffer = NULL;
         self->read_pos = 0;
@@ -90,6 +93,11 @@ int FftExchangeSides_init(FftExchangeSides* self, PyObject* args, PyObject* kwds
 }
 
 PyObject* FftExchangeSides_setInput(FftExchangeSides* self, PyObject* args, PyObject* kwds) {
+    if (self->inputBuffer != NULL) {
+        PyErr_SetString(PyExc_ValueError, "cannot set buffer twice");
+        return NULL;
+    }
+
     static char* kwlist[] = {"input", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->inputBuffer))
