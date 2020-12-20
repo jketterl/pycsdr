@@ -21,6 +21,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
         self->item_size = 1;
         self->write_pos = 0;
         self->read_pos = 0;
+        self->end_pos = 0;
         self->run = true;
     }
     return (PyObject*) self;
@@ -36,6 +37,7 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     if (self->size == 0) {
         self->size = DEFAULT_BUFFER_SIZE;
     }
+    self->end_pos = self->size;
 
     self->buffer = malloc(self->size * self->item_size);
 
@@ -54,7 +56,7 @@ PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
         Py_RETURN_NONE;
     } else {
         PyObject* bytes = PyMemoryView_FromMemory(Buffer_getReadPointer(self, self->read_pos), available * self->item_size, PyBUF_READ);
-        self->read_pos = (self->read_pos + available) % self->size;
+        Buffer_advanceReadPos(self, &self->read_pos, available);
         return bytes;
     }
 }
@@ -92,30 +94,40 @@ void* Buffer_getWritePointer(Buffer* self) {
 }
 
 void* Buffer_getWritePointer_n(Buffer* self, uint32_t n) {
-    if (Buffer_getWriteable(self) >= n) {
-        return Buffer_getWritePointer(self);
+    if (Buffer_getWriteable(self) < n) {
+        self->end_pos = self->write_pos;
+        self->write_pos = 0;
     }
-    // TODO: set buffer read end marker
-    fprintf(stderr, "WARNING: unsafe buffer rollover; write_pos: %i, requested: %i\n", self->write_pos, n);
-    return self->buffer;
+    return Buffer_getWritePointer(self);
 }
 
 void Buffer_advance(Buffer* self, uint32_t how_much) {
     pthread_mutex_lock(&self->wait_mutex);
     self->write_pos = (self->write_pos + how_much) % self->size;
+    if (self->write_pos > self->end_pos) {
+        self->end_pos = self->write_pos;
+    } else if (self->write_pos == 0) {
+        self->end_pos = self->size;
+    }
     pthread_cond_broadcast(&self->wait_condition);
     pthread_mutex_unlock(&self->wait_mutex);
 }
 
 void Buffer_advanceReadPos(Buffer* self, uint32_t* read_pos, uint32_t how_much) {
-    *read_pos = (*read_pos + how_much) % self->size;
+    if (*read_pos >= self->end_pos) {
+        *read_pos = how_much;
+    } else {
+        *read_pos = (*read_pos + how_much) % self->size;
+    }
 }
 
 static uint32_t Buffer_getAvailable(Buffer* self, uint32_t read_pos) {
     if (read_pos <= self->write_pos) {
         return self->write_pos - read_pos;
+    } else if (read_pos >= self->end_pos) {
+        return self->write_pos;
     } else {
-        return self->size - read_pos;
+        return self->end_pos - read_pos;
     }
 }
 
@@ -134,6 +146,9 @@ uint32_t Buffer_wait_n(Buffer* self, uint32_t read_pos, uint32_t n) {
 }
 
 void* Buffer_getReadPointer(Buffer* self, uint32_t read_pos) {
+    if (read_pos >= self->end_pos) {
+        return self->buffer;
+    }
     return self->buffer + read_pos * self->item_size;
 }
 

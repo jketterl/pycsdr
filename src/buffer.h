@@ -13,6 +13,7 @@ typedef struct {
     uint8_t item_size;
     uint32_t write_pos;
     uint32_t read_pos;
+    uint32_t end_pos;
     pthread_cond_t wait_condition;
     pthread_mutex_t wait_mutex;
     bool run;
