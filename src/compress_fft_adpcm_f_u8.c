@@ -40,28 +40,21 @@ PyObject* CompressFftAdpcm_new(PyTypeObject* type, PyObject* args, PyObject* kwd
 void* CompressFftAdpcm_worker(void* ctx) {
     CompressFftAdpcm* self = (CompressFftAdpcm*) ctx;
 
-    int real_data_size = self->fft_size + COMPRESS_FFT_PAD_N;
-    float* input = (float*) malloc(sizeof(float) * real_data_size);
-    short* temp = (short*) malloc(sizeof(short) * real_data_size);
-    unsigned char* output = (unsigned char*) malloc(sizeof(unsigned char) * (real_data_size / 2));
-    ima_adpcm_state_t d;
-    d.index = d.previousValue = 0;
+    fft_compress_ima_adpcm_t job;
+    fft_compress_ima_adpcm_init(&job, self->fft_size);
+
     uint32_t read;
     while (self->run) {
-        read = Buffer_read_n(self->inputBuffer, input + COMPRESS_FFT_PAD_N, &self->read_pos, self->fft_size);
+        read = Buffer_read_n(self->inputBuffer, fft_compress_ima_adpcm_get_write_pointer(&job), &self->read_pos, self->fft_size);
         if (read == 0) {
             self->run = false;
             break;
         }
-        // do padding
-        for (int i = 0; i < COMPRESS_FFT_PAD_N; i++) input[i] = input[COMPRESS_FFT_PAD_N];
-        // convert float dB values to short
-        for (int i = 0; i < real_data_size; i++) temp[i] = input[i] * 100;
-        // fft compression does not move the state forward but works with the same initial parameters every time.
-        // thus: return code is ignored intentionally.
-        encode_ima_adpcm_i16_u8(temp, output, real_data_size, d);
-        Buffer_write(self->buffer, output, real_data_size / 2);
+        fft_compress_ima_adpcm(&job, Buffer_getWritePointer_n(self->buffer, job.real_data_size / 2));
+        Buffer_advance(self->buffer, job.real_data_size / 2);
     }
+
+    fft_compress_ima_adpcm_free(&job);
 
     Buffer_shutdown(self->buffer);
 
