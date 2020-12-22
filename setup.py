@@ -18,6 +18,7 @@ setup(
                 "src/socket_client.c",
                 "src/buffer.c",
                 "src/fft_cc.c",
+                "src/log_power_cf.c",
                 "src/log_average_power_cf.c",
                 "src/fft_exchange_sides_ff.c",
                 "src/compress_fft_adpcm_f_u8.c",

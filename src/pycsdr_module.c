@@ -4,6 +4,7 @@
 #include "socket_client.h"
 #include "buffer.h"
 #include "fft_cc.h"
+#include "log_power_cf.h"
 #include "log_average_power_cf.h"
 #include "fft_exchange_sides_ff.h"
 #include "compress_fft_adpcm_f_u8.h"
@@ -27,6 +28,9 @@ PyInit_pycsdr(void) {
     if (PyType_Ready(&FftType) < 0)
         return NULL;
 
+    if (PyType_Ready(&LogPowerType) < 0)
+        return NULL;
+
     if (PyType_Ready(&LogAveragePowerType) < 0)
         return NULL;
 
@@ -48,6 +52,9 @@ PyInit_pycsdr(void) {
 
     Py_INCREF(&FftType);
     PyModule_AddObject(m, "Fft", (PyObject*) &FftType);
+
+    Py_INCREF(&LogPowerType);
+    PyModule_AddObject(m, "LogPower", (PyObject*) &LogPowerType);
 
     Py_INCREF(&LogAveragePowerType);
     PyModule_AddObject(m, "LogAveragePower", (PyObject*) &LogAveragePowerType);
