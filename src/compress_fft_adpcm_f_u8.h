@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <libcsdr.h>
+#include <signal.h>
 
 #include "buffer.h"
 
@@ -18,7 +19,7 @@
 typedef struct {
     PyObject_HEAD
     Buffer* inputBuffer;
-    Buffer* buffer;
+    Buffer* outputBuffer;
     uint32_t read_pos;
     bool run;
     pthread_t worker;
@@ -30,8 +31,9 @@ int CompressFftAdpcm_clear(CompressFftAdpcm* self);
 void CompressFftAdpcm_dealloc(CompressFftAdpcm* self);
 PyObject* CompressFftAdpcm_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
 int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds);
-PyObject* CompressFftAdpcm_getBuffer(CompressFftAdpcm* self, PyObject* Py_UNUSED(ignored));
 PyObject* CompressFftAdpcm_setInput(CompressFftAdpcm* self, PyObject* args, PyObject* kwds);
+PyObject* CompressFftAdpcm_setOutput(CompressFftAdpcm* self, PyObject* args, PyObject* kwds);
+PyObject* CompressFftAdpcm_start(CompressFftAdpcm* self);
 PyObject* CompressFftAdpcm_stop(CompressFftAdpcm* self, PyObject* Py_UNUSED(ignored));
 
 extern PyTypeObject CompressFftAdpcmType;

@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <libcsdr.h>
 #include <fftw3.h>
+#include <signal.h>
 
 #include "buffer.h"
 
@@ -16,7 +17,7 @@ typedef struct {
     uint16_t every_n_samples;
     // TODO window
     Buffer* inputBuffer;
-    Buffer* buffer;
+    Buffer* outputBuffer;
     uint32_t read_pos;
     bool run;
     pthread_t worker;
@@ -29,6 +30,7 @@ PyObject* Fft_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
 int Fft_init(Fft* self, PyObject* args, PyObject* kwds);
 PyObject* Fft_getBuffer(Fft* self, PyObject* Py_UNUSED(ignored));
 PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds);
+PyObject* Fft_start(Fft* self);
 PyObject* Fft_stop(Fft* self, PyObject* Py_UNUSED(ignored));
 PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds);
 

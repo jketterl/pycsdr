@@ -6,13 +6,14 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <libcsdr.h>
+#include <signal.h>
 
 #include "buffer.h"
 
 typedef struct {
     PyObject_HEAD
     Buffer* inputBuffer;
-    Buffer* buffer;
+    Buffer* outputBuffer;
     uint32_t read_pos;
     bool run;
     pthread_t worker;
@@ -24,8 +25,9 @@ int LogPower_clear(LogPower* self);
 void LogPower_dealloc(LogPower* self);
 PyObject* LogPower_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
 int LogPower_init(LogPower* self, PyObject* args, PyObject* kwds);
-PyObject* LogPower_getBuffer(LogPower* self, PyObject* Py_UNUSED(ignored));
 PyObject* LogPower_setInput(LogPower* self, PyObject* args, PyObject* kwds);
+PyObject* LogPower_setOutput(LogPower* self, PyObject* args, PyObject* kwds);
+PyObject* LogPower_start(LogPower* self);
 PyObject* LogPower_stop(LogPower* self, PyObject* Py_UNUSED(ignored));
 PyObject* LogPower_setFftAverages(LogPower* self, PyObject* args, PyObject* kwds);
 

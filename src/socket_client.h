@@ -4,6 +4,8 @@
 #include <Python.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <libcsdr.h>
+#include <signal.h>
 
 #include "buffer.h"
 
@@ -14,7 +16,7 @@ typedef struct {
     PyObject_HEAD
     int port;
     int socket;
-    Buffer* buffer;
+    Buffer* outputBuffer;
     bool run;
     pthread_t worker;
 } SocketClient;
@@ -24,7 +26,8 @@ int SocketClient_clear(SocketClient* self);
 void SocketClient_dealloc(SocketClient* self);
 PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
 int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds);
-PyObject* SocketClient_getBuffer(SocketClient* self, PyObject* Py_UNUSED(ignored));
+PyObject* SocketClient_setOutput(SocketClient* self, PyObject* args, PyObject* kwds);
+PyObject* SocketClient_start(SocketClient* self);
 PyObject* SocketClient_stop(SocketClient* self, PyObject* Py_UNUSED(ignored));
 
 extern PyTypeObject SocketClientType;
