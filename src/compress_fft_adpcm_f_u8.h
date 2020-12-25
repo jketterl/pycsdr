@@ -10,12 +10,6 @@
 #include "buffer.h"
 #include "worker_template.h"
 
-//We will pad the FFT at the beginning, with the first value of the input data, COMPRESS_FFT_PAD_N times.
-//No, this is not advanced DSP, just the ADPCM codec produces some gabarge samples at the beginning,
-//so we just add data to become garbage and get skipped.
-//COMPRESS_FFT_PAD_N should be even.
-#define COMPRESS_FFT_PAD_N 10
-
 typedef struct {
     PyObject_HEAD
     WORKER_MEMBERS
