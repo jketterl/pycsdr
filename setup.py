@@ -22,6 +22,7 @@ setup(
                 "src/log_average_power_cf.c",
                 "src/fft_exchange_sides_ff.c",
                 "src/compress_fft_adpcm_f_u8.c",
+                "src/fir_decimate_cc.c",
             ],
             include_dirs=["src"],
             libraries=['csdr', 'fftw3f'],
