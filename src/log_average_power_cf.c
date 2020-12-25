@@ -1,36 +1,13 @@
 #include "log_average_power_cf.h"
 
-int LogAveragePower_traverse(LogAveragePower* self, visitproc visit, void* arg) {
-    Py_VISIT(self->outputBuffer);
-    Py_VISIT(self->inputBuffer);
-    return 0;
-}
-
-int LogAveragePower_clear(LogAveragePower* self) {
-    LogAveragePower_stop(self, Py_None);
-    if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer);
-    self->inputBuffer = NULL;
-    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
-    self->outputBuffer = NULL;
-    return 0;
-}
-
-void LogAveragePower_dealloc(LogAveragePower* self) {
-    PyObject_GC_UnTrack(self);
-    LogAveragePower_clear(self);
-    Py_TYPE(self)->tp_free((PyObject*) self);
-}
+MAKE_WORKER(LogAveragePower, sizeof(complexf), sizeof(float))
 
 PyObject* LogAveragePower_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     LogAveragePower* self;
     self = (LogAveragePower*) type->tp_alloc(type, 0);
     if (self != NULL) {
-        self->outputBuffer = NULL;
-        self->inputBuffer = NULL;
-        self->read_pos = 0;
+        WORKER_MEMBER_INIT
         self->fft_size = 0;
-        self->run = true;
-        self->worker = 0;
         self->add_db = 0;
         self->avg_number = 0;
     }
@@ -81,76 +58,6 @@ int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject* kwds) 
     return 0;
 }
 
-PyObject* LogAveragePower_setInput(LogAveragePower* self, PyObject* args, PyObject* kwds) {
-    if (LogAveragePower_stop(self, Py_None) == NULL) {
-        return NULL;
-    }
-
-    if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer);
-
-    static char* kwlist[] = {"buffer", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
-                                     &BufferType, &self->inputBuffer))
-        return NULL;
-
-    if (Buffer_getItemSize(self->inputBuffer) != sizeof(complexf)) {
-        self->inputBuffer = NULL;
-        PyErr_SetString(PyExc_ValueError, "Input buffer item size mismatch");
-        return NULL;
-    }
-
-    Py_INCREF(self->inputBuffer);
-
-    return LogAveragePower_start(self);
-}
-
-PyObject* LogAveragePower_setOutput(LogAveragePower* self, PyObject* args, PyObject* kwds) {
-    if (LogAveragePower_stop(self, Py_None) == NULL) {
-        return NULL;
-    }
-
-    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
-
-    static char* kwlist[] = {"buffer", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
-                                     &BufferType, &self->outputBuffer))
-        return NULL;
-
-    Py_INCREF(self->outputBuffer);
-
-    Buffer_setItemSize(self->outputBuffer, sizeof(float));
-
-    return LogAveragePower_start(self);
-}
-
-PyObject* LogAveragePower_start(LogAveragePower* self) {
-    if (self->outputBuffer == NULL || self->inputBuffer == NULL) {
-        Py_RETURN_NONE;
-    } else {
-        self->run = true;
-
-        if (pthread_create(&self->worker, NULL, LogAveragePower_worker, self) != 0) {
-            PyErr_SetFromErrno(PyExc_OSError);
-            return NULL;
-        }
-
-        pthread_setname_np(self->worker, "pycsdr LogAvera");
-
-        Py_RETURN_NONE;
-    }
-}
-
-PyObject* LogAveragePower_stop(LogAveragePower* self, PyObject* Py_UNUSED(ignored)) {
-    self->run = false;
-    if (self->worker != 0) {
-        Buffer_unblock(self->inputBuffer);
-        void* retval = NULL;
-        pthread_join(self->worker, retval);
-    }
-    self->worker = 0;
-    Py_RETURN_NONE;
-}
-
 PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"avg_number", NULL};
 
@@ -162,32 +69,11 @@ PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, 
 }
 
 PyMethodDef LogAveragePower_methods[] = {
-    {"setInput", (PyCFunction) LogAveragePower_setInput, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) LogAveragePower_setOutput, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"stop", (PyCFunction) LogAveragePower_stop, METH_NOARGS,
-     "stop processing"
-    },
+    WORKER_METHODS(LogAveragePower)
     {"setFftAverages", (PyCFunction) LogAveragePower_setFftAverages, METH_VARARGS | METH_KEYWORDS,
      "set fft averageing factor"
     },
     {NULL}  /* Sentinel */
 };
 
-PyTypeObject LogAveragePowerType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pycsdr.LogAveragePower",
-    .tp_doc = "Custom objects",
-    .tp_basicsize = sizeof(LogAveragePower),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_new = LogAveragePower_new,
-    .tp_init = (initproc) LogAveragePower_init,
-    .tp_dealloc = (destructor) LogAveragePower_dealloc,
-    .tp_traverse = (traverseproc) LogAveragePower_traverse,
-    .tp_clear = (inquiry) LogAveragePower_clear,
-    .tp_methods = LogAveragePower_methods,
-};
+MAKE_WORKER_TYPE(LogAveragePower)

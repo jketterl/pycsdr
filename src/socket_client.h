@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <libcsdr.h>
-#include <signal.h>
 
 #include "buffer.h"
 

@@ -2,36 +2,21 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <pthread.h>
 #include <libcsdr.h>
 #include <fftw3.h>
-#include <signal.h>
 
-#include "buffer.h"
+#include "worker_template.h"
 
 typedef struct {
     PyObject_HEAD
+    WORKER_MEMBERS
     uint16_t size;
     uint16_t every_n_samples;
     // TODO window
-    Buffer* inputBuffer;
-    Buffer* outputBuffer;
-    uint32_t read_pos;
-    bool run;
-    pthread_t worker;
 } Fft;
 
-int Fft_traverse(Fft* self, visitproc visit, void* arg);
-int Fft_clear(Fft* self);
-void Fft_dealloc(Fft* self);
-PyObject* Fft_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
-int Fft_init(Fft* self, PyObject* args, PyObject* kwds);
-PyObject* Fft_getBuffer(Fft* self, PyObject* Py_UNUSED(ignored));
-PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds);
-PyObject* Fft_start(Fft* self);
-PyObject* Fft_stop(Fft* self, PyObject* Py_UNUSED(ignored));
+MAKE_WORKER_H(Fft)
+
 PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds);
 
 extern PyTypeObject FftType;

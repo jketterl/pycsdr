@@ -25,7 +25,7 @@ setup(
             ],
             include_dirs=["src"],
             libraries=['csdr', 'fftw3f'],
-            define_macros=[("USE_IMA_ADPCM", None)]
+            define_macros=[("USE_IMA_ADPCM", None)],
         )
     ],
 )

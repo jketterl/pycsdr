@@ -6,9 +6,9 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <libcsdr.h>
-#include <signal.h>
 
 #include "buffer.h"
+#include "worker_template.h"
 
 //We will pad the FFT at the beginning, with the first value of the input data, COMPRESS_FFT_PAD_N times.
 //No, this is not advanced DSP, just the ADPCM codec produces some gabarge samples at the beginning,
@@ -18,22 +18,10 @@
 
 typedef struct {
     PyObject_HEAD
-    Buffer* inputBuffer;
-    Buffer* outputBuffer;
-    uint32_t read_pos;
-    bool run;
-    pthread_t worker;
+    WORKER_MEMBERS
     uint16_t fft_size;
 } CompressFftAdpcm;
 
-int CompressFftAdpcm_traverse(CompressFftAdpcm* self, visitproc visit, void* arg);
-int CompressFftAdpcm_clear(CompressFftAdpcm* self);
-void CompressFftAdpcm_dealloc(CompressFftAdpcm* self);
-PyObject* CompressFftAdpcm_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
-int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds);
-PyObject* CompressFftAdpcm_setInput(CompressFftAdpcm* self, PyObject* args, PyObject* kwds);
-PyObject* CompressFftAdpcm_setOutput(CompressFftAdpcm* self, PyObject* args, PyObject* kwds);
-PyObject* CompressFftAdpcm_start(CompressFftAdpcm* self);
-PyObject* CompressFftAdpcm_stop(CompressFftAdpcm* self, PyObject* Py_UNUSED(ignored));
+MAKE_WORKER_H(CompressFftAdpcm);
 
 extern PyTypeObject CompressFftAdpcmType;
