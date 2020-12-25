@@ -86,7 +86,9 @@ PyObject* LogAveragePower_setInput(LogAveragePower* self, PyObject* args, PyObje
         return NULL;
     }
 
-    static char* kwlist[] = {"input", NULL};
+    if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer);
+
+    static char* kwlist[] = {"buffer", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->inputBuffer))
         return NULL;
@@ -107,7 +109,9 @@ PyObject* LogAveragePower_setOutput(LogAveragePower* self, PyObject* args, PyObj
         return NULL;
     }
 
-    static char* kwlist[] = {"output", NULL};
+    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
+
+    static char* kwlist[] = {"buffer", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->outputBuffer))
         return NULL;

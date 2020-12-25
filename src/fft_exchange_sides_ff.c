@@ -77,7 +77,9 @@ PyObject* FftExchangeSides_setInput(FftExchangeSides* self, PyObject* args, PyOb
         return NULL;
     }
 
-    static char* kwlist[] = {"input", NULL};
+    if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer);
+
+    static char* kwlist[] = {"buffer", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->inputBuffer))
         return NULL;
@@ -98,7 +100,9 @@ PyObject* FftExchangeSides_setOutput(FftExchangeSides* self, PyObject* args, PyO
         return NULL;
     }
 
-    static char* kwlist[] = {"output", NULL};
+    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
+
+    static char* kwlist[] = {"buffer", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->outputBuffer))
         return NULL;

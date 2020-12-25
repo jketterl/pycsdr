@@ -102,7 +102,9 @@ PyObject* Fft_setInput(Fft* self, PyObject* args, PyObject* kwds) {
         return NULL;
     }
 
-    static char* kwlist[] = {"input", NULL};
+    if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer);
+
+    static char* kwlist[] = {"buffer", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->inputBuffer))
         return NULL;
@@ -123,7 +125,9 @@ PyObject* Fft_setOutput(Fft* self, PyObject* args, PyObject* kwds) {
         return NULL;
     }
 
-    static char* kwlist[] = {"output", NULL};
+    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
+
+    static char* kwlist[] = {"buffer", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->outputBuffer))
         return NULL;

@@ -91,7 +91,9 @@ PyObject* SocketClient_setOutput(SocketClient* self, PyObject* args, PyObject* k
         return NULL;
     }
 
-    static char* kwlist[] = {"output", NULL};
+    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
+
+    static char* kwlist[] = {"buffer", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
                                      &BufferType, &self->outputBuffer))
         return NULL;
