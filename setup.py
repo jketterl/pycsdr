@@ -23,6 +23,7 @@ setup(
                 "src/fft_exchange_sides_ff.c",
                 "src/compress_fft_adpcm_f_u8.c",
                 "src/fir_decimate_cc.c",
+                "src/bandpass_fir_fft_cc.c",
             ],
             include_dirs=["src"],
             libraries=['csdr', 'fftw3f'],
