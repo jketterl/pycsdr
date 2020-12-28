@@ -2,6 +2,16 @@
 
 MAKE_WORKER(CompressFftAdpcm, sizeof(float), sizeof(unsigned char))
 
+int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds) {
+    static char* kwlist[] = {"fft_size", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
+                                     &self->fft_size))
+        return -1;
+
+    return 0;
+}
+
 PyObject* CompressFftAdpcm_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     CompressFftAdpcm* self;
     self = (CompressFftAdpcm*) type->tp_alloc(type, 0);
