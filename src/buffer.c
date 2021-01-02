@@ -69,11 +69,11 @@ PyMethodDef Buffer_methods[] = {
 
 PyTypeObject BufferType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pycsdr.Buffer",
+    .tp_name = "pycsdr.modules.Buffer",
     .tp_doc = "Custom objects",
     .tp_basicsize = sizeof(Buffer),
     .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HEAPTYPE,
     .tp_new = Buffer_new,
     .tp_init = (initproc) Buffer_init,
     .tp_dealloc = (destructor) Buffer_dealloc,
@@ -168,6 +168,7 @@ uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t* read_pos, bool* run, u
     uint32_t read = 0;
     while (*run && read < n) {
         available = Buffer_wait(self, *read_pos, run);
+        if (!*run) break;
 
         if (available > n - read) available = n - read;
         memcpy(dst + read * self->item_size, Buffer_getReadPointer(self, *read_pos), available * self->item_size);
@@ -182,6 +183,7 @@ uint32_t Buffer_skip_n(Buffer* self, uint32_t* read_pos, bool* run, uint32_t n) 
     uint32_t read = 0;
     while (*run && read < n) {
         available = Buffer_wait(self, *read_pos, run);
+        if (!*run) break;
 
         if (available > n - read) available = n - read;
         read += available;

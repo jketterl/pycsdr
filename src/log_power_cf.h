@@ -8,7 +8,7 @@
 #include "worker_template.h"
 
 typedef struct {
-    PyObject_HEAD
+    PyObject_VAR_HEAD;
     WORKER_MEMBERS
     float add_db;
 } LogPower;

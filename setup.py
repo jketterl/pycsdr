@@ -2,9 +2,17 @@
 # -*- coding: UTF-8 -*-
 from setuptools import setup, Extension
 
+try:
+    from setuptools import find_namespace_packages
+except ImportError:
+    from setuptools import PEP420PackageFinder
+    find_namespace_packages = PEP420PackageFinder.find
+
+
 setup(
     name="pycsdr",
     version="0.18.0-dev",
+    packages=find_namespace_packages(include=["pycsdr.api"]),
 
     package_data={
         "": ["**.txt", "**.md", "**.py", "**.h", "**.hpp", "**.c", "**.cpp"],
@@ -12,9 +20,10 @@ setup(
 
     ext_modules=[
         Extension(
-            name="pycsdr",
+            name="pycsdr.modules",
             sources=[
                 "src/pycsdr_module.c",
+                "src/worker_template.c",
                 "src/socket_client.c",
                 "src/buffer.c",
                 "src/fft_cc.c",

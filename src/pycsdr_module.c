@@ -13,20 +13,41 @@
 
 static PyModuleDef pycsdrmodule = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "pycsdr",
+    .m_name = "pycsdr.modules",
     .m_doc = "Python bindings for the csdr library",
     .m_size = -1,
 };
 
 PyMODINIT_FUNC
-PyInit_pycsdr(void) {
-    PyObject* m;
+PyInit_modules(void) {
+    PyObject* api_module = PyImport_ImportModule("pycsdr.api");
+    if (api_module == NULL) {
+        PyErr_Print();
+        exit(1);
+    }
+
+    PyObject* api_FlowType = PyObject_GetAttrString(api_module, "Flow");
+    if (api_FlowType == NULL) {
+        PyErr_Print();
+        exit(1);
+    }
+
+    PyObject* api_BufferType = PyObject_GetAttrString(api_module, "Buffer");
+    if (api_BufferType == NULL) {
+        PyErr_Print();
+        exit(1);
+    }
+
+    Py_DECREF(api_module);
+
     if (PyType_Ready(&SocketClientType) < 0)
         return NULL;
 
+    BufferType.tp_base = (PyTypeObject*) api_BufferType;
     if (PyType_Ready(&BufferType) < 0)
         return NULL;
 
+    FftType.tp_base = (PyTypeObject*) api_FlowType;
     if (PyType_Ready(&FftType) < 0)
         return NULL;
 
@@ -48,7 +69,7 @@ PyInit_pycsdr(void) {
     if (PyType_Ready(&BandpassFirFftType) < 0)
         return NULL;
 
-    m = PyModule_Create(&pycsdrmodule);
+    PyObject* m = PyModule_Create(&pycsdrmodule);
     if (m == NULL)
         return NULL;
 

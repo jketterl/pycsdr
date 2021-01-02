@@ -145,7 +145,7 @@ PyMethodDef SocketClient_methods[] = {
 
 PyTypeObject SocketClientType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pycsdr.SocketClient",
+    .tp_name = "pycsdr.modules.SocketClient",
     .tp_doc = "Custom objects",
     .tp_basicsize = sizeof(SocketClient),
     .tp_itemsize = 0,

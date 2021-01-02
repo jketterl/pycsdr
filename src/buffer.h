@@ -7,7 +7,7 @@
 #include <stdbool.h>
 
 typedef struct {
-    PyObject_HEAD
+    PyObject_VAR_HEAD;
     uint32_t size;
     void* buffer;
     uint8_t item_size;
