@@ -38,8 +38,15 @@ PyInit_modules(void) {
         exit(1);
     }
 
+    PyObject* api_SourceType = PyObject_GetAttrString(api_module, "Source");
+    if (api_SourceType == NULL) {
+        PyErr_Print();
+        exit(1);
+    }
+
     Py_DECREF(api_module);
 
+    SocketClientType.tp_base = (PyTypeObject*) api_SourceType;
     if (PyType_Ready(&SocketClientType) < 0)
         return NULL;
 
@@ -51,21 +58,27 @@ PyInit_modules(void) {
     if (PyType_Ready(&FftType) < 0)
         return NULL;
 
+    LogPowerType.tp_base = (PyTypeObject*) api_FlowType;
     if (PyType_Ready(&LogPowerType) < 0)
         return NULL;
 
+    LogAveragePowerType.tp_base = (PyTypeObject*) api_FlowType;
     if (PyType_Ready(&LogAveragePowerType) < 0)
         return NULL;
 
+    FftExchangeSidesType.tp_base = (PyTypeObject*) api_FlowType;
     if (PyType_Ready(&FftExchangeSidesType) < 0)
         return NULL;
 
+    CompressFftAdpcmType.tp_base = (PyTypeObject*) api_FlowType;
     if (PyType_Ready(&CompressFftAdpcmType) < 0)
         return NULL;
 
+    FirDecimateType.tp_base = (PyTypeObject*) api_FlowType;
     if (PyType_Ready(&FirDecimateType) < 0)
         return NULL;
 
+    BandpassFirFftType.tp_base = (PyTypeObject*) api_FlowType;
     if (PyType_Ready(&BandpassFirFftType) < 0)
         return NULL;
 

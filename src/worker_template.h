@@ -50,7 +50,9 @@ void setThreadName(pthread_t t, char* name);
     void name##_dealloc(name* self) { \
         PyObject_GC_UnTrack(self); \
         name##_clear(self); \
-        Py_TYPE(self)->tp_free((PyObject*) self); \
+        PyTypeObject* tp = Py_TYPE(self); \
+        tp->tp_free((PyObject*) self); \
+        Py_DECREF(tp); \
     } \
     \
     PyObject* name##_setInput(name* self, PyObject* args, PyObject* kwds) { \

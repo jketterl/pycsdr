@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 
 int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
+    Py_VISIT(Py_TYPE(self));
     Py_VISIT(self->outputBuffer);
     return 0;
 }
@@ -20,7 +21,9 @@ int SocketClient_clear(SocketClient* self) {
 void SocketClient_dealloc(SocketClient* self) {
     PyObject_GC_UnTrack(self);
     SocketClient_clear(self);
-    Py_TYPE(self)->tp_free((PyObject*) self);
+    PyTypeObject* tp = Py_TYPE(self);
+    tp->tp_free((PyObject*) self);
+    Py_DECREF(tp);
 }
 
 PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
@@ -149,7 +152,7 @@ PyTypeObject SocketClientType = {
     .tp_doc = "Custom objects",
     .tp_basicsize = sizeof(SocketClient),
     .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_HAVE_GC,
     .tp_new = SocketClient_new,
     .tp_init = (initproc) SocketClient_init,
     .tp_dealloc = (destructor) SocketClient_dealloc,

@@ -10,7 +10,9 @@ int Buffer_clear(Buffer* self) {
 
 void Buffer_dealloc(Buffer* self) {
     Buffer_clear(self);
-    Py_TYPE(self)->tp_free((PyObject*) self);
+    PyTypeObject* tp = Py_TYPE(self);
+    tp->tp_free((PyObject*) self);
+    Py_DECREF(tp);
 }
 
 PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {

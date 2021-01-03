@@ -12,7 +12,7 @@
 #define SOCKET_ITEM_SIZE 8
 
 typedef struct {
-    PyObject_HEAD
+    PyObject_VAR_HEAD
     int port;
     int socket;
     Buffer* outputBuffer;
