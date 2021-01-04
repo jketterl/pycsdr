@@ -24,6 +24,7 @@ PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     Buffer* self;
     self = (Buffer*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(type);
         self->buffer = NULL;
         self->item_size = 1;
         self->write_pos = 0;
@@ -73,25 +74,6 @@ PyMethodDef Buffer_methods[] = {
      "read bytes from the buffer"},
     {NULL}  /* Sentinel */
 };
-
-/*
-static PyType_Slot BufferSlots[] = {
-    {Py_tp_new, Buffer_new},
-    {Py_tp_init, Buffer_init},
-    {Py_tp_dealloc, Buffer_dealloc},
-    {Py_tp_clear, Buffer_clear},
-    {Py_tp_methods, Buffer_methods},
-    {0, 0}
-};
-
-PyType_Spec BufferSpec = {
-    "pycsdr.modules.Buffer",
-    sizeof(Buffer),
-    0,
-    Py_TPFLAGS_DEFAULT,
-    BufferSlots
-};
-*/
 
 PyTypeObject BufferType = {
     PyVarObject_HEAD_INIT(NULL, 0)

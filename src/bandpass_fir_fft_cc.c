@@ -16,6 +16,7 @@ PyObject* BandpassFirFft_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
     BandpassFirFft* self;
     self = (BandpassFirFft*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(type);
         WORKER_MEMBER_INIT
         self->low_cut = 0;
         self->high_cut = 0;

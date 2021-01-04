@@ -16,6 +16,7 @@ PyObject* FirDecimate_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     FirDecimate* self;
     self = (FirDecimate*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(type);
         WORKER_MEMBER_INIT
         self->decimation = 1;
     }

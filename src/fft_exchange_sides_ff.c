@@ -6,6 +6,7 @@ PyObject* FftExchangeSides_new(PyTypeObject* type, PyObject* args, PyObject* kwd
     FftExchangeSides* self;
     self = (FftExchangeSides*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(type);
         WORKER_MEMBER_INIT
     }
     return (PyObject*) self;

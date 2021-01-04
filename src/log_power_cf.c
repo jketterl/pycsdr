@@ -6,6 +6,7 @@ PyObject* LogPower_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     LogPower* self;
     self = (LogPower*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(type);
         WORKER_MEMBER_INIT
         self->add_db = 0;
     }

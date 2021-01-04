@@ -21,6 +21,7 @@ PyObject* Fft_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     Fft* self;
     self = (Fft*) type->tp_alloc(type, 0);
     if (self != NULL) {
+        Py_INCREF(type);
         WORKER_MEMBER_INIT
         self->size = 0;
         self->every_n_samples = 0;
