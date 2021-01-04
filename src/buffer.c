@@ -1,5 +1,10 @@
 #include "buffer.h"
 
+int Buffer_traverse(Buffer* self, visitproc visit, void* arg) {
+    Py_VISIT(Py_TYPE(self));
+    return 0;
+}
+
 int Buffer_clear(Buffer* self) {
     if (self->buffer != NULL) free(self->buffer);
     self->buffer = NULL;
@@ -69,16 +74,36 @@ PyMethodDef Buffer_methods[] = {
     {NULL}  /* Sentinel */
 };
 
+/*
+static PyType_Slot BufferSlots[] = {
+    {Py_tp_new, Buffer_new},
+    {Py_tp_init, Buffer_init},
+    {Py_tp_dealloc, Buffer_dealloc},
+    {Py_tp_clear, Buffer_clear},
+    {Py_tp_methods, Buffer_methods},
+    {0, 0}
+};
+
+PyType_Spec BufferSpec = {
+    "pycsdr.modules.Buffer",
+    sizeof(Buffer),
+    0,
+    Py_TPFLAGS_DEFAULT,
+    BufferSlots
+};
+*/
+
 PyTypeObject BufferType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "pycsdr.modules.Buffer",
     .tp_doc = "Custom objects",
     .tp_basicsize = sizeof(Buffer),
     .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HEAPTYPE,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_HAVE_GC,
     .tp_new = Buffer_new,
     .tp_init = (initproc) Buffer_init,
     .tp_dealloc = (destructor) Buffer_dealloc,
+    .tp_traverse = (traverseproc) Buffer_traverse,
     .tp_clear = (inquiry) Buffer_clear,
     .tp_methods = Buffer_methods,
 };
