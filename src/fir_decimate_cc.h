@@ -7,13 +7,10 @@
 #include "worker_template.h"
 
 typedef struct {
-    PyObject_VAR_HEAD;
+    PyObject base1;
+    PyObject base2;
     WORKER_MEMBERS
     int16_t decimation;
 } FirDecimate;
 
 MAKE_WORKER_H(FirDecimate)
-
-PyObject* FirDecimate_setDecimation(FirDecimate* self, PyObject* args, PyObject* kwds);
-
-extern PyTypeObject FirDecimateType;

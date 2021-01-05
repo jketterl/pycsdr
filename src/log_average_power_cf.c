@@ -2,20 +2,7 @@
 
 MAKE_WORKER(LogAveragePower, sizeof(complexf), sizeof(float))
 
-PyObject* LogAveragePower_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    LogAveragePower* self;
-    self = (LogAveragePower*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        WORKER_MEMBER_INIT
-        self->fft_size = 0;
-        self->add_db = 0;
-        self->avg_number = 0;
-    }
-    return (PyObject*) self;
-}
-
-void* LogAveragePower_worker(void* ctx) {
+static void* LogAveragePower_worker(void* ctx) {
     LogAveragePower* self = (LogAveragePower*) ctx;
 
     float add_db = self->add_db - 10.0 * log10(self->avg_number);
@@ -44,12 +31,10 @@ void* LogAveragePower_worker(void* ctx) {
         Buffer_advance(self->outputBuffer, self->fft_size);
     }
 
-    //Buffer_shutdown(self->outputBuffer);
-
     return NULL;
 }
 
-int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject* kwds) {
+static int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"add_db", "fft_size", "avg_number", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "fHH", kwlist,
@@ -59,7 +44,7 @@ int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject* kwds) 
     return 0;
 }
 
-PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, PyObject* kwds) {
+static PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"avg_number", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
@@ -69,7 +54,7 @@ PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, 
     Py_RETURN_NONE;
 }
 
-PyMethodDef LogAveragePower_methods[] = {
+static PyMethodDef LogAveragePower_methods[] = {
     WORKER_METHODS(LogAveragePower)
     {"setFftAverages", (PyCFunction) LogAveragePower_setFftAverages, METH_VARARGS | METH_KEYWORDS,
      "set fft averageing factor"
@@ -77,4 +62,4 @@ PyMethodDef LogAveragePower_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-MAKE_WORKER_TYPE(LogAveragePower)
+MAKE_WORKER_SPEC(LogAveragePower)

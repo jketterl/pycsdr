@@ -2,7 +2,7 @@
 
 MAKE_WORKER(FirDecimate, sizeof(complexf), sizeof(complexf))
 
-int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
+static int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"decimation", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
@@ -12,25 +12,13 @@ int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-PyObject* FirDecimate_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    FirDecimate* self;
-    self = (FirDecimate*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        WORKER_MEMBER_INIT
-        self->decimation = 1;
-    }
-    return (PyObject*) self;
-}
-
-
-void* FirDecimate_worker(void* ctx) {
+static void* FirDecimate_worker(void* ctx) {
     FirDecimate* self = (FirDecimate*) ctx;
 
     return NULL;
 }
 
-PyObject* FirDecimate_setDecimation(FirDecimate* self, PyObject* args, PyObject* kwds){
+static PyObject* FirDecimate_setDecimation(FirDecimate* self, PyObject* args, PyObject* kwds){
     static char* kwlist[] = {"decimation", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
@@ -40,7 +28,7 @@ PyObject* FirDecimate_setDecimation(FirDecimate* self, PyObject* args, PyObject*
     Py_RETURN_NONE;
 }
 
-PyMethodDef FirDecimate_methods[] = {
+static PyMethodDef FirDecimate_methods[] = {
     WORKER_METHODS(FirDecimate)
     {"setDecimation", (PyCFunction) FirDecimate_setDecimation, METH_VARARGS | METH_KEYWORDS,
      "set decimation factor"
@@ -48,4 +36,4 @@ PyMethodDef FirDecimate_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-MAKE_WORKER_TYPE(FirDecimate)
+MAKE_WORKER_SPEC(FirDecimate)

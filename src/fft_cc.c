@@ -2,7 +2,7 @@
 
 MAKE_WORKER(Fft, sizeof(complexf), sizeof(complexf))
 
-int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
+static int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"size", "every_n_samples", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "HH", kwlist,
@@ -17,20 +17,7 @@ int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-PyObject* Fft_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    Fft* self;
-    self = (Fft*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        WORKER_MEMBER_INIT
-        self->size = 0;
-        self->every_n_samples = 0;
-    }
-    return (PyObject*) self;
-}
-
-
-void* Fft_worker(void* ctx) {
+static void* Fft_worker(void* ctx) {
     Fft* self = (Fft*) ctx;
 
     window_t window = WINDOW_DEFAULT;
@@ -74,7 +61,7 @@ void* Fft_worker(void* ctx) {
     return NULL;
 }
 
-PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds){
+static PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds){
     static char* kwlist[] = {"every_n_samples", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
@@ -84,7 +71,7 @@ PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds){
     Py_RETURN_NONE;
 }
 
-PyMethodDef Fft_methods[] = {
+static PyMethodDef Fft_methods[] = {
     WORKER_METHODS(Fft)
     {"setEveryNSamples", (PyCFunction) Fft_setEveryNSamples, METH_VARARGS | METH_KEYWORDS,
      "set repetition interval in samples"
@@ -92,4 +79,4 @@ PyMethodDef Fft_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-MAKE_WORKER_TYPE(Fft)
+MAKE_WORKER_SPEC(Fft)

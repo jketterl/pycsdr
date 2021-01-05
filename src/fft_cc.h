@@ -8,7 +8,8 @@
 #include "worker_template.h"
 
 typedef struct {
-    PyObject_VAR_HEAD
+    PyObject base1;
+    PyObject base2;
     WORKER_MEMBERS
     uint16_t size;
     uint16_t every_n_samples;
@@ -16,7 +17,3 @@ typedef struct {
 } Fft;
 
 MAKE_WORKER_H(Fft)
-
-PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds);
-
-extern PyTypeObject FftType;

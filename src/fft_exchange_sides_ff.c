@@ -2,17 +2,7 @@
 
 MAKE_WORKER(FftExchangeSides, sizeof(float), sizeof(float));
 
-PyObject* FftExchangeSides_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    FftExchangeSides* self;
-    self = (FftExchangeSides*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        WORKER_MEMBER_INIT
-    }
-    return (PyObject*) self;
-}
-
-void* FftExchangeSides_worker(void* ctx) {
+static void* FftExchangeSides_worker(void* ctx) {
     FftExchangeSides* self = (FftExchangeSides*) ctx;
 
     uint32_t available;
@@ -34,12 +24,10 @@ void* FftExchangeSides_worker(void* ctx) {
         Buffer_advance(self->outputBuffer, self->fft_size);
     }
 
-    //Buffer_shutdown(self->outputBuffer);
-
     return NULL;
 }
 
-int FftExchangeSides_init(FftExchangeSides* self, PyObject* args, PyObject* kwds) {
+static int FftExchangeSides_init(FftExchangeSides* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"fft_size", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
@@ -49,9 +37,9 @@ int FftExchangeSides_init(FftExchangeSides* self, PyObject* args, PyObject* kwds
     return 0;
 }
 
-PyMethodDef FftExchangeSides_methods[] = {
+static PyMethodDef FftExchangeSides_methods[] = {
     WORKER_METHODS(FftExchangeSides)
     {NULL}  /* Sentinel */
 };
 
-MAKE_WORKER_TYPE(FftExchangeSides)
+MAKE_WORKER_SPEC(FftExchangeSides)

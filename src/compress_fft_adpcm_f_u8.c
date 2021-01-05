@@ -2,7 +2,7 @@
 
 MAKE_WORKER(CompressFftAdpcm, sizeof(float), sizeof(unsigned char))
 
-int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds) {
+static int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"fft_size", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist,
@@ -12,17 +12,7 @@ int CompressFftAdpcm_init(CompressFftAdpcm* self, PyObject* args, PyObject* kwds
     return 0;
 }
 
-PyObject* CompressFftAdpcm_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    CompressFftAdpcm* self;
-    self = (CompressFftAdpcm*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        WORKER_MEMBER_INIT
-    }
-    return (PyObject*) self;
-}
-
-void* CompressFftAdpcm_worker(void* ctx) {
+static void* CompressFftAdpcm_worker(void* ctx) {
     CompressFftAdpcm* self = (CompressFftAdpcm*) ctx;
 
     fft_compress_ima_adpcm_t job;
@@ -44,9 +34,9 @@ void* CompressFftAdpcm_worker(void* ctx) {
     return NULL;
 }
 
-PyMethodDef CompressFftAdpcm_methods[] = {
+static PyMethodDef CompressFftAdpcm_methods[] = {
     WORKER_METHODS(CompressFftAdpcm)
     {NULL}  /* Sentinel */
 };
 
-MAKE_WORKER_TYPE(CompressFftAdpcm)
+MAKE_WORKER_SPEC(CompressFftAdpcm)

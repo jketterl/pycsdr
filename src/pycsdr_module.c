@@ -1,6 +1,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+#include "api.h"
 #include "socket_client.h"
 #include "buffer.h"
 #include "fft_cc.h"
@@ -20,98 +21,67 @@ static PyModuleDef pycsdrmodule = {
 
 PyMODINIT_FUNC
 PyInit_modules(void) {
-    PyObject* api_module = PyImport_ImportModule("pycsdr.api");
-    if (api_module == NULL) {
-        PyErr_Print();
-        exit(1);
-    }
+    PyObject* api_SourceBases = getApiTypeTuple("Source");
+    if (api_SourceBases == NULL) return NULL;
 
-    PyObject* api_FlowType = PyObject_GetAttrString(api_module, "Flow");
-    if (api_FlowType == NULL) {
-        PyErr_Print();
-        exit(1);
-    }
+    PyObject* api_BufferBases = getApiTypeTuple("Buffer");
+    if (api_BufferBases == NULL) return NULL;
 
-    PyObject* api_BufferType = PyObject_GetAttrString(api_module, "Buffer");
-    if (api_BufferType == NULL) {
-        PyErr_Print();
-        exit(1);
-    }
+    PyObject* api_FlowBases = getApiTypeTuple("Flow");
+    if (api_FlowBases == NULL) return NULL;
 
-    PyObject* api_SourceType = PyObject_GetAttrString(api_module, "Source");
-    if (api_SourceType == NULL) {
-        PyErr_Print();
-        exit(1);
-    }
+    PyObject* SocketClientType = PyType_FromSpecWithBases(&SocketClientSpec, api_SourceBases);
+    if (SocketClientType == NULL) return NULL;
 
-    Py_DECREF(api_module);
+    PyObject* BufferType = PyType_FromSpecWithBases(&BufferSpec, api_BufferBases);
+    if (BufferType == NULL) return NULL;
 
-    SocketClientType.tp_base = (PyTypeObject*) api_SourceType;
-    if (PyType_Ready(&SocketClientType) < 0)
-        return NULL;
+    PyObject* FftType = PyType_FromSpecWithBases(&FftSpec, api_FlowBases);
+    if (FftType == NULL) return NULL;
 
-    BufferType.tp_base = (PyTypeObject*) api_BufferType;
-    if (PyType_Ready(&BufferType) < 0)
-        return NULL;
+    PyObject* LogPowerType = PyType_FromSpecWithBases(&LogPowerSpec, api_FlowBases);
+    if (LogPowerType == NULL) return NULL;
 
-    FftType.tp_base = (PyTypeObject*) api_FlowType;
-    if (PyType_Ready(&FftType) < 0)
-        return NULL;
+    PyObject* LogAveragePowerType = PyType_FromSpecWithBases(&LogAveragePowerSpec, api_FlowBases);
+    if (LogAveragePowerType == NULL) return NULL;
 
-    LogPowerType.tp_base = (PyTypeObject*) api_FlowType;
-    if (PyType_Ready(&LogPowerType) < 0)
-        return NULL;
+    PyObject* FftExchangeSidesType = PyType_FromSpecWithBases(&FftExchangeSidesSpec, api_FlowBases);
+    if (FftExchangeSidesType == NULL) return NULL;
 
-    LogAveragePowerType.tp_base = (PyTypeObject*) api_FlowType;
-    if (PyType_Ready(&LogAveragePowerType) < 0)
-        return NULL;
+    PyObject* CompressFftAdpcmType = PyType_FromSpecWithBases(&CompressFftAdpcmSpec, api_FlowBases);
+    if (CompressFftAdpcmType == NULL) return NULL;
 
-    FftExchangeSidesType.tp_base = (PyTypeObject*) api_FlowType;
-    if (PyType_Ready(&FftExchangeSidesType) < 0)
-        return NULL;
+    PyObject* FirDecimateType = PyType_FromSpecWithBases(&FirDecimateSpec, api_FlowBases);
+    if (FirDecimateType == NULL) return NULL;
 
-    CompressFftAdpcmType.tp_base = (PyTypeObject*) api_FlowType;
-    if (PyType_Ready(&CompressFftAdpcmType) < 0)
-        return NULL;
-
-    FirDecimateType.tp_base = (PyTypeObject*) api_FlowType;
-    if (PyType_Ready(&FirDecimateType) < 0)
-        return NULL;
-
-    BandpassFirFftType.tp_base = (PyTypeObject*) api_FlowType;
-    if (PyType_Ready(&BandpassFirFftType) < 0)
-        return NULL;
+    PyObject* BandpassFirFftType = PyType_FromSpecWithBases(&BandpassFirFftSpec, api_FlowBases);
+    if (BandpassFirFftType == NULL) return NULL;
 
     PyObject* m = PyModule_Create(&pycsdrmodule);
     if (m == NULL)
         return NULL;
 
-    Py_INCREF(&SocketClientType);
-    PyModule_AddObject(m, "SocketClient", (PyObject*) &SocketClientType);
+    PyModule_AddObject(m, "SocketClient", SocketClientType);
 
-    Py_INCREF(&BufferType);
-    PyModule_AddObject(m, "Buffer", (PyObject*) &BufferType);
+    PyModule_AddObject(m, "Buffer", BufferType);
 
-    Py_INCREF(&FftType);
-    PyModule_AddObject(m, "Fft", (PyObject*) &FftType);
+    PyModule_AddObject(m, "Fft", FftType);
 
-    Py_INCREF(&LogPowerType);
-    PyModule_AddObject(m, "LogPower", (PyObject*) &LogPowerType);
+    PyModule_AddObject(m, "LogPower", LogPowerType);
 
-    Py_INCREF(&LogAveragePowerType);
-    PyModule_AddObject(m, "LogAveragePower", (PyObject*) &LogAveragePowerType);
+    PyModule_AddObject(m, "LogAveragePower", LogAveragePowerType);
 
-    Py_INCREF(&FftExchangeSidesType);
-    PyModule_AddObject(m, "FftExchangeSides", (PyObject*) &FftExchangeSidesType);
+    PyModule_AddObject(m, "FftExchangeSides", FftExchangeSidesType);
 
-    Py_INCREF(&CompressFftAdpcmType);
-    PyModule_AddObject(m, "CompressFftAdpcm", (PyObject*) &CompressFftAdpcmType);
+    PyModule_AddObject(m, "CompressFftAdpcm", CompressFftAdpcmType);
 
-    Py_INCREF(&FirDecimateType);
-    PyModule_AddObject(m, "FirDecimate", (PyObject*) &FirDecimateType);
+    PyModule_AddObject(m, "FirDecimate", FirDecimateType);
 
-    Py_INCREF(&BandpassFirFftType);
-    PyModule_AddObject(m, "BandpassFirFft", (PyObject*) &BandpassFirFftType);
+    PyModule_AddObject(m, "BandpassFirFft", BandpassFirFftType);
+
+    Py_DECREF(api_SourceBases);
+    Py_DECREF(api_BufferBases);
+    Py_DECREF(api_FlowBases);
 
     return m;
 }

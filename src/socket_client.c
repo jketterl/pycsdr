@@ -4,43 +4,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-int SocketClient_traverse(SocketClient* self, visitproc visit, void* arg) {
-    Py_VISIT(Py_TYPE(self));
-    Py_VISIT(self->outputBuffer);
-    return 0;
-}
-
-int SocketClient_clear(SocketClient* self) {
-    SocketClient_stop(self, Py_None);
-    close(self->socket);
-    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
-    self->outputBuffer = NULL;
-    return 0;
-}
-
-void SocketClient_dealloc(SocketClient* self) {
-    PyObject_GC_UnTrack(self);
-    SocketClient_clear(self);
-    PyTypeObject* tp = Py_TYPE(self);
-    tp->tp_free((PyObject*) self);
-    Py_DECREF(tp);
-}
-
-PyObject* SocketClient_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    SocketClient* self;
-    self = (SocketClient*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        self->port = 0;
-        self->socket = 0;
-        self->outputBuffer = NULL;
-        self->run = true;
-        self->worker = 0;
-    }
-    return (PyObject*) self;
-}
-
-void* SocketClient_worker(void* ctx) {
+static void* SocketClient_worker(void* ctx) {
     SocketClient* self = (SocketClient*) ctx;
 
     int read_bytes;
@@ -58,17 +22,49 @@ void* SocketClient_worker(void* ctx) {
         }
     }
 
-    //Buffer_shutdown(self->outputBuffer);
-
     return NULL;
 }
 
-int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
-    static char* kwlist[] = {"port", NULL};
+static PyObject* SocketClient_start(SocketClient* self) {
+    if (self->outputBuffer == NULL) {
+        Py_RETURN_NONE;
+    } else {
+        self->run = true;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
-                                     &self->port))
+        if (pthread_create(&self->worker, NULL, SocketClient_worker, self) != 0) {
+            PyErr_SetFromErrno(PyExc_OSError);
+            return NULL;
+        }
+
+        pthread_setname_np(self->worker, "pycsdr SocketCl");
+
+        Py_RETURN_NONE;
+    }
+}
+
+static PyObject* SocketClient_stop(SocketClient* self, PyObject* Py_UNUSED(ignored)) {
+    self->run = false;
+    if (self->worker != 0) {
+        void* retval = NULL;
+        pthread_join(self->worker, retval);
+    }
+    self->worker = 0;
+    Py_RETURN_NONE;
+}
+
+static int SocketClient_clear(SocketClient* self) {
+    SocketClient_stop(self, Py_None);
+    close(self->socket);
+    if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
+    self->outputBuffer = NULL;
+    return 0;
+}
+
+static int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
+    static char* kwlist[] = {"port", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &self->port)) {
         return -1;
+    }
 
     struct sockaddr_in remote;
 
@@ -90,7 +86,7 @@ int SocketClient_init(SocketClient* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-PyObject* SocketClient_setOutput(SocketClient* self, PyObject* args, PyObject* kwds) {
+static PyObject* SocketClient_setOutput(SocketClient* self, PyObject* args, PyObject* kwds) {
     if (SocketClient_stop(self, Py_None) == NULL) {
         return NULL;
     }
@@ -98,8 +94,7 @@ PyObject* SocketClient_setOutput(SocketClient* self, PyObject* args, PyObject* k
     if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer);
 
     static char* kwlist[] = {"buffer", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist,
-                                     &BufferType, &self->outputBuffer))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, getApiType("Buffer"), &self->outputBuffer))
         return NULL;
 
     Py_INCREF(self->outputBuffer);
@@ -109,35 +104,7 @@ PyObject* SocketClient_setOutput(SocketClient* self, PyObject* args, PyObject* k
     return SocketClient_start(self);
 }
 
-PyObject* SocketClient_start(SocketClient* self) {
-    if (self->outputBuffer == NULL) {
-        Py_RETURN_NONE;
-    } else {
-        self->run = true;
-
-        if (pthread_create(&self->worker, NULL, SocketClient_worker, self) != 0) {
-            PyErr_SetFromErrno(PyExc_OSError);
-            return NULL;
-        }
-
-        pthread_setname_np(self->worker, "pycsdr SocketCl");
-
-        Py_RETURN_NONE;
-    }
-}
-
-PyObject* SocketClient_stop(SocketClient* self, PyObject* Py_UNUSED(ignored)) {
-    self->run = false;
-    if (self->worker != 0) {
-        void* retval = NULL;
-        pthread_join(self->worker, retval);
-    }
-    self->worker = 0;
-    Py_RETURN_NONE;
-}
-
-
-PyMethodDef SocketClient_methods[] = {
+static PyMethodDef SocketClient_methods[] = {
     {"setOutput", (PyCFunction) SocketClient_setOutput, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
@@ -147,18 +114,17 @@ PyMethodDef SocketClient_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-PyTypeObject SocketClientType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pycsdr.modules.SocketClient",
-    .tp_doc = "Custom objects",
-    .tp_basicsize = sizeof(SocketClient),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_new = SocketClient_new,
-    .tp_init = (initproc) SocketClient_init,
-    .tp_dealloc = (destructor) SocketClient_dealloc,
-    .tp_traverse = (traverseproc) SocketClient_traverse,
-    .tp_clear = (inquiry) SocketClient_clear,
-    .tp_methods = SocketClient_methods,
+static PyType_Slot SocketClientSlots[] = {
+    {Py_tp_init, SocketClient_init},
+    {Py_tp_clear, SocketClient_clear},
+    {Py_tp_methods, SocketClient_methods},
+    {0, 0}
 };
 
+PyType_Spec SocketClientSpec = {
+    "pycsdr.modules.SocketClient",
+    sizeof(SocketClient),
+    0,
+    Py_TPFLAGS_DEFAULT,
+    SocketClientSlots
+};

@@ -1,11 +1,6 @@
 #include "buffer.h"
 
-int Buffer_traverse(Buffer* self, visitproc visit, void* arg) {
-    Py_VISIT(Py_TYPE(self));
-    return 0;
-}
-
-int Buffer_clear(Buffer* self) {
+static int Buffer_clear(Buffer* self) {
     if (self->buffer != NULL) free(self->buffer);
     self->buffer = NULL;
     pthread_cond_destroy(&self->wait_condition);
@@ -13,29 +8,7 @@ int Buffer_clear(Buffer* self) {
     return 0;
 }
 
-void Buffer_dealloc(Buffer* self) {
-    Buffer_clear(self);
-    PyTypeObject* tp = Py_TYPE(self);
-    tp->tp_free((PyObject*) self);
-    Py_DECREF(tp);
-}
-
-PyObject* Buffer_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    Buffer* self;
-    self = (Buffer*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        self->buffer = NULL;
-        self->item_size = 1;
-        self->write_pos = 0;
-        self->read_pos = 0;
-        self->end_pos = 0;
-        self->run = true;
-    }
-    return (PyObject*) self;
-}
-
-int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
+static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"size", "item_size", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|IB", kwlist,
@@ -52,10 +25,12 @@ int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     pthread_cond_init(&self->wait_condition, NULL);
     pthread_mutex_init(&self->wait_mutex, NULL);
 
+    self->run = true;
+
     return 0;
 }
 
-PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
+static PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     uint32_t available;
     Py_BEGIN_ALLOW_THREADS
     available = Buffer_wait(self, self->read_pos, &self->run);
@@ -69,25 +44,25 @@ PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     }
 }
 
-PyMethodDef Buffer_methods[] = {
+static PyMethodDef Buffer_methods[] = {
     {"read", (PyCFunction) Buffer_read, METH_NOARGS,
      "read bytes from the buffer"},
     {NULL}  /* Sentinel */
 };
 
-PyTypeObject BufferType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pycsdr.modules.Buffer",
-    .tp_doc = "Custom objects",
-    .tp_basicsize = sizeof(Buffer),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_new = Buffer_new,
-    .tp_init = (initproc) Buffer_init,
-    .tp_dealloc = (destructor) Buffer_dealloc,
-    .tp_traverse = (traverseproc) Buffer_traverse,
-    .tp_clear = (inquiry) Buffer_clear,
-    .tp_methods = Buffer_methods,
+static PyType_Slot BufferSlots[] = {
+    {Py_tp_init, Buffer_init},
+    {Py_tp_clear, Buffer_clear},
+    {Py_tp_methods, Buffer_methods},
+    {0, 0}
+};
+
+PyType_Spec BufferSpec = {
+    "pycsdr.modules.Buffer",
+    sizeof(Buffer),
+    0,
+    Py_TPFLAGS_DEFAULT,
+    BufferSlots
 };
 
 void Buffer_setItemSize(Buffer* self, uint8_t item_size) {
@@ -211,12 +186,6 @@ void Buffer_write(Buffer* self, void* src, uint32_t len) {
         Buffer_advance(self, writeable);
         remaining -= writeable;
     }
-}
-
-void Buffer_shutdown(Buffer* self) {
-    self->run = false;
-    // wake up everybody waiting
-    Buffer_unblock(self);
 }
 
 void Buffer_unblock(Buffer* self) {

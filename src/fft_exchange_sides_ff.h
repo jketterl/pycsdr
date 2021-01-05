@@ -8,11 +8,10 @@
 #include "worker_template.h"
 
 typedef struct {
-    PyObject_VAR_HEAD;
+    PyObject base1;
+    PyObject base2;
     WORKER_MEMBERS
     uint16_t fft_size;
 } FftExchangeSides;
 
 MAKE_WORKER_H(FftExchangeSides);
-
-extern PyTypeObject FftExchangeSidesType;

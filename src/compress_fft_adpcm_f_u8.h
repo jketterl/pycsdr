@@ -11,11 +11,10 @@
 #include "worker_template.h"
 
 typedef struct {
-    PyObject_VAR_HEAD;
+    PyObject base1;
+    PyObject base2;
     WORKER_MEMBERS
     uint16_t fft_size;
 } CompressFftAdpcm;
 
 MAKE_WORKER_H(CompressFftAdpcm);
-
-extern PyTypeObject CompressFftAdpcmType;

@@ -7,6 +7,7 @@
 #include <pthread.h>
 
 #include "buffer.h"
+#include "api.h"
 
 #define WORKER_MEMBERS \
     Buffer* inputBuffer; \
@@ -16,87 +17,14 @@
     pthread_t worker;
 
 #define MAKE_WORKER_H(name) \
-    int name##_traverse(name* self, visitproc visit, void* arg); \
-    int name##_clear(name* self); \
-    void name##_dealloc(name* self); \
-    PyObject* name##_new(PyTypeObject* type, PyObject* args, PyObject* kwds); \
-    int name##_init(name* self, PyObject* args, PyObject* kwds); \
-    PyObject* name##_setInput(name* self, PyObject* args, PyObject* kwds); \
-    PyObject* name##_setOutput(name* self, PyObject* args, PyObject* kwds); \
-    PyObject* name##_start(name* self); \
-    PyObject* name##_stop(name* self, PyObject* Py_UNUSED(ignored));
+    extern PyType_Spec name##Spec;
 
 void setThreadName(pthread_t t, char* name);
 
 #define MAKE_WORKER(name, input_size, output_size) \
-    void* name##_worker(void* ctx); \
+    static void* name##_worker(void* ctx); \
     \
-    int name##_traverse(name* self, visitproc visit, void* arg) { \
-        Py_VISIT(Py_TYPE(self)); \
-        Py_VISIT(self->outputBuffer); \
-        Py_VISIT(self->inputBuffer); \
-        return 0; \
-    } \
-    \
-    int name##_clear(name* self) { \
-        name##_stop(self, Py_None); \
-        if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer); \
-        self->inputBuffer = NULL; \
-        if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer); \
-        self->outputBuffer = NULL; \
-        return 0; \
-    } \
-    \
-    void name##_dealloc(name* self) { \
-        PyObject_GC_UnTrack(self); \
-        name##_clear(self); \
-        PyTypeObject* tp = Py_TYPE(self); \
-        tp->tp_free((PyObject*) self); \
-        Py_DECREF(tp); \
-    } \
-    \
-    PyObject* name##_setInput(name* self, PyObject* args, PyObject* kwds) { \
-        if (name##_stop(self, Py_None) == NULL) { \
-            return NULL; \
-        } \
-        \
-        if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer); \
-        \
-        static char* kwlist[] = {"buffer", NULL}; \
-        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, &BufferType, &self->inputBuffer)) { \
-            return NULL; \
-        } \
-        \
-        if (Buffer_getItemSize(self->inputBuffer) != input_size) { \
-            self->inputBuffer = NULL; \
-            PyErr_SetString(PyExc_ValueError, "Input buffer item size mismatch"); \
-            return NULL; \
-        } \
-        \
-        Py_INCREF(self->inputBuffer); \
-        \
-        return name##_start(self); \
-    } \
-    \
-    PyObject* name##_setOutput(name* self, PyObject* args, PyObject* kwds) { \
-        if (name##_stop(self, Py_None) == NULL) { \
-            return NULL; \
-        } \
-        \
-        if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer); \
-        \
-        static char* kwlist[] = {"buffer", NULL}; \
-        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, &BufferType, &self->outputBuffer)) { \
-            return NULL; \
-        } \
-        Py_INCREF(self->outputBuffer); \
-        \
-        Buffer_setItemSize(self->outputBuffer, output_size); \
-        \
-        return name##_start(self); \
-    } \
-    \
-    PyObject* name##_start(name* self) { \
+    static PyObject* name##_start(name* self) { \
         if (self->outputBuffer == NULL || self->inputBuffer == NULL) { \
             Py_RETURN_NONE; \
         } else { \
@@ -113,7 +41,7 @@ void setThreadName(pthread_t t, char* name);
         } \
     } \
     \
-    PyObject* name##_stop(name* self, PyObject* Py_UNUSED(ignored)) { \
+    static PyObject* name##_stop(name* self, PyObject* Py_UNUSED(ignored)) { \
         self->run = false; \
         if (self->worker != 0) { \
             Buffer_unblock(self->inputBuffer); \
@@ -122,14 +50,57 @@ void setThreadName(pthread_t t, char* name);
         } \
         self->worker = 0; \
         Py_RETURN_NONE; \
+    } \
+    \
+    static int name##_clear(name* self) { \
+        name##_stop(self, Py_None); \
+        Py_XDECREF(self->inputBuffer); \
+        self->inputBuffer = NULL; \
+        Py_XDECREF(self->outputBuffer); \
+        self->outputBuffer = NULL; \
+        return 0; \
+    } \
+    \
+    static PyObject* name##_setInput(name* self, PyObject* args, PyObject* kwds) { \
+        if (name##_stop(self, Py_None) == NULL) { \
+            return NULL; \
+        } \
+        \
+        if (self->inputBuffer != NULL) Py_DECREF(self->inputBuffer); \
+        \
+        static char* kwlist[] = {"buffer", NULL}; \
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, getApiType("Buffer"), &self->inputBuffer)) { \
+            return NULL; \
+        } \
+        \
+        if (Buffer_getItemSize(self->inputBuffer) != input_size) { \
+            self->inputBuffer = NULL; \
+            PyErr_SetString(PyExc_ValueError, "Input buffer item size mismatch"); \
+            return NULL; \
+        } \
+        \
+        Py_INCREF(self->inputBuffer); \
+        \
+        return name##_start(self); \
+    } \
+    \
+    static PyObject* name##_setOutput(name* self, PyObject* args, PyObject* kwds) { \
+        if (name##_stop(self, Py_None) == NULL) { \
+            return NULL; \
+        } \
+        \
+        if (self->outputBuffer != NULL) Py_DECREF(self->outputBuffer); \
+        \
+        static char* kwlist[] = {"buffer", NULL}; \
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, getApiType("Buffer"), &self->outputBuffer)) { \
+            return NULL; \
+        } \
+        Py_INCREF(self->outputBuffer); \
+        \
+        Buffer_setItemSize(self->outputBuffer, output_size); \
+        \
+        return name##_start(self); \
     }
-
-#define WORKER_MEMBER_INIT \
-    self->outputBuffer = NULL; \
-    self->inputBuffer = NULL; \
-    self->read_pos = 0; \
-    self->run = true; \
-    self->worker = 0;
 
 #define WORKER_METHODS(name) \
     {"setInput", (PyCFunction) name##_setInput, METH_VARARGS | METH_KEYWORDS, \
@@ -142,19 +113,18 @@ void setThreadName(pthread_t t, char* name);
      "stop processing" \
     },
 
-#define MAKE_WORKER_TYPE(name) \
-    PyTypeObject name##Type = { \
-        PyVarObject_HEAD_INIT(NULL, 0) \
-        .tp_name = "pycsdr.modules." #name, \
-        .tp_doc = "Custom objects", \
-        .tp_basicsize = sizeof(name), \
-        .tp_base = NULL, \
-        .tp_itemsize = 0, \
-        .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_HAVE_GC, \
-        .tp_new = name##_new, \
-        .tp_init = (initproc) name##_init, \
-        .tp_dealloc = (destructor) name##_dealloc, \
-        .tp_traverse = (traverseproc) name##_traverse, \
-        .tp_clear = (inquiry) name##_clear, \
-        .tp_methods = name##_methods, \
+#define MAKE_WORKER_SPEC(name) \
+    static PyType_Slot name##Slots[] = { \
+        {Py_tp_init, name##_init}, \
+        {Py_tp_clear, name##_clear}, \
+        {Py_tp_methods, name##_methods}, \
+        {0, 0} \
+    }; \
+    \
+    PyType_Spec name##Spec = { \
+        "pycsdr.modules." #name, \
+        sizeof(name), \
+        0, \
+        Py_TPFLAGS_DEFAULT, \
+        name##Slots \
     };

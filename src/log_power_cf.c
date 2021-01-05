@@ -2,18 +2,7 @@
 
 MAKE_WORKER(LogPower, sizeof(complexf), sizeof(float))
 
-PyObject* LogPower_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-    LogPower* self;
-    self = (LogPower*) type->tp_alloc(type, 0);
-    if (self != NULL) {
-        Py_INCREF(type);
-        WORKER_MEMBER_INIT
-        self->add_db = 0;
-    }
-    return (PyObject*) self;
-}
-
-void* LogPower_worker(void* ctx) {
+static void* LogPower_worker(void* ctx) {
     LogPower* self = (LogPower*) ctx;
 
     uint32_t available;
@@ -33,12 +22,10 @@ void* LogPower_worker(void* ctx) {
         Buffer_advance(self->outputBuffer, available);
     }
 
-    //Buffer_shutdown(self->outputBuffer);
-
     return NULL;
 }
 
-int LogPower_init(LogPower* self, PyObject* args, PyObject* kwds) {
+static int LogPower_init(LogPower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {"add_db", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "f", kwlist,
@@ -48,9 +35,9 @@ int LogPower_init(LogPower* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-PyMethodDef LogPower_methods[] = {
+static PyMethodDef LogPower_methods[] = {
     WORKER_METHODS(LogPower)
     {NULL}  /* Sentinel */
 };
 
-MAKE_WORKER_TYPE(LogPower)
+MAKE_WORKER_SPEC(LogPower)

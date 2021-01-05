@@ -8,13 +8,10 @@
 #include "worker_template.h"
 
 typedef struct {
-    PyObject_VAR_HEAD;
+    PyObject base1;
+    PyObject base2;
     WORKER_MEMBERS
     float add_db;
 } LogPower;
 
 MAKE_WORKER_H(LogPower)
-
-PyObject* LogPower_setFftAverages(LogPower* self, PyObject* args, PyObject* kwds);
-
-extern PyTypeObject LogPowerType;

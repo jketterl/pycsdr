@@ -22,6 +22,7 @@ setup(
         Extension(
             name="pycsdr.modules",
             sources=[
+                "src/api.c",
                 "src/pycsdr_module.c",
                 "src/worker_template.c",
                 "src/socket_client.c",
