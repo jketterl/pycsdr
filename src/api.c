@@ -13,9 +13,6 @@ PyObject* getApiType(const char* name) {
         exit(1);
     }
 
-    fprintf(stderr, "Size indicated by type %s: %lu; item size: %lu\n", name, ((PyTypeObject*) api_type)->tp_basicsize, ((PyTypeObject*) api_type)->tp_itemsize);
-    fprintf(stderr, "sizeof(PyObject): %lu\n", sizeof(PyObject));
-
     Py_DECREF(api_module);
 
     Py_INCREF(api_type);
