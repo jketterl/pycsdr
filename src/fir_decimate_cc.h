@@ -11,6 +11,8 @@ typedef struct {
     PyObject base2;
     WORKER_MEMBERS
     int16_t decimation;
+    float transition_bw;
+    window_t window;
 } FirDecimate;
 
 MAKE_WORKER_H(FirDecimate)
