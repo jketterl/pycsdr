@@ -6,16 +6,28 @@ class Buffer(ABC):
     def read(self):
         pass
 
+    @abstractmethod
+    def stop(self):
+        pass
+
 
 class Source(ABC):
     @abstractmethod
     def setOutput(self, buffer: Buffer):
         pass
 
+    @abstractmethod
+    def stop(self):
+        pass
+
 
 class Sink(ABC):
     @abstractmethod
     def setInput(self, buffer: Buffer):
+        pass
+
+    @abstractmethod
+    def stop(self):
         pass
 
 

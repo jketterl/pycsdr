@@ -44,9 +44,17 @@ static PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     }
 }
 
+static PyObject* Buffer_stop(Buffer* self, PyObject* Py_UNUSED(ignored)) {
+    self->run = false;
+    Buffer_unblock(self);
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef Buffer_methods[] = {
     {"read", (PyCFunction) Buffer_read, METH_NOARGS,
      "read bytes from the buffer"},
+    {"stop", (PyCFunction) Buffer_stop, METH_NOARGS,
+     "stop the buffer and unblock calls to read()"},
     {NULL}  /* Sentinel */
 };
 
