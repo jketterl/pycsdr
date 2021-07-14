@@ -6,13 +6,13 @@
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
-        .m_name = "pycsdr",
+        .m_name = "pycsdr.modules",
         .m_doc = "Python bindings for the csdr library",
         .m_size = -1,
 };
 
 PyMODINIT_FUNC
-PyInit_pycsdr(void) {
+PyInit_modules(void) {
     PyObject* BufferType = PyType_FromSpec(&BufferSpec);
     if (BufferType == NULL) return NULL;
 

@@ -8,8 +8,9 @@
 typedef struct {
     PyObject base1;
     PyObject base2;
-    Csdr::Ringbuffer<Csdr::complex<float>>* buffer;
-    Csdr::RingbufferReader<Csdr::complex<float>>* reader;
+    PyObject* format;
+    Csdr::UntypedWriter* writer;
+    Csdr::UntypedReader* reader;
 } Buffer;
 
 // 256kb

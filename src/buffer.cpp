@@ -1,29 +1,55 @@
 #include "buffer.h"
+#include "types.h"
 
 static int Buffer_clear(Buffer* self) {
-    if (self->buffer != nullptr) delete self->buffer;
-    self->buffer = NULL;
+    if (self->writer != nullptr) delete self->writer;
+    self->writer = NULL;
     if (self->reader != nullptr) delete self->reader;
     self->reader = NULL;
     return 0;
 }
 
+template <typename T>
+static void createBuffer(Buffer* self, uint32_t size) {
+    auto buffer = new Csdr::Ringbuffer<T>(size);
+    self->writer = buffer;
+    self->reader = new Csdr::RingbufferReader<T>(buffer);
+}
+
 static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
-    char* kwlist[] = {(char*) "size", NULL};
+    char* kwlist[] = {(char*) "format", (char*) "size", NULL};
 
     uint32_t size = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I", kwlist,
-                                     &size))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O!I", kwlist, FormatType, &self->format, &size)) {
         return -1;
+    }
 
     if (size == 0) {
         size = DEFAULT_BUFFER_SIZE;
     }
 
-    self->buffer = new Csdr::Ringbuffer<Csdr::complex<float>>(size);
-    self->reader = new Csdr::RingbufferReader<Csdr::complex<float>>(self->buffer);
+    if (self->format == FORMAT_CHAR) {
+        createBuffer<unsigned char>(self, size);
+    } else if (self->format == FORMAT_SHORT) {
+        createBuffer<short>(self, size);
+    } else if (self->format == FORMAT_FLOAT) {
+        createBuffer<float>(self, size);
+    } else if (self->format == FORMAT_COMPLEX_FLOAT) {
+        createBuffer<Csdr::complex<float>>(self, size);
+    } else {
+        PyErr_SetString(PyExc_ValueError, "invalid format");
+        return -1;
+    }
 
     return 0;
+}
+
+template <typename T>
+static PyObject* getBytes(Csdr::UntypedReader* reader) {
+    size_t available = reader->available();
+    char* source = (char *) (dynamic_cast<Csdr::RingbufferReader<T> *>(reader))->getReadPointer();
+    return PyMemoryView_FromMemory(source, available * sizeof(T), PyBUF_READ);
+    reader->advance(available);
 }
 
 static PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
@@ -33,9 +59,19 @@ static PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
         self->reader->wait();
         Py_END_ALLOW_THREADS
     }
-    PyObject* bytes = PyMemoryView_FromMemory((char*) self->reader->getReadPointer(), available * sizeof(short), PyBUF_READ);
-    self->reader->advance(available);
-    return bytes;
+
+    if (self->format == FORMAT_CHAR) {
+        return getBytes<unsigned char>(self->reader);
+    } else if (self->format == FORMAT_SHORT) {
+        return getBytes<short>(self->reader);
+    } else if (self->format == FORMAT_FLOAT) {
+        return getBytes<float>(self->reader);
+    } else if (self->format == FORMAT_COMPLEX_FLOAT) {
+        return getBytes<Csdr::complex<float>>(self->reader);
+    } else {
+        PyErr_SetString(PyExc_ValueError, "invalid format");
+        return NULL;
+    }
 }
 
 static PyObject* Buffer_stop(Buffer* self, PyObject* Py_UNUSED(ignored)) {

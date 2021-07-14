@@ -1,5 +1,6 @@
 #include "tcpsource.h"
 #include "buffer.h"
+#include "types.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -37,7 +38,13 @@ static PyObject* TcpSource_setOutput(TcpSource* self, PyObject* args, PyObject* 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer))
         return NULL;
 
-    self->source->setWriter(buffer->buffer);
+    // we only support complex float here.
+    if (buffer->format == FORMAT_COMPLEX_FLOAT) {
+        self->source->setWriter(dynamic_cast<Csdr::Writer<Csdr::complex<float>>*>(buffer->writer));
+    } else {
+        PyErr_SetString(PyExc_ValueError, "invalid format");
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
@@ -66,7 +73,7 @@ static PyType_Slot TcpSourceSlots[] = {
 };
 
 PyType_Spec TcpSourceSpec = {
-    "pycsdr.TcpSource",
+    "pycsdr.modules.TcpSource",
     sizeof(TcpSource),
     0,
     Py_TPFLAGS_DEFAULT,

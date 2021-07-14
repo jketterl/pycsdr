@@ -15,17 +15,17 @@ setup(
     packages=["pycsdr"],
 
     package_data={
-        "": ["**.txt", "**.md", "**.py", "**.h", "**.hpp", "**.c", "**.cpp"],
-        "pycsdr": ["**.pyi"],
+        "pycsdr": ["**.pyi", "**.py"],
     },
 
     ext_modules=[
         Extension(
-            name="pycsdr",
+            name="pycsdr.modules",
             sources=[
                 "src/pycsdr.cpp",
                 "src/buffer.cpp",
                 "src/tcpsource.cpp",
+                "src/types.cpp",
             ],
             language="c++",
             include_dirs=["src"],

@@ -1,12 +1,17 @@
+from pycsdr import Format
+
+
 class Writer:
     pass
 
+
 class Reader:
-    def read(self):
+    def read(self) -> bytes:
         pass
 
+
 class Buffer(Writer, Reader):
-    def __init__(self, size=None):
+    def __init__(self, format: Format, size: int=None):
         pass
 
     def stop(self):
@@ -14,7 +19,7 @@ class Buffer(Writer, Reader):
 
 
 class Source:
-    def setOutput(self, writer: Writer):
+    def setOutput(self, writer: Writer) -> None:
         pass
 
     def stop(self):
@@ -22,7 +27,7 @@ class Source:
 
 
 class Sink:
-    def setInput(self, reader: Reader):
+    def setInput(self, reader: Reader) -> None:
         pass
 
     def stop(self):
