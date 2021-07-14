@@ -7,7 +7,6 @@
 #include <pthread.h>
 
 #include "buffer.h"
-#include "api.h"
 
 #define WORKER_MEMBERS \
     Buffer* inputBuffer; \

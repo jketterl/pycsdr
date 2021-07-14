@@ -2,42 +2,17 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include <stdint.h>
-#include <pthread.h>
-#include <stdbool.h>
-
-#include "api.h"
+#include <csdr/ringbuffer.hpp>
+#include <csdr/complex.hpp>
 
 typedef struct {
     PyObject base1;
     PyObject base2;
-    uint32_t size;
-    void* buffer;
-    uint8_t item_size;
-    uint32_t write_pos;
-    uint32_t read_pos;
-    uint32_t end_pos;
-    pthread_cond_t wait_condition;
-    pthread_mutex_t wait_mutex;
-    bool run;
+    Csdr::Ringbuffer<Csdr::complex<float>>* buffer;
+    Csdr::RingbufferReader<Csdr::complex<float>>* reader;
 } Buffer;
 
 // 256kb
 #define DEFAULT_BUFFER_SIZE 262144
-
-void Buffer_setItemSize(Buffer* self, uint8_t item_size);
-uint8_t Buffer_getItemSize(Buffer* self);
-uint32_t Buffer_getWriteable(Buffer* self);
-void* Buffer_getWritePointer(Buffer* self);
-void* Buffer_getWritePointer_n(Buffer* self, uint32_t n);
-void Buffer_advance(Buffer* self, uint32_t how_much);
-void Buffer_advanceReadPos(Buffer* self, uint32_t* read_pos, uint32_t how_much);
-uint32_t Buffer_wait(Buffer* self, uint32_t read_pos, bool* run);
-uint32_t Buffer_wait_n(Buffer* self, uint32_t read_pos, bool* run, uint32_t n);
-void* Buffer_getReadPointer(Buffer* self, uint32_t read_pos);
-uint32_t Buffer_read_n(Buffer* self, void* dst, uint32_t* read_pos, bool* run, uint32_t n);
-uint32_t Buffer_skip_n(Buffer* self, uint32_t* read_pos, bool* run, uint32_t n);
-void Buffer_write(Buffer* self, void* src, uint32_t len);
-void Buffer_unblock(Buffer* self);
 
 extern PyType_Spec BufferSpec;

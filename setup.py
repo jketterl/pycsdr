@@ -12,32 +12,24 @@ except ImportError:
 setup(
     name="pycsdr",
     version="0.18.0-dev",
-    packages=find_namespace_packages(include=["pycsdr.api"]),
+    packages=["pycsdr"],
 
     package_data={
         "": ["**.txt", "**.md", "**.py", "**.h", "**.hpp", "**.c", "**.cpp"],
+        "pycsdr": ["**.pyi"],
     },
 
     ext_modules=[
         Extension(
-            name="pycsdr.modules",
+            name="pycsdr",
             sources=[
-                "src/api.c",
-                "src/pycsdr_module.c",
-                "src/worker_template.c",
-                "src/socket_client.c",
-                "src/buffer.c",
-                "src/fft_cc.c",
-                "src/log_power_cf.c",
-                "src/log_average_power_cf.c",
-                "src/fft_exchange_sides_ff.c",
-                "src/compress_fft_adpcm_f_u8.c",
-                "src/fir_decimate_cc.c",
-                "src/bandpass_fir_fft_cc.c",
+                "src/pycsdr.cpp",
+                "src/buffer.cpp",
+                "src/tcpsource.cpp",
             ],
+            language="c++",
             include_dirs=["src"],
-            libraries=['csdr', 'fftw3f'],
-            define_macros=[("USE_IMA_ADPCM", None)],
+            libraries=['csdr++', 'fftw3f'],
         )
     ],
 )
