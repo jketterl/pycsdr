@@ -33,6 +33,7 @@ setup(
                 "src/fftswap.cpp",
                 "src/fftadpcm.cpp",
                 "src/firdecimate.cpp",
+                "src/bandpass.cpp",
             ],
             language="c++",
             include_dirs=["src"],

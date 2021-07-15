@@ -14,7 +14,7 @@ class Buffer(Writer, Reader):
     def __init__(self, format: Format, size: int=None):
         pass
 
-    def stop(self):
+    def stop(self) -> None:
         pass
 
 
@@ -22,7 +22,7 @@ class Source:
     def setOutput(self, writer: Writer) -> None:
         pass
 
-    def stop(self):
+    def stop(self) -> None:
         pass
 
 
@@ -30,7 +30,7 @@ class Sink:
     def setInput(self, reader: Reader) -> None:
         pass
 
-    def stop(self):
+    def stop(self) -> None:
         pass
 
 
@@ -47,7 +47,7 @@ class Fft(Module):
     def __init__(self, fft_size: int, every_n_samples: int):
         pass
 
-    def setEveryNSamples(self, every_n_samples: int):
+    def setEveryNSamples(self, every_n_samples: int) -> None:
         pass
 
 
@@ -60,7 +60,7 @@ class LogAveragePower(Module):
     def __init__(self, add_db: float, fft_size: int, avg_number: int):
         pass
 
-    def setAvgNumber(self, avg_number: int):
+    def setAvgNumber(self, avg_number: int) -> None:
         pass
 
 
@@ -76,4 +76,12 @@ class FftAdpcm(Module):
 
 class FirDecimate(Module):
     def __init__(self, decimation: int, transition: float = 0.05):
+        pass
+
+
+class Bandpass(Module):
+    def __init__(self, low_cut: float = 0.0, high_cut: float = 0.0, transition: float = 0.0, use_fft: bool = True):
+        pass
+
+    def setBandpass(self, low_cut: float, high_cut: float) -> None:
         pass

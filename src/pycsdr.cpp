@@ -9,6 +9,7 @@
 #include "fftswap.h"
 #include "fftadpcm.h"
 #include "firdecimate.h"
+#include "bandpass.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -43,10 +44,8 @@ PyInit_modules(void) {
     PyObject* FirDecimateType = PyType_FromSpec(&FirDecimateSpec);
     if (FirDecimateType == NULL) return NULL;
 
-    /*
-    PyObject* BandpassFirFftType = PyType_FromSpec(&BandpassFirFftSpec);
-    if (BandpassFirFftType == NULL) return NULL;
-    */
+    PyObject* BandpassType = PyType_FromSpec(&BandpassSpec);
+    if (BandpassType == NULL) return NULL;
 
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
@@ -69,9 +68,7 @@ PyInit_modules(void) {
 
     PyModule_AddObject(m, "FirDecimate", FirDecimateType);
 
-    /*
-    PyModule_AddObject(m, "BandpassFirFft", BandpassFirFftType);
-    */
+    PyModule_AddObject(m, "Bandpass", BandpassType);
 
     return m;
 }
