@@ -67,3 +67,8 @@ class LogAveragePower(Module):
 class FftSwap(Module):
     def __init__(self, fft_size: int):
         pass
+
+
+class FftAdpcm(Module):
+    def __init__(self, fft_size: int):
+        pass

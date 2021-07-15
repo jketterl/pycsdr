@@ -49,6 +49,7 @@ PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds) {
 template PyObject* Module_setInput(module<Csdr::complex<float>, Csdr::complex<float>>* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setInput(module<Csdr::complex<float>, float>* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setInput(module<float, float>* self, PyObject* args, PyObject* kwds);
+template PyObject* Module_setInput(module<float, unsigned char>* self, PyObject* args, PyObject* kwds);
 
 template <typename T, typename U>
 PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds) {
@@ -77,6 +78,7 @@ PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds) {
 template PyObject* Module_setOutput(module<Csdr::complex<float>, Csdr::complex<float>>* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setOutput(module<Csdr::complex<float>, float>* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setOutput(module<float, float>* self, PyObject* args, PyObject* kwds);
+template PyObject* Module_setOutput(module<float, unsigned char>* self, PyObject* args, PyObject* kwds);
 
 template <typename T, typename U>
 PyObject* Module_stop(module<T, U>* self) {
@@ -90,3 +92,4 @@ PyObject* Module_stop(module<T, U>* self) {
 template PyObject* Module_stop(module<Csdr::complex<float>, Csdr::complex<float>>* self);
 template PyObject* Module_stop(module<Csdr::complex<float>, float>* self);
 template PyObject* Module_stop(module<float, float>* self);
+template PyObject* Module_stop(module<float, unsigned char>* self);
