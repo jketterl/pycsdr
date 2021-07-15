@@ -62,3 +62,8 @@ class LogAveragePower(Module):
 
     def setAvgNumber(self, avg_number: int):
         pass
+
+
+class FftSwap(Module):
+    def __init__(self, fft_size: int):
+        pass

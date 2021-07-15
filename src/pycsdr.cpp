@@ -6,6 +6,7 @@
 #include "fft.h"
 #include "logpower.h"
 #include "logaveragepower.h"
+#include "fftswap.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -31,10 +32,10 @@ PyInit_modules(void) {
     PyObject* LogAveragePowerType = PyType_FromSpec(&LogAveragePowerSpec);
     if (LogAveragePowerType == NULL) return NULL;
 
-    /*
-    PyObject* FftExchangeSidesType = PyType_FromSpec(&FftExchangeSidesSpec);
-    if (FftExchangeSidesType == NULL) return NULL;
+    PyObject* FftSwapType = PyType_FromSpec(&FftSwapSpec);
+    if (FftSwapType == NULL) return NULL;
 
+    /*
     PyObject* CompressFftAdpcmType = PyType_FromSpec(&CompressFftAdpcmSpec);
     if (CompressFftAdpcmType == NULL) return NULL;
 
@@ -60,9 +61,9 @@ PyInit_modules(void) {
 
     PyModule_AddObject(m, "LogAveragePower", LogAveragePowerType);
 
-    /*
-    PyModule_AddObject(m, "FftExchangeSides", FftExchangeSidesType);
+    PyModule_AddObject(m, "FftSwap", FftSwapType);
 
+    /*
     PyModule_AddObject(m, "CompressFftAdpcm", CompressFftAdpcmType);
 
     PyModule_AddObject(m, "FirDecimate", FirDecimateType);

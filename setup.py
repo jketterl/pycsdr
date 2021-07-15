@@ -30,6 +30,7 @@ setup(
                 "src/fft.cpp",
                 "src/logpower.cpp",
                 "src/logaveragepower.cpp",
+                "src/fftswap.cpp",
             ],
             language="c++",
             include_dirs=["src"],
