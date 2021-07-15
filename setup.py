@@ -28,6 +28,7 @@ setup(
                 "src/types.cpp",
                 "src/module.cpp",
                 "src/fft.cpp",
+                "src/logpower.cpp",
             ],
             language="c++",
             include_dirs=["src"],

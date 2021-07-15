@@ -40,13 +40,14 @@ PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds) {
     }
 
     if (self->module->hasReader() && self->module->hasWriter()) {
-        self->runner = new Csdr::AsyncRunner<Csdr::complex<float>, Csdr::complex<float>>(self->module);
+        self->runner = new Csdr::AsyncRunner<T, U>(self->module);
     }
 
     Py_RETURN_NONE;
 }
 
 template PyObject* Module_setInput(module<Csdr::complex<float>, Csdr::complex<float>>* self, PyObject* args, PyObject* kwds);
+template PyObject* Module_setInput(module<Csdr::complex<float>, float>* self, PyObject* args, PyObject* kwds);
 
 template <typename T, typename U>
 PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds) {
@@ -66,13 +67,14 @@ PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds) {
     }
 
     if (self->module->hasReader() && self->module->hasWriter()) {
-        self->runner = new Csdr::AsyncRunner<Csdr::complex<float>, Csdr::complex<float>>(self->module);
+        self->runner = new Csdr::AsyncRunner<T, U>(self->module);
     }
 
     Py_RETURN_NONE;
 }
 
 template PyObject* Module_setOutput(module<Csdr::complex<float>, Csdr::complex<float>>* self, PyObject* args, PyObject* kwds);
+template PyObject* Module_setOutput(module<Csdr::complex<float>, float>* self, PyObject* args, PyObject* kwds);
 
 template <typename T, typename U>
 PyObject* Module_stop(module<T, U>* self) {
@@ -81,3 +83,4 @@ PyObject* Module_stop(module<T, U>* self) {
 }
 
 template PyObject* Module_stop(module<Csdr::complex<float>, Csdr::complex<float>>* self);
+template PyObject* Module_stop(module<Csdr::complex<float>, float>* self);

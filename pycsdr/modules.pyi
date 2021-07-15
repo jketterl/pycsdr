@@ -49,3 +49,8 @@ class Fft(Module):
 
     def setEveryNSamples(self, every_n_samples: int):
         pass
+
+
+class LogPower(Module):
+    def __init__(self, add_db: float = 0.0):
+        pass
