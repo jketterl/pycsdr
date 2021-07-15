@@ -72,3 +72,8 @@ class FftSwap(Module):
 class FftAdpcm(Module):
     def __init__(self, fft_size: int):
         pass
+
+
+class FirDecimate(Module):
+    def __init__(self, decimation: int, transition: float = 0.05):
+        pass

@@ -32,6 +32,7 @@ setup(
                 "src/logaveragepower.cpp",
                 "src/fftswap.cpp",
                 "src/fftadpcm.cpp",
+                "src/firdecimate.cpp",
             ],
             language="c++",
             include_dirs=["src"],

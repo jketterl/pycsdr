@@ -8,6 +8,7 @@
 #include "logaveragepower.h"
 #include "fftswap.h"
 #include "fftadpcm.h"
+#include "firdecimate.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -39,10 +40,10 @@ PyInit_modules(void) {
     PyObject* FftAdpcmType = PyType_FromSpec(&FftAdpcmSpec);
     if (FftAdpcmType == NULL) return NULL;
 
-    /*
     PyObject* FirDecimateType = PyType_FromSpec(&FirDecimateSpec);
     if (FirDecimateType == NULL) return NULL;
 
+    /*
     PyObject* BandpassFirFftType = PyType_FromSpec(&BandpassFirFftSpec);
     if (BandpassFirFftType == NULL) return NULL;
     */
@@ -66,9 +67,9 @@ PyInit_modules(void) {
 
     PyModule_AddObject(m, "FftAdpcm", FftAdpcmType);
 
-    /*
     PyModule_AddObject(m, "FirDecimate", FirDecimateType);
 
+    /*
     PyModule_AddObject(m, "BandpassFirFft", BandpassFirFftType);
     */
 
