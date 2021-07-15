@@ -1,6 +1,7 @@
 #include "module.h"
 #include "types.h"
 #include "buffer.h"
+#include <csdr/ringbuffer.hpp>
 
 template<>
 bool isFormatCorrect<unsigned char>(PyObject* format) {
@@ -33,7 +34,9 @@ PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds) {
 
     // we only support complex float here.
     if (isFormatCorrect<T>(buffer->format)) {
-        self->module->setReader(dynamic_cast<Csdr::Reader<T>*>(buffer->reader));
+        Csdr::Ringbuffer<T>* b = dynamic_cast<Csdr::Ringbuffer<T>*>(buffer->writer);
+        Csdr::Reader<T>* reader = new Csdr::RingbufferReader<T>(b);
+        self->module->setReader(reader);
     } else {
         PyErr_SetString(PyExc_ValueError, "invalid reader format");
         return NULL;
