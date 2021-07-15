@@ -78,7 +78,10 @@ template PyObject* Module_setOutput(module<Csdr::complex<float>, float>* self, P
 
 template <typename T, typename U>
 PyObject* Module_stop(module<T, U>* self) {
-    self->runner->stop();
+    if (self->runner != nullptr) {
+        self->runner->stop();
+        delete self->runner;
+    }
     Py_RETURN_NONE;
 }
 

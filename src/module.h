@@ -10,7 +10,7 @@ struct module {
     PyObject base1;
     PyObject base2;
     Csdr::Module<T, U>* module;
-    Csdr::AsyncRunner<T, U>* runner;
+    Csdr::AsyncRunner<T, U>* runner = nullptr;
 };
 
 template <typename T>
