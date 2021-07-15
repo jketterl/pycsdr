@@ -54,3 +54,11 @@ class Fft(Module):
 class LogPower(Module):
     def __init__(self, add_db: float = 0.0):
         pass
+
+
+class LogAveragePower(Module):
+    def __init__(self, add_db: float, fft_size: int, avg_number: int):
+        pass
+
+    def setAvgNumber(self, avg_number: int):
+        pass

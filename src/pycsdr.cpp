@@ -5,6 +5,7 @@
 #include "tcpsource.h"
 #include "fft.h"
 #include "logpower.h"
+#include "logaveragepower.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -27,10 +28,10 @@ PyInit_modules(void) {
     PyObject* LogPowerType = PyType_FromSpec(&LogPowerSpec);
     if (LogPowerType == NULL) return NULL;
 
-    /*
     PyObject* LogAveragePowerType = PyType_FromSpec(&LogAveragePowerSpec);
     if (LogAveragePowerType == NULL) return NULL;
 
+    /*
     PyObject* FftExchangeSidesType = PyType_FromSpec(&FftExchangeSidesSpec);
     if (FftExchangeSidesType == NULL) return NULL;
 
@@ -45,8 +46,9 @@ PyInit_modules(void) {
     */
 
     PyObject *m = PyModule_Create(&pycsdrmodule);
-    if (m == NULL)
+    if (m == NULL) {
         return NULL;
+    }
 
     PyModule_AddObject(m, "TcpSource", TcpSourceType);
 
@@ -56,9 +58,9 @@ PyInit_modules(void) {
 
     PyModule_AddObject(m, "LogPower", LogPowerType);
 
-    /*
     PyModule_AddObject(m, "LogAveragePower", LogAveragePowerType);
 
+    /*
     PyModule_AddObject(m, "FftExchangeSides", FftExchangeSidesType);
 
     PyModule_AddObject(m, "CompressFftAdpcm", CompressFftAdpcmType);
