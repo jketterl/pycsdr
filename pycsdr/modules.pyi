@@ -1,4 +1,4 @@
-from pycsdr import Format
+from pycsdr.types import Format
 
 
 class Writer:

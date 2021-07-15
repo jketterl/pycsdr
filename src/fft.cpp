@@ -33,7 +33,7 @@ static PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds)
         return NULL;
     }
 
-    // TODO: send to the FFT modules
+    ((Csdr::Fft*) self->module)->setEveryNSamples(everyNSamples);
 
     Py_RETURN_NONE;
 }
