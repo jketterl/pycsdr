@@ -41,3 +41,11 @@ class Module(Source, Sink):
 class TcpSource(Source):
     def __init__(self, port: int):
         pass
+
+
+class Fft(Module):
+    def __init__(self, fft_size: int, every_n_samples: int):
+        pass
+
+    def setEveryNSamples(self, every_n_samples: int):
+        pass

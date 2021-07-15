@@ -26,6 +26,8 @@ setup(
                 "src/buffer.cpp",
                 "src/tcpsource.cpp",
                 "src/types.cpp",
+                "src/module.cpp",
+                "src/fft.cpp",
             ],
             language="c++",
             include_dirs=["src"],

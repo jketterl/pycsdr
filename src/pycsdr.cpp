@@ -3,6 +3,7 @@
 
 #include "buffer.h"
 #include "tcpsource.h"
+#include "fft.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -19,10 +20,10 @@ PyInit_modules(void) {
     PyObject* TcpSourceType = PyType_FromSpec(&TcpSourceSpec);
     if (TcpSourceType == NULL) return NULL;
 
-    /*
     PyObject* FftType = PyType_FromSpec(&FftSpec);
     if (FftType == NULL) return NULL;
 
+    /*
     PyObject* LogPowerType = PyType_FromSpec(&LogPowerSpec);
     if (LogPowerType == NULL) return NULL;
 
@@ -50,9 +51,9 @@ PyInit_modules(void) {
 
     PyModule_AddObject(m, "Buffer", BufferType);
 
-    /*
     PyModule_AddObject(m, "Fft", FftType);
 
+    /*
     PyModule_AddObject(m, "LogPower", LogPowerType);
 
     PyModule_AddObject(m, "LogAveragePower", LogAveragePowerType);
