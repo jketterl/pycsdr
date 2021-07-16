@@ -47,14 +47,14 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
 template <typename T>
 static PyObject* getBytes(Csdr::UntypedReader* reader) {
     size_t available = reader->available();
-    char* source = (char *) (dynamic_cast<Csdr::RingbufferReader<T> *>(reader))->getReadPointer();
-    return PyMemoryView_FromMemory(source, available * sizeof(T), PyBUF_READ);
+    char* source = (char *) (dynamic_cast<Csdr::Reader<T> *>(reader))->getReadPointer();
+    PyObject* bytes = PyMemoryView_FromMemory(source, available * sizeof(T), PyBUF_READ);
     reader->advance(available);
+    return bytes;
 }
 
 static PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
-    uint32_t available;
-    while ((available = self->reader->available()) == 0) {
+    while (self->reader->available() == 0) {
         Py_BEGIN_ALLOW_THREADS
         self->reader->wait();
         Py_END_ALLOW_THREADS
