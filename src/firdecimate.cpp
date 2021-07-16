@@ -11,7 +11,7 @@ static int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
     // TODO restore window argument
     static char* kwlist[] = {(char*) "decimation", (char*) "transition", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H!f", kwlist, &decimation, &transition)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H|f", kwlist, &decimation, &transition)) {
         return -1;
     }
 
