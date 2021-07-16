@@ -44,7 +44,7 @@ class TcpSource(Source):
 
 
 class Fft(Module):
-    def __init__(self, fft_size: int, every_n_samples: int):
+    def __init__(self, size: int, every_n_samples: int):
         pass
 
     def setEveryNSamples(self, every_n_samples: int) -> None:
