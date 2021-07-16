@@ -3,9 +3,13 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-extern PyTypeObject* FormatType;
+PyTypeObject* getFormatType();
 
-extern PyObject* FORMAT_CHAR;
-extern PyObject* FORMAT_SHORT;
-extern PyObject* FORMAT_FLOAT;
-extern PyObject* FORMAT_COMPLEX_FLOAT;
+#define FORMAT_TYPE getFormatType()
+
+PyObject* getFormat(const char* name);
+
+#define FORMAT_CHAR getFormat("CHAR")
+#define FORMAT_SHORT getFormat("SHORT")
+#define FORMAT_FLOAT getFormat("FLOAT")
+#define FORMAT_COMPLEX_FLOAT getFormat("COMPLEX_FLOAT")

@@ -21,7 +21,7 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     char* kwlist[] = {(char*) "format", (char*) "size", NULL};
 
     uint32_t size = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", kwlist, FormatType, &self->format, &size)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", kwlist, FORMAT_TYPE, &self->format, &size)) {
         return -1;
     }
 

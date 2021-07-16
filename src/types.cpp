@@ -1,6 +1,6 @@
 #include "types.h"
 
-static PyObject* getFormat() {
+PyTypeObject* getFormatType() {
     PyObject* module = PyImport_ImportModule("pycsdr.types");
     if (module == NULL) {
         PyErr_Print();
@@ -16,13 +16,11 @@ static PyObject* getFormat() {
     Py_INCREF(FormatType);
     Py_DECREF(module);
 
-    return FormatType;
+    return (PyTypeObject*) FormatType;
 }
 
-PyTypeObject* FormatType = (PyTypeObject*) getFormat();
-
-static PyObject* getFormat(const char* name) {
-    PyObject* format = PyObject_GetAttrString(getFormat(), name);
+PyObject* getFormat(const char* name) {
+    PyObject* format = PyObject_GetAttrString((PyObject*) FORMAT_TYPE, name);
     if (format == NULL) {
         PyErr_Print();
         exit(1);
@@ -31,8 +29,3 @@ static PyObject* getFormat(const char* name) {
     Py_INCREF(format);
     return format;
 }
-
-PyObject* FORMAT_CHAR = getFormat("CHAR");
-PyObject* FORMAT_SHORT = getFormat("SHORT");
-PyObject* FORMAT_FLOAT = getFormat("FLOAT");
-PyObject* FORMAT_COMPLEX_FLOAT = getFormat("COMPLEX_FLOAT");
