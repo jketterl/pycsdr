@@ -20,14 +20,6 @@ static int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-static int FirDecimate_clear(FirDecimate* self) {
-    Module_stop(self);
-
-    delete self->module;
-
-    return 0;
-}
-
 static PyMethodDef FirDecimate_methods[] = {
     {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
      "set the input buffer"
@@ -46,7 +38,7 @@ static PyMethodDef FirDecimate_methods[] = {
 
 static PyType_Slot FirDecimateSlots[] = {
     {Py_tp_init, (void*) FirDecimate_init},
-    {Py_tp_clear, (void*) FirDecimate_clear},
+    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>, Csdr::complex<float>>},
     {Py_tp_methods, FirDecimate_methods},
     {0, 0}
 };

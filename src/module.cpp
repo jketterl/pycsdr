@@ -39,8 +39,9 @@ PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds) {
 
     static char* kwlist[] = {(char*) "reader", NULL};
     // TODO get the type check "O!" back
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer)) {
         return NULL;
+    }
 
     if (getFormat<T>() != buffer->format) {
         PyErr_SetString(PyExc_ValueError, "invalid reader format");
@@ -75,11 +76,12 @@ PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds) {
 
     static char* kwlist[] = {(char*) "writer", NULL};
     // TODO get the type check "O!" back
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer)) {
         return NULL;
+    }
 
     if (getFormat<U>() != buffer->format) {
-        PyErr_SetString(PyExc_ValueError, "invalid format");
+        PyErr_SetString(PyExc_ValueError, "invalid writer format");
         return NULL;
     }
 
@@ -116,3 +118,27 @@ template PyObject* Module_stop(module<Csdr::complex<float>, Csdr::complex<float>
 template PyObject* Module_stop(module<Csdr::complex<float>, float>* self);
 template PyObject* Module_stop(module<float, float>* self);
 template PyObject* Module_stop(module<float, unsigned char>* self);
+
+template <typename T, typename U>
+int Module_clear(module<T, U>* self) {
+    Module_stop(self);
+
+    if (self->output != nullptr) {
+        Py_DECREF(self->output);
+        self->output = nullptr;
+    }
+
+    if (self->input != nullptr) {
+        Py_DECREF(self->input);
+        self->input = nullptr;
+    }
+
+    delete self->module;
+
+    return 0;
+}
+
+template int Module_clear(module<Csdr::complex<float>, Csdr::complex<float>>* self);
+template int Module_clear(module<Csdr::complex<float>, float>* self);
+template int Module_clear(module<float, float>* self);
+template int Module_clear(module<float, unsigned char>* self);

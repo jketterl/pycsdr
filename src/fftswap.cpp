@@ -15,15 +15,6 @@ static int FftSwap_init(FftSwap* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-static int FftSwap_clear(FftSwap* self) {
-    Module_stop(self);
-
-    delete self->module;
-
-    return 0;
-}
-
-
 static PyMethodDef FftSwap_methods[] = {
     {"setInput", (PyCFunction) Module_setInput<float, float>, METH_VARARGS | METH_KEYWORDS,
      "set the input buffer"
@@ -42,7 +33,7 @@ static PyMethodDef FftSwap_methods[] = {
 
 static PyType_Slot FftSwapSlots[] = {
     {Py_tp_init, (void*) FftSwap_init},
-    {Py_tp_clear, (void*) FftSwap_clear},
+    {Py_tp_clear, (void*) Module_clear<float, float>},
     {Py_tp_methods, FftSwap_methods},
     {0, 0}
 };

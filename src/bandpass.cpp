@@ -23,14 +23,6 @@ static int Bandpass_init(Bandpass* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-static int Bandpass_clear(Bandpass* self) {
-    Module_stop(self);
-
-    delete self->module;
-
-    return 0;
-}
-
 static PyObject* Bandpass_setBandpass(Bandpass* self, PyObject* args, PyObject* kwds){
     static char* kwlist[] = {(char*) "low_cut", (char*) "high_cut", NULL};
 
@@ -71,7 +63,7 @@ static PyMethodDef Bandpass_methods[] = {
 
 static PyType_Slot BandpassSlots[] = {
     {Py_tp_init, (void*) Bandpass_init},
-    {Py_tp_clear, (void*) Bandpass_clear},
+    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>, Csdr::complex<float>>},
     {Py_tp_methods, Bandpass_methods},
     {0, 0}
 };

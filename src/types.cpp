@@ -1,6 +1,6 @@
 #include "types.h"
 
-static PyObject* getFormatType() {
+static PyObject* getFormat() {
     PyObject* module = PyImport_ImportModule("pycsdr.types");
     if (module == NULL) {
         PyErr_Print();
@@ -19,10 +19,10 @@ static PyObject* getFormatType() {
     return FormatType;
 }
 
-PyObject* FormatType = getFormatType();
+PyTypeObject* FormatType = (PyTypeObject*) getFormat();
 
 static PyObject* getFormat(const char* name) {
-    PyObject* format = PyObject_GetAttrString(FormatType, name);
+    PyObject* format = PyObject_GetAttrString(getFormat(), name);
     if (format == NULL) {
         PyErr_Print();
         exit(1);

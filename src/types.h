@@ -3,7 +3,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-extern PyObject* FormatType;
+extern PyTypeObject* FormatType;
 
 extern PyObject* FORMAT_CHAR;
 extern PyObject* FORMAT_SHORT;

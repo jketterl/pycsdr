@@ -1,5 +1,4 @@
 #include "tcpsource.h"
-#include "buffer.h"
 #include "types.h"
 
 #include <sys/socket.h>
@@ -9,6 +8,10 @@
 static int TcpSource_clear(TcpSource* self) {
     if (self->source != nullptr) delete self->source;
     self->source = nullptr;
+    if (self->output != nullptr) {
+        Py_DECREF(self->output);
+        self->output = nullptr;
+    }
     return 0;
 }
 
@@ -33,18 +36,25 @@ static int TcpSource_init(TcpSource* self, PyObject* args, PyObject* kwds) {
 static PyObject* TcpSource_setOutput(TcpSource* self, PyObject* args, PyObject* kwds) {
     Buffer* buffer;
 
-    static char* kwlist[] = {(char*) "buffer", NULL};
+    static char* kwlist[] = {(char*) "writer", NULL};
     // TODO get the type check "O!" back
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer))
-        return NULL;
-
-    // we only support complex float here.
-    if (buffer->format == FORMAT_COMPLEX_FLOAT) {
-        self->source->setWriter(dynamic_cast<Csdr::Writer<Csdr::complex<float>>*>(buffer->writer));
-    } else {
-        PyErr_SetString(PyExc_ValueError, "invalid format");
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer)) {
         return NULL;
     }
+
+    // we only support complex float here.
+    if (buffer->format != FORMAT_COMPLEX_FLOAT) {
+        PyErr_SetString(PyExc_ValueError, "invalid writer format");
+        return NULL;
+    }
+
+    if (self->output != nullptr) {
+        Py_DECREF(self->output);
+    }
+    self->output = buffer;
+    Py_INCREF(self->output);
+
+    self->source->setWriter(dynamic_cast<Csdr::Writer<Csdr::complex<float>>*>(buffer->writer));
 
     Py_RETURN_NONE;
 }

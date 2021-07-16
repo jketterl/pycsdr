@@ -17,14 +17,6 @@ static int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-static int Fft_clear(Fft* self) {
-    Module_stop(self);
-
-    delete self->module;
-
-    return 0;
-}
-
 static PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds){
     static char* kwlist[] = {(char*) "every_n_samples", NULL};
 
@@ -59,7 +51,7 @@ static PyMethodDef Fft_methods[] = {
 
 static PyType_Slot FftSlots[] = {
     {Py_tp_init, (void*) Fft_init},
-    {Py_tp_clear, (void*) Fft_clear},
+    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>, Csdr::complex<float>>},
     {Py_tp_methods, Fft_methods},
     {0, 0}
 };

@@ -17,14 +17,6 @@ static int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject*
     return 0;
 }
 
-static int LogAveragePower_clear(LogAveragePower* self) {
-    Module_stop(self);
-
-    delete self->module;
-
-    return 0;
-}
-
 static PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "avg_number", NULL};
 
@@ -59,7 +51,7 @@ static PyMethodDef LogAveragePower_methods[] = {
 
 static PyType_Slot LogAveragePowerSlots[] = {
     {Py_tp_init, (void*) LogAveragePower_init},
-    {Py_tp_clear, (void*) LogAveragePower_clear},
+    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>, float>},
     {Py_tp_methods, LogAveragePower_methods},
     {0, 0}
 };

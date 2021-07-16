@@ -31,3 +31,6 @@ PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds);
 
 template <typename T, typename U>
 PyObject* Module_stop(module<T, U>* self);
+
+template <typename T, typename U>
+int Module_clear(module<T, U>* self);

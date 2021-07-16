@@ -15,14 +15,6 @@ static int FftAdpcm_init(FftAdpcm* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-static int FftAdpcm_clear(FftAdpcm* self) {
-    Module_stop(self);
-
-    delete self->module;
-
-    return 0;
-}
-
 static PyMethodDef FftAdpcm_methods[] = {
     {"setInput", (PyCFunction) Module_setInput<float, unsigned char>, METH_VARARGS | METH_KEYWORDS,
      "set the input buffer"
@@ -41,7 +33,7 @@ static PyMethodDef FftAdpcm_methods[] = {
 
 static PyType_Slot FftAdpcmSlots[] = {
     {Py_tp_init, (void*) FftAdpcm_init},
-    {Py_tp_clear, (void*) FftAdpcm_clear},
+    {Py_tp_clear, (void*) Module_clear<float, unsigned char>},
     {Py_tp_methods, FftAdpcm_methods},
     {0, 0}
 };

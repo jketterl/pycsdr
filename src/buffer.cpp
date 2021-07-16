@@ -6,6 +6,7 @@ static int Buffer_clear(Buffer* self) {
     self->writer = NULL;
     if (self->reader != nullptr) delete self->reader;
     self->reader = NULL;
+    Py_DECREF(self->format);
     return 0;
 }
 
@@ -23,6 +24,8 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", kwlist, FormatType, &self->format, &size)) {
         return -1;
     }
+
+    Py_INCREF(self->format);
 
     if (size == 0) {
         size = DEFAULT_BUFFER_SIZE;

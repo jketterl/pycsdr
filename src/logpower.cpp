@@ -14,14 +14,6 @@ static int LogPower_init(LogPower* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
-static int LogPower_clear(LogPower* self) {
-    Module_stop(self);
-
-    delete self->module;
-
-    return 0;
-}
-
 static PyMethodDef LogPower_methods[] = {
     {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, float>, METH_VARARGS | METH_KEYWORDS,
      "set the input buffer"
@@ -40,7 +32,7 @@ static PyMethodDef LogPower_methods[] = {
 
 static PyType_Slot LogPowerSlots[] = {
     {Py_tp_init, (void*) LogPower_init},
-    {Py_tp_clear, (void*) LogPower_clear},
+    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>, float>},
     {Py_tp_methods, LogPower_methods},
     {0, 0}
 };
