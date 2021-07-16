@@ -30,6 +30,9 @@ static PyMethodDef FftAdpcm_methods[] = {
     {"setOutput", (PyCFunction) Module_setOutput<float, unsigned char>, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
+    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float, unsigned char>, METH_NOARGS,
+     "get output format"
+    },
     {"stop", (PyCFunction) Module_stop<float, unsigned char>, METH_NOARGS,
      "stop processing"
     },

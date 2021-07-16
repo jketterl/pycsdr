@@ -31,6 +31,9 @@ static PyMethodDef FftSwap_methods[] = {
     {"setOutput", (PyCFunction) Module_setOutput<float, float>, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
+    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float, float>, METH_NOARGS,
+     "get output format"
+    },
     {"stop", (PyCFunction) Module_stop<float, float>, METH_NOARGS,
      "stop processing"
     },

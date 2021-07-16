@@ -22,6 +22,9 @@ class Source:
     def setOutput(self, writer: Writer) -> None:
         pass
 
+    def getOutputFormat(self) -> Format:
+        pass
+
     def stop(self) -> None:
         pass
 

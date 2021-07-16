@@ -29,6 +29,9 @@ static PyMethodDef LogPower_methods[] = {
     {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, float>, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
+    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>, float>, METH_NOARGS,
+     "get output format"
+    },
     {"stop", (PyCFunction) Module_stop<Csdr::complex<float>, float>, METH_NOARGS,
      "stop processing"
     },

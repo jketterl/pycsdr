@@ -5,16 +5,23 @@
 #include <csdr/module.hpp>
 #include <csdr/async.hpp>
 
+#include "buffer.h"
+
 template <typename T, typename U>
 struct module {
     PyObject base1;
     PyObject base2;
     Csdr::Module<T, U>* module;
     Csdr::AsyncRunner<T, U>* runner = nullptr;
+    Buffer* input = nullptr;
+    Buffer* output = nullptr;
 };
 
 template <typename T>
-bool isFormatCorrect(PyObject* format);
+PyObject* getFormat();
+
+template <typename T, typename U>
+PyObject* Module_getOutputFormat(module<T, U>* self);
 
 template <typename T, typename U>
 PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds);

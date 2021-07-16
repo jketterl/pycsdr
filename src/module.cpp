@@ -4,24 +4,34 @@
 #include <csdr/ringbuffer.hpp>
 
 template<>
-bool isFormatCorrect<unsigned char>(PyObject* format) {
-    return format == FORMAT_CHAR;
+PyObject* getFormat<unsigned char>() {
+    return FORMAT_CHAR;
+}
+
+template <>
+PyObject* getFormat<short>() {
+    return FORMAT_SHORT;
+}
+
+template <>
+PyObject* getFormat<float>() {
+    return FORMAT_FLOAT;
 }
 
 template<>
-bool isFormatCorrect<short>(PyObject* format) {
-    return format == FORMAT_SHORT;
+PyObject* getFormat<Csdr::complex<float>>() {
+    return FORMAT_COMPLEX_FLOAT;
 }
 
-template<>
-bool isFormatCorrect<float>(PyObject* format) {
-    return format == FORMAT_FLOAT;
+template <typename T, typename U>
+PyObject* Module_getOutputFormat(module<T, U>* self) {
+    return getFormat<U>();
 }
 
-template<>
-bool isFormatCorrect<Csdr::complex<float>>(PyObject* format) {
-    return format == FORMAT_COMPLEX_FLOAT;
-}
+template PyObject* Module_getOutputFormat(module<Csdr::complex<float>, Csdr::complex<float>>* self);
+template PyObject* Module_getOutputFormat(module<Csdr::complex<float>, float>* self);
+template PyObject* Module_getOutputFormat(module<float, float>* self);
+template PyObject* Module_getOutputFormat(module<float, unsigned char>* self);
 
 template <typename T, typename U>
 PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds) {
@@ -32,17 +42,22 @@ PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds) {
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer))
         return NULL;
 
-    // we only support complex float here.
-    if (isFormatCorrect<T>(buffer->format)) {
-        Csdr::Ringbuffer<T>* b = dynamic_cast<Csdr::Ringbuffer<T>*>(buffer->writer);
-        Csdr::Reader<T>* reader = new Csdr::RingbufferReader<T>(b);
-        self->module->setReader(reader);
-    } else {
+    if (getFormat<T>() != buffer->format) {
         PyErr_SetString(PyExc_ValueError, "invalid reader format");
         return NULL;
     }
 
-    if (self->module->hasReader() && self->module->hasWriter()) {
+    if (self->input != nullptr) {
+        Py_DECREF(self->input);
+    }
+    self->input = buffer;
+    Py_INCREF(self->input);
+
+    Csdr::Ringbuffer<T>* b = dynamic_cast<Csdr::Ringbuffer<T>*>(buffer->writer);
+    Csdr::Reader<T>* reader = new Csdr::RingbufferReader<T>(b);
+    self->module->setReader(reader);
+
+    if (self->module->hasReader() && self->module->hasWriter() && self->runner == nullptr) {
         self->runner = new Csdr::AsyncRunner<T, U>(self->module);
     }
 
@@ -63,15 +78,20 @@ PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds) {
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &buffer))
         return NULL;
 
-    // we only support complex float here.
-    if (isFormatCorrect<U>(buffer->format)) {
-        self->module->setWriter(dynamic_cast<Csdr::Writer<U>*>(buffer->writer));
-    } else {
+    if (getFormat<U>() != buffer->format) {
         PyErr_SetString(PyExc_ValueError, "invalid format");
         return NULL;
     }
 
-    if (self->module->hasReader() && self->module->hasWriter()) {
+    if (self->output != nullptr) {
+        Py_DECREF(self->output);
+    }
+    self->output = buffer;
+    Py_INCREF(self->output);
+
+    self->module->setWriter(dynamic_cast<Csdr::Writer<U>*>(buffer->writer));
+
+    if (self->module->hasReader() && self->module->hasWriter() && self->runner == nullptr) {
         self->runner = new Csdr::AsyncRunner<T, U>(self->module);
     }
 
