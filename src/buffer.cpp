@@ -1,11 +1,13 @@
 #include "buffer.h"
 #include "types.h"
 
+#include <iostream>
+
 static int Buffer_clear(Buffer* self) {
-    if (self->writer != nullptr) delete self->writer;
-    self->writer = NULL;
     if (self->reader != nullptr) delete self->reader;
-    self->reader = NULL;
+    self->reader = nullptr;
+    if (self->writer != nullptr) delete self->writer;
+    self->writer = nullptr;
     Py_DECREF(self->format);
     return 0;
 }
@@ -44,6 +46,8 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
+    self->run = true;
+
     return 0;
 }
 
@@ -56,11 +60,15 @@ static PyObject* getBytes(Csdr::UntypedReader* reader) {
     return bytes;
 }
 
-static PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
-    while (self->reader->available() == 0) {
+static PyObject* Buffer_read(Buffer* self) {
+    while (self->run && self->reader->available() == 0) {
         Py_BEGIN_ALLOW_THREADS
         self->reader->wait();
         Py_END_ALLOW_THREADS
+    }
+
+    if (!self->run) {
+        Py_RETURN_NONE;
     }
 
     if (self->format == FORMAT_CHAR) {
@@ -77,7 +85,9 @@ static PyObject* Buffer_read(Buffer* self, PyObject* Py_UNUSED(ignored)) {
     }
 }
 
-static PyObject* Buffer_stop(Buffer* self, PyObject* Py_UNUSED(ignored)) {
+static PyObject* Buffer_stop(Buffer* self) {
+    self->run = false;
+    self->reader->unblock();
     Py_RETURN_NONE;
 }
 

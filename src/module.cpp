@@ -43,24 +43,35 @@ PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds) {
         return NULL;
     }
 
-    if (getFormat<T>() != buffer->format) {
+    if ((PyObject*) buffer != Py_None && getFormat<T>() != buffer->format) {
         PyErr_SetString(PyExc_ValueError, "invalid reader format");
         return NULL;
     }
 
+    auto oldReader = self->module->getReader();
+
     if (self->input != nullptr) {
         Py_DECREF(self->input);
+        self->input = nullptr;
     }
-    self->input = buffer;
-    Py_INCREF(self->input);
 
-    Csdr::Ringbuffer<T>* b = dynamic_cast<Csdr::Ringbuffer<T>*>(buffer->writer);
-    Csdr::Reader<T>* reader = new Csdr::RingbufferReader<T>(b);
-    self->module->setReader(reader);
+    if ((PyObject*) buffer != Py_None) {
+        self->input = buffer;
+        Py_INCREF(self->input);
 
-    if (self->module->hasReader() && self->module->hasWriter() && self->runner == nullptr) {
-        self->runner = new Csdr::AsyncRunner<T, U>(self->module);
+        Csdr::Ringbuffer <T> *b = dynamic_cast<Csdr::Ringbuffer <T> *>(buffer->writer);
+        Csdr::Reader <T> *reader = new Csdr::RingbufferReader<T>(b);
+        self->module->setReader(reader);
+
+        if (self->module->hasReader() && self->module->hasWriter() && self->runner == nullptr) {
+            self->runner = new Csdr::AsyncRunner<T, U>(self->module);
+        }
+    } else {
+        self->module->setReader(nullptr);
     }
+
+    // we created it, we discard of it
+    delete oldReader;
 
     Py_RETURN_NONE;
 }
@@ -80,21 +91,27 @@ PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds) {
         return NULL;
     }
 
-    if (getFormat<U>() != buffer->format) {
+    if ((PyObject*) buffer != Py_None && getFormat<U>() != buffer->format) {
         PyErr_SetString(PyExc_ValueError, "invalid writer format");
         return NULL;
     }
 
     if (self->output != nullptr) {
         Py_DECREF(self->output);
+        self->output = nullptr;
     }
-    self->output = buffer;
-    Py_INCREF(self->output);
 
-    self->module->setWriter(dynamic_cast<Csdr::Writer<U>*>(buffer->writer));
+    if ((PyObject*) buffer != Py_None) {
+        self->output = buffer;
+        Py_INCREF(self->output);
 
-    if (self->module->hasReader() && self->module->hasWriter() && self->runner == nullptr) {
-        self->runner = new Csdr::AsyncRunner<T, U>(self->module);
+        self->module->setWriter(dynamic_cast<Csdr::Writer <U> *>(buffer->writer));
+
+        if (self->module->hasReader() && self->module->hasWriter() && self->runner == nullptr) {
+            self->runner = new Csdr::AsyncRunner<T, U>(self->module);
+        }
+    } else {
+        self->module->setWriter(nullptr);
     }
 
     Py_RETURN_NONE;
@@ -110,6 +127,7 @@ PyObject* Module_stop(module<T, U>* self) {
     if (self->runner != nullptr) {
         self->runner->stop();
         delete self->runner;
+        self->runner = nullptr;
     }
     Py_RETURN_NONE;
 }
@@ -129,6 +147,9 @@ int Module_clear(module<T, U>* self) {
     }
 
     if (self->input != nullptr) {
+        auto reader = self->module->getReader();
+        self->module->setReader(nullptr);
+        delete reader;
         Py_DECREF(self->input);
         self->input = nullptr;
     }

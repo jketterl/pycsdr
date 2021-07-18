@@ -9,8 +9,9 @@ typedef struct {
     PyObject base1;
     PyObject base2;
     PyObject* format;
-    Csdr::UntypedWriter* writer;
-    Csdr::UntypedReader* reader;
+    Csdr::UntypedWriter* writer = nullptr;
+    Csdr::UntypedReader* reader = nullptr;
+    bool run = true;
 } Buffer;
 
 // 256kb
