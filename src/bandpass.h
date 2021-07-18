@@ -6,7 +6,7 @@
 
 #include "module.h"
 
-struct Bandpass: module<Csdr::complex<float>, Csdr::complex<float>> {
+struct Bandpass: Module {
     float low_cut = 0.0f;
     float high_cut = 0.0f;
     float transition = 0.0f;

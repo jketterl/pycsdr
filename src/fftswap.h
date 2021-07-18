@@ -5,6 +5,6 @@
 
 #include "module.h"
 
-struct FftSwap: module<float, float> {};
+struct FftSwap: Module {};
 
 extern PyType_Spec FftSwapSpec;

@@ -6,6 +6,6 @@
 
 #include "module.h"
 
-struct FirDecimate: module<Csdr::complex<float>, Csdr::complex<float>> {};
+struct FirDecimate: Module {};
 
 extern PyType_Spec FirDecimateSpec;

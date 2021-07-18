@@ -22,10 +22,10 @@ static PyMethodDef FftAdpcm_methods[] = {
     {"setOutput", (PyCFunction) Module_setOutput<float, unsigned char>, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float, unsigned char>, METH_NOARGS,
+    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<unsigned char>, METH_NOARGS,
      "get output format"
     },
-    {"stop", (PyCFunction) Module_stop<float, unsigned char>, METH_NOARGS,
+    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
      "stop processing"
     },
     {NULL}  /* Sentinel */
@@ -33,7 +33,7 @@ static PyMethodDef FftAdpcm_methods[] = {
 
 static PyType_Slot FftAdpcmSlots[] = {
     {Py_tp_init, (void*) FftAdpcm_init},
-    {Py_tp_clear, (void*) Module_clear<float, unsigned char>},
+    {Py_tp_clear, (void*) Module_clear<float>},
     {Py_tp_methods, FftAdpcm_methods},
     {0, 0}
 };

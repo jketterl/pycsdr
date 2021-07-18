@@ -6,6 +6,6 @@
 
 #include "module.h"
 
-struct Shift: module<Csdr::complex<float>, Csdr::complex<float>> {};
+struct Shift: Module {};
 
 extern PyType_Spec ShiftSpec;

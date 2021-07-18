@@ -37,10 +37,10 @@ static PyMethodDef Fft_methods[] = {
     {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>, Csdr::complex<float>>, METH_NOARGS,
+    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>>, METH_NOARGS,
      "get output format"
     },
-    {"stop", (PyCFunction) Module_stop<Csdr::complex<float>, Csdr::complex<float>>, METH_NOARGS,
+    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
      "stop processing"
     },
     {"setEveryNSamples", (PyCFunction) Fft_setEveryNSamples, METH_VARARGS | METH_KEYWORDS,
@@ -51,7 +51,7 @@ static PyMethodDef Fft_methods[] = {
 
 static PyType_Slot FftSlots[] = {
     {Py_tp_init, (void*) Fft_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>, Csdr::complex<float>>},
+    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
     {Py_tp_methods, Fft_methods},
     {0, 0}
 };

@@ -5,6 +5,6 @@
 
 #include "module.h"
 
-struct FftAdpcm: module<float, unsigned char> {};
+struct FftAdpcm: Module {};
 
 extern PyType_Spec FftAdpcmSpec;

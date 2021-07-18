@@ -96,3 +96,8 @@ class Shift(Module):
 
     def setRate(self, rate: float):
         pass
+
+
+class Convert(Module):
+    def __init__(self, inFormat: Format, outFormat: Format):
+        pass

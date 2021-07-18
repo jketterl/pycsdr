@@ -6,6 +6,6 @@
 
 #include "module.h"
 
-struct LogPower: module<Csdr::complex<float>, float> {};
+struct LogPower: Module {};
 
 extern PyType_Spec LogPowerSpec;

@@ -22,10 +22,10 @@ static PyMethodDef FftSwap_methods[] = {
     {"setOutput", (PyCFunction) Module_setOutput<float, float>, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float, float>, METH_NOARGS,
+    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float>, METH_NOARGS,
      "get output format"
     },
-    {"stop", (PyCFunction) Module_stop<float, float>, METH_NOARGS,
+    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
      "stop processing"
     },
     {NULL}  /* Sentinel */
@@ -33,7 +33,7 @@ static PyMethodDef FftSwap_methods[] = {
 
 static PyType_Slot FftSwapSlots[] = {
     {Py_tp_init, (void*) FftSwap_init},
-    {Py_tp_clear, (void*) Module_clear<float, float>},
+    {Py_tp_clear, (void*) Module_clear<float>},
     {Py_tp_methods, FftSwap_methods},
     {0, 0}
 };

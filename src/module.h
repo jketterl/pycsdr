@@ -7,12 +7,11 @@
 
 #include "buffer.h"
 
-template <typename T, typename U>
-struct module {
+struct Module {
     PyObject base1;
     PyObject base2;
-    Csdr::Module<T, U>* module;
-    Csdr::AsyncRunner<T, U>* runner = nullptr;
+    Csdr::UntypedModule* module;
+    Csdr::UntypedRunner* runner = nullptr;
     Buffer* input = nullptr;
     Buffer* output = nullptr;
 };
@@ -20,17 +19,16 @@ struct module {
 template <typename T>
 PyObject* getFormat();
 
-template <typename T, typename U>
-PyObject* Module_getOutputFormat(module<T, U>* self);
+template <typename U>
+PyObject* Module_getOutputFormat(Module* self);
 
 template <typename T, typename U>
-PyObject* Module_setInput(module<T, U>* self, PyObject* args, PyObject* kwds);
+PyObject* Module_setInput(Module* self, PyObject* args, PyObject* kwds);
 
 template <typename T, typename U>
-PyObject* Module_setOutput(module<T, U>* self, PyObject* args, PyObject* kwds);
+PyObject* Module_setOutput(Module* self, PyObject* args, PyObject* kwds);
 
-template <typename T, typename U>
-PyObject* Module_stop(module<T, U>* self);
+PyObject* Module_stop(Module* self);
 
-template <typename T, typename U>
-int Module_clear(module<T, U>* self);
+template <typename U>
+int Module_clear(Module* self);

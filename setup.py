@@ -35,6 +35,7 @@ setup(
                 "src/firdecimate.cpp",
                 "src/bandpass.cpp",
                 "src/shift.cpp",
+                "src/convert.cpp",
             ],
             language="c++",
             include_dirs=["src"],

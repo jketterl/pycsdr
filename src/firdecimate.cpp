@@ -27,10 +27,10 @@ static PyMethodDef FirDecimate_methods[] = {
     {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
      "set the output buffer"
     },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>, Csdr::complex<float>>, METH_NOARGS,
+    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>>, METH_NOARGS,
      "get output format"
     },
-    {"stop", (PyCFunction) Module_stop<Csdr::complex<float>, Csdr::complex<float>>, METH_NOARGS,
+    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
      "stop processing"
     },
     {NULL}  /* Sentinel */
@@ -38,7 +38,7 @@ static PyMethodDef FirDecimate_methods[] = {
 
 static PyType_Slot FirDecimateSlots[] = {
     {Py_tp_init, (void*) FirDecimate_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>, Csdr::complex<float>>},
+    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
     {Py_tp_methods, FirDecimate_methods},
     {0, 0}
 };

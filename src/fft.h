@@ -6,6 +6,6 @@
 
 #include "module.h"
 
-struct Fft: module<Csdr::complex<float>, Csdr::complex<float>> {};
+struct Fft: Module {};
 
 extern PyType_Spec FftSpec;
