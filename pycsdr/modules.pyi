@@ -88,3 +88,11 @@ class Bandpass(Module):
 
     def setBandpass(self, low_cut: float, high_cut: float) -> None:
         pass
+
+
+class Shift(Module):
+    def __init__(self, rate: float = 0.0):
+        pass
+
+    def setRate(self, rate: float):
+        pass

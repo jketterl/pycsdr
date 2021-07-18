@@ -34,6 +34,7 @@ setup(
                 "src/fftadpcm.cpp",
                 "src/firdecimate.cpp",
                 "src/bandpass.cpp",
+                "src/shift.cpp",
             ],
             language="c++",
             include_dirs=["src"],
