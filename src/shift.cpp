@@ -23,7 +23,7 @@ static PyObject* Shift_setRate(Shift* self, PyObject* args, PyObject* kwds){
         return NULL;
     }
 
-    ((Csdr::Shift*) self->module)->setRate(rate);
+    ((Csdr::ShiftAddfast*) self->module)->setRate(rate);
 
     Py_RETURN_NONE;
 }
