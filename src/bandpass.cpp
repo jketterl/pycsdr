@@ -26,7 +26,7 @@ static int Bandpass_init(Bandpass* self, PyObject* args, PyObject* kwds) {
 static PyObject* Bandpass_setBandpass(Bandpass* self, PyObject* args, PyObject* kwds){
     static char* kwlist[] = {(char*) "low_cut", (char*) "high_cut", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "f", kwlist, &self->low_cut, &self->low_cut)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "ff", kwlist, &self->low_cut, &self->low_cut)) {
         return NULL;
     }
 
