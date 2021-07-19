@@ -119,3 +119,8 @@ class FractionalDecimator(Module):
 class FmDemod(Module):
     def __init__(self):
         pass
+
+
+class Limit(Module):
+    def __init__(self, maxAmplitude: float = 1.0):
+        pass

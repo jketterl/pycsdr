@@ -38,7 +38,8 @@ setup(
                 "src/convert.cpp",
                 "src/squelch.cpp",
                 "src/fractionaldecimator.cpp",
-                "src/fmdemod.cpp"
+                "src/fmdemod.cpp",
+                "src/limit.cpp",
             ],
             language="c++",
             include_dirs=["src"],

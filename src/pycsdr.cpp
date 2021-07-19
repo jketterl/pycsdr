@@ -14,6 +14,7 @@
 #include "squelch.h"
 #include "fractionaldecimator.h"
 #include "fmdemod.h"
+#include "limit.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -63,6 +64,9 @@ PyInit_modules(void) {
     PyObject* FmDemodType = PyType_FromSpec(&FmDemodSpec);
     if (FmDemodType == NULL) return NULL;
 
+    PyObject* LimitType = PyType_FromSpec(&LimitSpec);
+    if (LimitType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -93,6 +97,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "FractionalDecimator", FractionalDecimatorType);
 
     PyModule_AddObject(m, "FmDemod", FmDemodType);
+
+    PyModule_AddObject(m, "Limit", LimitType);
 
     return m;
 }
