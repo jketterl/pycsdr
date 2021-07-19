@@ -12,6 +12,7 @@
 #include "bandpass.h"
 #include "shift.h"
 #include "squelch.h"
+#include "fractionaldecimator.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -55,6 +56,9 @@ PyInit_modules(void) {
     PyObject* SquelchType = PyType_FromSpec(&SquelchSpec);
     if (SquelchType == NULL) return NULL;
 
+    PyObject* FractionalDecimatorType = PyType_FromSpec(&FractionalDecimatorSpec);
+    if (FractionalDecimatorType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -81,6 +85,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "Shift", ShiftType);
 
     PyModule_AddObject(m, "Squelch", SquelchType);
+
+    PyModule_AddObject(m, "FractionalDecimator", FractionalDecimatorType);
 
     return m;
 }

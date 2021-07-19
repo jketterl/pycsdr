@@ -109,3 +109,8 @@ class Squelch(Module):
 
     def setSquelchLevel(self, level: float) -> None:
         pass
+
+
+class FractionalDecimator(Module):
+    def __init__(self, decimation: float, numPolyPoint: int = 12):
+        pass

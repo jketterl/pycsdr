@@ -37,6 +37,7 @@ setup(
                 "src/shift.cpp",
                 "src/convert.cpp",
                 "src/squelch.cpp",
+                "src/fractionaldecimator.cpp",
             ],
             language="c++",
             include_dirs=["src"],
