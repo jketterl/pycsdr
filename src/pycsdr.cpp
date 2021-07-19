@@ -18,6 +18,7 @@
 #include "nfmdeemphasis.h"
 #include "agc.h"
 #include "convert.h"
+#include "amdemod.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -79,6 +80,9 @@ PyInit_modules(void) {
     PyObject* ConvertType = PyType_FromSpec(&ConvertSpec);
     if (ConvertType == NULL) return NULL;
 
+    PyObject* AmDemodType = PyType_FromSpec(&AmDemodSpec);
+    if (AmDemodType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -117,6 +121,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "Agc", AgcType);
 
     PyModule_AddObject(m, "Convert", ConvertType);
+
+    PyModule_AddObject(m, "AmDemod", AmDemodType);
 
     return m;
 }

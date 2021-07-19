@@ -134,3 +134,8 @@ class NfmDeemphasis(Module):
 class Agc(Module):
     def __init__(self, format: Format):
         pass
+
+
+class AmDemod(Module):
+    def __init__(self):
+        pass
