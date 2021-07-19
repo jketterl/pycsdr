@@ -11,9 +11,19 @@ static int Agc_init(Agc* self, PyObject* args, PyObject* kwds) {
     }
 
     if (self->format == FORMAT_FLOAT) {
-        self->module = new Csdr::Agc<float>();
+        auto agc = new Csdr::Agc<float>();
+        agc->setAttack(0.01);
+        agc->setDecay(0.0001);
+        agc->setHangTime(600);
+        agc->setMaxGain(3.0f);
+        self->module = agc;
     } else if (self->format == FORMAT_SHORT) {
-        self->module = new Csdr::Agc<short>();
+        auto agc = new Csdr::Agc<short>();
+        agc->setAttack(0.01);
+        agc->setDecay(0.0001);
+        agc->setHangTime(600);
+        agc->setMaxGain(3.0f);
+        self->module = agc;
     } else {
         PyErr_SetString(PyExc_ValueError, "unsupported agc format");
         return -1;
