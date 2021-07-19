@@ -17,6 +17,7 @@
 #include "limit.h"
 #include "nfmdeemphasis.h"
 #include "agc.h"
+#include "convert.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -75,6 +76,9 @@ PyInit_modules(void) {
     PyObject* AgcType = PyType_FromSpec(&AgcSpec);
     if (AgcType == NULL) return NULL;
 
+    PyObject* ConvertType = PyType_FromSpec(&ConvertSpec);
+    if (ConvertType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -111,6 +115,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "NfmDeemphasis", NfmDeemphasisType);
 
     PyModule_AddObject(m, "Agc", AgcType);
+
+    PyModule_AddObject(m, "Convert", ConvertType);
 
     return m;
 }
