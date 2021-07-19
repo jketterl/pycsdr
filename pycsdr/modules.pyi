@@ -101,3 +101,11 @@ class Shift(Module):
 class Convert(Module):
     def __init__(self, inFormat: Format, outFormat: Format):
         pass
+
+
+class Squelch(Module):
+    def __init__(self, decimation: int):
+        pass
+
+    def setSquelchLevel(self, level: float) -> None:
+        pass

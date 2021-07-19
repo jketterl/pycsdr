@@ -36,6 +36,7 @@ setup(
                 "src/bandpass.cpp",
                 "src/shift.cpp",
                 "src/convert.cpp",
+                "src/squelch.cpp",
             ],
             language="c++",
             include_dirs=["src"],
