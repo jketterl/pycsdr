@@ -124,3 +124,8 @@ class FmDemod(Module):
 class Limit(Module):
     def __init__(self, maxAmplitude: float = 1.0):
         pass
+
+
+class NfmDeemphasis(Module):
+    def __init__(self, sampleRate: int):
+        pass

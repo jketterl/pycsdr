@@ -40,6 +40,7 @@ setup(
                 "src/fractionaldecimator.cpp",
                 "src/fmdemod.cpp",
                 "src/limit.cpp",
+                "src/nfmdeemphasis.cpp",
             ],
             language="c++",
             include_dirs=["src"],
