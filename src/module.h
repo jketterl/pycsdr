@@ -30,5 +30,5 @@ PyObject* Module_setOutput(Module* self, PyObject* args, PyObject* kwds);
 
 PyObject* Module_stop(Module* self);
 
-template <typename U>
+template <typename T>
 int Module_clear(Module* self);
