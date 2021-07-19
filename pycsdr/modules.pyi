@@ -139,3 +139,8 @@ class Agc(Module):
 class AmDemod(Module):
     def __init__(self):
         pass
+
+
+class DcBlock(Module):
+    def __init__(self):
+        pass

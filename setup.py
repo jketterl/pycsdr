@@ -43,6 +43,7 @@ setup(
                 "src/nfmdeemphasis.cpp",
                 "src/agc.cpp",
                 "src/amdemod.cpp",
+                "src/dcblock.cpp",
             ],
             language="c++",
             include_dirs=["src"],

@@ -19,6 +19,7 @@
 #include "agc.h"
 #include "convert.h"
 #include "amdemod.h"
+#include "dcblock.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -83,6 +84,9 @@ PyInit_modules(void) {
     PyObject* AmDemodType = PyType_FromSpec(&AmDemodSpec);
     if (AmDemodType == NULL) return NULL;
 
+    PyObject* DcBlockType = PyType_FromSpec(&DcBlockSpec);
+    if (DcBlockType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -123,6 +127,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "Convert", ConvertType);
 
     PyModule_AddObject(m, "AmDemod", AmDemodType);
+
+    PyModule_AddObject(m, "DcBlock", DcBlockType);
 
     return m;
 }
