@@ -41,6 +41,7 @@ setup(
                 "src/fmdemod.cpp",
                 "src/limit.cpp",
                 "src/nfmdeemphasis.cpp",
+                "src/agc.cpp",
             ],
             language="c++",
             include_dirs=["src"],

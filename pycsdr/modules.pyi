@@ -129,3 +129,8 @@ class Limit(Module):
 class NfmDeemphasis(Module):
     def __init__(self, sampleRate: int):
         pass
+
+
+class Agc(Module):
+    def __init__(self, format: Format):
+        pass

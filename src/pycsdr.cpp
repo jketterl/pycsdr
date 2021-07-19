@@ -16,6 +16,7 @@
 #include "fmdemod.h"
 #include "limit.h"
 #include "nfmdeemphasis.h"
+#include "agc.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -71,6 +72,9 @@ PyInit_modules(void) {
     PyObject* NfmDeemphasisType = PyType_FromSpec(&NfmDeemphasisSpec);
     if (NfmDeemphasisType == NULL) return NULL;
 
+    PyObject* AgcType = PyType_FromSpec(&AgcSpec);
+    if (AgcType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -105,6 +109,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "Limit", LimitType);
 
     PyModule_AddObject(m, "NfmDeemphasis", NfmDeemphasisType);
+
+    PyModule_AddObject(m, "Agc", AgcType);
 
     return m;
 }
