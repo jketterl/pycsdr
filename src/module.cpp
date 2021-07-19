@@ -84,6 +84,7 @@ template PyObject* Module_setInput<float, float>(Module* self, PyObject* args, P
 template PyObject* Module_setInput<float, unsigned char>(Module* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setInput<float, short>(Module* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setInput<short, float>(Module* self, PyObject* args, PyObject* kwds);
+template PyObject* Module_setInput<short, short>(Module* self, PyObject* args, PyObject* kwds);
 
 template <typename T, typename U>
 PyObject* Module_setOutput(Module* self, PyObject* args, PyObject* kwds) {
@@ -129,6 +130,7 @@ template PyObject* Module_setOutput<float, float>(Module* self, PyObject* args, 
 template PyObject* Module_setOutput<float, unsigned char>(Module* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setOutput<float, short>(Module* self, PyObject* args, PyObject* kwds);
 template PyObject* Module_setOutput<short, float>(Module* self, PyObject* args, PyObject* kwds);
+template PyObject* Module_setOutput<short, short>(Module* self, PyObject* args, PyObject* kwds);
 
 PyObject* Module_stop(Module* self) {
     if (self->runner != nullptr) {
