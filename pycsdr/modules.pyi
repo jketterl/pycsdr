@@ -144,3 +144,8 @@ class AmDemod(Module):
 class DcBlock(Module):
     def __init__(self):
         pass
+
+
+class RealPart(Module):
+    def __init__(self):
+        pass

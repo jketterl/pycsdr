@@ -20,6 +20,7 @@
 #include "convert.h"
 #include "amdemod.h"
 #include "dcblock.h"
+#include "realpart.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -87,6 +88,9 @@ PyInit_modules(void) {
     PyObject* DcBlockType = PyType_FromSpec(&DcBlockSpec);
     if (DcBlockType == NULL) return NULL;
 
+    PyObject* RealPartType = PyType_FromSpec(&RealPartSpec);
+    if (RealPartType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -129,6 +133,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "AmDemod", AmDemodType);
 
     PyModule_AddObject(m, "DcBlock", DcBlockType);
+
+    PyModule_AddObject(m, "RealPart", RealPartType);
 
     return m;
 }

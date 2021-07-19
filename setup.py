@@ -44,6 +44,7 @@ setup(
                 "src/agc.cpp",
                 "src/amdemod.cpp",
                 "src/dcblock.cpp",
+                "src/realpart.cpp",
             ],
             language="c++",
             include_dirs=["src"],
