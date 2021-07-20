@@ -25,7 +25,7 @@ static PyObject* Squelch_setSquelchLevel(Squelch* self, PyObject* args, PyObject
         return NULL;
     }
 
-    ((Csdr::Squelch*) self->module)->setSquelch(level);
+    dynamic_cast<Csdr::Squelch*>(self->module)->setSquelch(level);
 
     Py_RETURN_NONE;
 }

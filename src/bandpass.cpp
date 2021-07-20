@@ -37,7 +37,7 @@ static PyObject* Bandpass_setBandpass(Bandpass* self, PyObject* args, PyObject* 
         filter = new Csdr::BandPassFilter<Csdr::complex<float>>(self->low_cut, self->high_cut, self->transition, new Csdr::HammingWindow());
     }
 
-    ((Csdr::FilterModule<Csdr::complex<float>>*) self->module)->setFilter(filter);
+    dynamic_cast<Csdr::FilterModule<Csdr::complex<float>>*>(self->module)->setFilter(filter);
 
     Py_RETURN_NONE;
 }

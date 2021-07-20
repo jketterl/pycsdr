@@ -25,7 +25,7 @@ static PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject*
         return NULL;
     }
 
-    ((Csdr::LogAveragePower*) self->module)->setAvgNumber(avgNumber);
+    dynamic_cast<Csdr::LogAveragePower*>(self->module)->setAvgNumber(avgNumber);
 
     Py_RETURN_NONE;
 }

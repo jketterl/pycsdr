@@ -25,7 +25,7 @@ static PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds)
         return NULL;
     }
 
-    ((Csdr::Fft*) self->module)->setEveryNSamples(everyNSamples);
+    dynamic_cast<Csdr::Fft*>(self->module)->setEveryNSamples(everyNSamples);
 
     Py_RETURN_NONE;
 }
