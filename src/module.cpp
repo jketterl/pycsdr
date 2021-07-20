@@ -151,8 +151,9 @@ int Module_clear(Module* self) {
     }
 
     if (self->input != nullptr) {
-        auto reader = ((Csdr::Sink<T>*) self->module)->getReader();
-        ((Csdr::Sink<T>*) self->module)->setReader(nullptr);
+        auto module = dynamic_cast<Csdr::Sink<T>*>(self->module);
+        auto reader = module->getReader();
+        module->setReader(nullptr);
         delete reader;
         Py_DECREF(self->input);
         self->input = nullptr;
