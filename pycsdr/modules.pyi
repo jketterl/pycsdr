@@ -1,4 +1,4 @@
-from pycsdr.types import Format
+from pycsdr.types import Format, AgcProfile
 
 
 class Writer:
@@ -135,6 +135,14 @@ class Agc(Module):
     def __init__(self, format: Format):
         pass
 
+    def setProfile(self, profile: AgcProfile) -> None:
+        pass
+
+    def setMaxGain(self, maxGain: float) -> None:
+        pass
+
+    def setInitialGain(self, gain: float) -> None:
+        pass
 
 class AmDemod(Module):
     def __init__(self):

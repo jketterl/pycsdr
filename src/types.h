@@ -13,3 +13,7 @@ PyObject* getFormat(const char* name);
 #define FORMAT_SHORT getFormat("SHORT")
 #define FORMAT_FLOAT getFormat("FLOAT")
 #define FORMAT_COMPLEX_FLOAT getFormat("COMPLEX_FLOAT")
+
+PyTypeObject* getAgcProfileType();
+
+#define AGC_PROFILE_TYPE getAgcProfileType()

@@ -1,11 +1,16 @@
 #include "types.h"
 
-PyTypeObject* getFormatType() {
+static PyObject* getPyCsdrModule() {
     PyObject* module = PyImport_ImportModule("pycsdr.types");
     if (module == NULL) {
         PyErr_Print();
         exit(1);
     }
+    return module;
+}
+
+PyTypeObject* getFormatType() {
+    PyObject* module = getPyCsdrModule();
 
     PyObject* FormatType = PyObject_GetAttrString(module, "Format");
     if (FormatType == NULL) {
@@ -13,7 +18,6 @@ PyTypeObject* getFormatType() {
         exit(1);
     }
 
-    Py_INCREF(FormatType);
     Py_DECREF(module);
 
     return (PyTypeObject*) FormatType;
@@ -28,4 +32,18 @@ PyObject* getFormat(const char* name) {
 
     Py_INCREF(format);
     return format;
+}
+
+PyTypeObject* getAgcProfileType() {
+    PyObject* module = getPyCsdrModule();
+
+    PyObject* AgcProfileType = PyObject_GetAttrString(module, "AgcProfile");
+    if (AgcProfileType == NULL) {
+        PyErr_Print();
+        exit(1);
+    }
+
+    Py_DECREF(module);
+
+    return (PyTypeObject*) AgcProfileType;
 }
