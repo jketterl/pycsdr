@@ -160,6 +160,7 @@ int Module_clear(Module* self) {
     }
 
     delete self->module;
+    self->module = nullptr;
 
     return 0;
 }
