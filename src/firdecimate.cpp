@@ -15,7 +15,9 @@ static int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
-    self->module = new Csdr::FirDecimate(decimation, transition, new Csdr::HammingWindow());
+    auto window = new Csdr::HammingWindow();
+    self->module = new Csdr::FirDecimate(decimation, transition, window);
+    delete window;
 
     return 0;
 }

@@ -12,7 +12,9 @@ static int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
     }
 
     // TODO make window available as an argument
-    self->module = new Csdr::Fft(fftSize, everyNSamples, new Csdr::HammingWindow());
+    auto window = new Csdr::HammingWindow();
+    self->module = new Csdr::Fft(fftSize, everyNSamples, window);
+    delete window;
 
     return 0;
 }

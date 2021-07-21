@@ -13,12 +13,14 @@ static int Bandpass_init(Bandpass* self, PyObject* args, PyObject* kwds) {
     }
 
     Csdr::Filter<Csdr::complex<float>>* filter;
+    auto window = new Csdr::HammingWindow();
     if (self->use_fft) {
-        filter = new Csdr::FftBandPassFilter(self->low_cut, self->high_cut, self->transition, new Csdr::HammingWindow());
+        filter = new Csdr::FftBandPassFilter(self->low_cut, self->high_cut, self->transition, window);
     } else {
-        filter = new Csdr::BandPassFilter<Csdr::complex<float>>(self->low_cut, self->high_cut, self->transition, new Csdr::HammingWindow());
+        filter = new Csdr::BandPassFilter<Csdr::complex<float>>(self->low_cut, self->high_cut, self->transition, window);
     }
     self->module = new Csdr::FilterModule<Csdr::complex<float>>(filter);
+    delete window;
 
     return 0;
 }
@@ -31,13 +33,15 @@ static PyObject* Bandpass_setBandpass(Bandpass* self, PyObject* args, PyObject* 
     }
 
     Csdr::Filter<Csdr::complex<float>>* filter;
+    auto window = new Csdr::HammingWindow();
     if (self->use_fft) {
-        filter = new Csdr::FftBandPassFilter(self->low_cut, self->high_cut, self->transition, new Csdr::HammingWindow());
+        filter = new Csdr::FftBandPassFilter(self->low_cut, self->high_cut, self->transition, window);
     } else {
-        filter = new Csdr::BandPassFilter<Csdr::complex<float>>(self->low_cut, self->high_cut, self->transition, new Csdr::HammingWindow());
+        filter = new Csdr::BandPassFilter<Csdr::complex<float>>(self->low_cut, self->high_cut, self->transition, window);
     }
 
     dynamic_cast<Csdr::FilterModule<Csdr::complex<float>>*>(self->module)->setFilter(filter);
+    delete window;
 
     Py_RETURN_NONE;
 }
