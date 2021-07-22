@@ -7,9 +7,7 @@
 
 #include "buffer.h"
 
-struct Module {
-    PyObject base1;
-    PyObject base2;
+struct Module: PyObject {
     Csdr::UntypedModule* module;
     Csdr::UntypedRunner* runner = nullptr;
     Buffer* input = nullptr;
