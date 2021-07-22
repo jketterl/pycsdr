@@ -78,6 +78,7 @@ static PyObject* Convert_setOutput(Convert* self, PyObject* args, PyObject* kwds
 }
 
 static PyObject* Convert_getOutputFormat(Convert* self) {
+    Py_INCREF(self->outFormat);
     return self->outFormat;
 }
 

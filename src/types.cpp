@@ -30,7 +30,6 @@ PyObject* getFormat(const char* name) {
         exit(1);
     }
 
-    Py_INCREF(format);
     return format;
 }
 

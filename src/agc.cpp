@@ -117,6 +117,7 @@ static PyObject* Agc_setOutput(Agc* self, PyObject* args, PyObject* kwds) {
 }
 
 static PyObject* Agc_getOutputFormat(Agc* self) {
+    Py_INCREF(self->format);
     return self->format;
 }
 

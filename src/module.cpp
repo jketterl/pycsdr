@@ -25,7 +25,9 @@ PyObject* getFormat<Csdr::complex<float>>() {
 
 template <typename U>
 PyObject* Module_getOutputFormat(Module* self) {
-    return getFormat<U>();
+    PyObject* format = getFormat<U>();
+    Py_INCREF(format);
+    return format;
 }
 
 template PyObject* Module_getOutputFormat<Csdr::complex<float>>(Module* self);
