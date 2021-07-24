@@ -4,17 +4,26 @@
 #include <csdr/fractionaldecimator.hpp>
 
 static int FractionalDecimator_init(FractionalDecimator* self, PyObject* args, PyObject* kwds) {
-    static char* kwlist[] = {(char*) "decimation", (char*) "numPolyPoints", NULL};
+    static char* kwlist[] = {(char*) "format", (char*) "decimation", (char*) "numPolyPoints", NULL};
 
+    PyObject* format;
     float decimation = 0.0f;
     unsigned int numPolyPoints = 12;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "f|I", kwlist, &decimation, &numPolyPoints)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!f|I", kwlist, FORMAT_TYPE, &format, &decimation, &numPolyPoints)) {
         return -1;
     }
 
-    self->inputFormat = FORMAT_FLOAT;
-    self->outputFormat = FORMAT_FLOAT;
-    self->setModule(new Csdr::FractionalDecimator<float>(decimation, numPolyPoints));
+    if (format == FORMAT_FLOAT) {
+        self->setModule(new Csdr::FractionalDecimator<float>(decimation, numPolyPoints));
+    } else if (format == FORMAT_COMPLEX_FLOAT) {
+        self->setModule(new Csdr::FractionalDecimator<Csdr::complex<float>>(decimation, numPolyPoints));
+    } else {
+        Py_DECREF(format);
+        PyErr_SetString(PyExc_ValueError, "unsupported fractional decimator format");
+        return -1;
+    }
+    self->inputFormat = format;
+    self->outputFormat = format;
 
     return 0;
 }

@@ -11,17 +11,18 @@ static int Agc_init(Agc* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
-    self->inputFormat = format;
-    self->outputFormat = format;
-
     if (format == FORMAT_FLOAT) {
         self->setModule(new Csdr::Agc<float>());
     } else if (format == FORMAT_SHORT) {
         self->setModule(new Csdr::Agc<short>());
     } else {
+        Py_DECREF(format);
         PyErr_SetString(PyExc_ValueError, "unsupported agc format");
         return -1;
     }
+
+    self->inputFormat = format;
+    self->outputFormat = format;
 
     return 0;
 }
