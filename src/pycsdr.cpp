@@ -209,6 +209,8 @@ PyInit_modules(void) {
 
     PyModule_AddObject(m, "Source", (PyObject*) SourceType);
 
+    PyModule_AddObject(m, "Module", (PyObject*) ModuleType);
+
     PyModule_AddObject(m, "TcpSource", TcpSourceType);
 
     PyModule_AddObject(m, "Buffer", (PyObject*) BufferType);
