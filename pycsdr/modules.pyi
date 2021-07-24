@@ -113,10 +113,13 @@ class Convert(Module):
 
 
 class Squelch(Module):
-    def __init__(self, decimation: int):
+    def __init__(self, decimation: int, reportInterval: int):
         pass
 
     def setSquelchLevel(self, level: float) -> None:
+        pass
+
+    def setPowerWriter(self, writer: Writer) -> None:
         pass
 
 
