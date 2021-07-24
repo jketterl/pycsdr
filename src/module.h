@@ -11,7 +11,7 @@
 
 struct Module: Sink, Source {
     Csdr::UntypedModule* module;
-    Csdr::UntypedRunner* runner;
+    Csdr::AsyncRunner* runner;
 
     void setModule(Csdr::UntypedModule* module);
 };
