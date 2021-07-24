@@ -1,6 +1,4 @@
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
-
+#include "pycsdr.hpp"
 #include "buffer.h"
 #include "tcpsource.h"
 #include "fft.h"
@@ -21,6 +19,12 @@
 #include "amdemod.h"
 #include "dcblock.h"
 #include "realpart.h"
+#include "writer.hpp"
+#include "reader.hpp"
+#include "sink.hpp"
+#include "source.hpp"
+#include "bufferreader.hpp"
+#include "module.h"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -29,66 +33,167 @@ static PyModuleDef pycsdrmodule = {
         .m_size = -1,
 };
 
+PyTypeObject* WriterType;
+
+PyTypeObject* ReaderType;
+
+PyTypeObject* SinkType;
+
+PyTypeObject* SourceType;
+
+PyTypeObject* ModuleType;
+
+PyTypeObject* BufferType;
+
+PyTypeObject* BufferReaderType;
+
 PyMODINIT_FUNC
 PyInit_modules(void) {
-    PyObject* BufferType = PyType_FromSpec(&BufferSpec);
+    WriterType = (PyTypeObject*) PyType_FromSpec(&WriterSpec);
+    if (WriterType == NULL) return NULL;
+
+    ReaderType = (PyTypeObject*) PyType_FromSpec(&ReaderSpec);
+    if (ReaderType == NULL) return NULL;
+
+    SinkType = (PyTypeObject*) PyType_FromSpec(&SinkSpec);
+    if (SinkType == NULL) return NULL;
+
+    SourceType = (PyTypeObject*) PyType_FromSpec(&SourceSpec);
+    if (SourceType == NULL) return NULL;
+
+    /*
+    Py_INCREF(SinkType);
+    Py_INCREF(SourceType);
+    PyObject* bases = PyTuple_Pack(2, SinkType, SourceType);
+    if (bases == NULL) return NULL;
+    */
+    ModuleType = (PyTypeObject*) PyType_FromSpec/*WithBases*/(&ModuleSpec/*, bases*/);
+    if (ModuleType == NULL) return NULL;
+
+    Py_INCREF(WriterType);
+    PyObject* bases = PyTuple_Pack(1, WriterType);
+    if (bases == NULL) return NULL;
+    BufferType = (PyTypeObject*) PyType_FromSpecWithBases(&BufferSpec, bases);
     if (BufferType == NULL) return NULL;
 
-    PyObject* TcpSourceType = PyType_FromSpec(&TcpSourceSpec);
+    Py_INCREF(ReaderType);
+    bases = PyTuple_Pack(1, ReaderType);
+    if (bases == NULL) return NULL;
+    BufferReaderType = (PyTypeObject*) PyType_FromSpecWithBases(&BufferReaderSpec, bases);
+    if (BufferReaderType == NULL) return NULL;
+
+    Py_INCREF(SourceType);
+    bases = PyTuple_Pack(1, SourceType);
+    if (bases == NULL) return NULL;
+    PyObject* TcpSourceType = PyType_FromSpecWithBases(&TcpSourceSpec, bases);
     if (TcpSourceType == NULL) return NULL;
 
-    PyObject* FftType = PyType_FromSpec(&FftSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* FftType = PyType_FromSpecWithBases(&FftSpec, bases);
     if (FftType == NULL) return NULL;
 
-    PyObject* LogPowerType = PyType_FromSpec(&LogPowerSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* LogPowerType = PyType_FromSpecWithBases(&LogPowerSpec, bases);
     if (LogPowerType == NULL) return NULL;
 
-    PyObject* LogAveragePowerType = PyType_FromSpec(&LogAveragePowerSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* LogAveragePowerType = PyType_FromSpecWithBases(&LogAveragePowerSpec, bases);
     if (LogAveragePowerType == NULL) return NULL;
 
-    PyObject* FftSwapType = PyType_FromSpec(&FftSwapSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* FftSwapType = PyType_FromSpecWithBases(&FftSwapSpec, bases);
     if (FftSwapType == NULL) return NULL;
 
-    PyObject* FftAdpcmType = PyType_FromSpec(&FftAdpcmSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* FftAdpcmType = PyType_FromSpecWithBases(&FftAdpcmSpec, bases);
     if (FftAdpcmType == NULL) return NULL;
 
-    PyObject* FirDecimateType = PyType_FromSpec(&FirDecimateSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* FirDecimateType = PyType_FromSpecWithBases(&FirDecimateSpec, bases);
     if (FirDecimateType == NULL) return NULL;
 
-    PyObject* BandpassType = PyType_FromSpec(&BandpassSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* BandpassType = PyType_FromSpecWithBases(&BandpassSpec, bases);
     if (BandpassType == NULL) return NULL;
 
-    PyObject* ShiftType = PyType_FromSpec(&ShiftSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* ShiftType = PyType_FromSpecWithBases(&ShiftSpec, bases);
     if (ShiftType == NULL) return NULL;
 
-    PyObject* SquelchType = PyType_FromSpec(&SquelchSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* SquelchType = PyType_FromSpecWithBases(&SquelchSpec, bases);
     if (SquelchType == NULL) return NULL;
 
-    PyObject* FractionalDecimatorType = PyType_FromSpec(&FractionalDecimatorSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* FractionalDecimatorType = PyType_FromSpecWithBases(&FractionalDecimatorSpec, bases);
     if (FractionalDecimatorType == NULL) return NULL;
 
-    PyObject* FmDemodType = PyType_FromSpec(&FmDemodSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* FmDemodType = PyType_FromSpecWithBases(&FmDemodSpec, bases);
     if (FmDemodType == NULL) return NULL;
 
-    PyObject* LimitType = PyType_FromSpec(&LimitSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* LimitType = PyType_FromSpecWithBases(&LimitSpec, bases);
     if (LimitType == NULL) return NULL;
 
-    PyObject* NfmDeemphasisType = PyType_FromSpec(&NfmDeemphasisSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* NfmDeemphasisType = PyType_FromSpecWithBases(&NfmDeemphasisSpec, bases);
     if (NfmDeemphasisType == NULL) return NULL;
 
-    PyObject* AgcType = PyType_FromSpec(&AgcSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* AgcType = PyType_FromSpecWithBases(&AgcSpec, bases);
     if (AgcType == NULL) return NULL;
 
-    PyObject* ConvertType = PyType_FromSpec(&ConvertSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* ConvertType = PyType_FromSpecWithBases(&ConvertSpec, bases);
     if (ConvertType == NULL) return NULL;
 
-    PyObject* AmDemodType = PyType_FromSpec(&AmDemodSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* AmDemodType = PyType_FromSpecWithBases(&AmDemodSpec, bases);
     if (AmDemodType == NULL) return NULL;
 
-    PyObject* DcBlockType = PyType_FromSpec(&DcBlockSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* DcBlockType = PyType_FromSpecWithBases(&DcBlockSpec, bases);
     if (DcBlockType == NULL) return NULL;
 
-    PyObject* RealPartType = PyType_FromSpec(&RealPartSpec);
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* RealPartType = PyType_FromSpecWithBases(&RealPartSpec, bases);
     if (RealPartType == NULL) return NULL;
 
     PyObject *m = PyModule_Create(&pycsdrmodule);
@@ -96,9 +201,19 @@ PyInit_modules(void) {
         return NULL;
     }
 
+    PyModule_AddObject(m, "Reader", (PyObject*) ReaderType);
+
+    PyModule_AddObject(m, "Writer", (PyObject*) WriterType);
+
+    PyModule_AddObject(m, "Sink", (PyObject*) SinkType);
+
+    PyModule_AddObject(m, "Source", (PyObject*) SourceType);
+
     PyModule_AddObject(m, "TcpSource", TcpSourceType);
 
-    PyModule_AddObject(m, "Buffer", BufferType);
+    PyModule_AddObject(m, "Buffer", (PyObject*) BufferType);
+
+    PyModule_AddObject(m, "BufferReader", (PyObject*) BufferReaderType);
 
     PyModule_AddObject(m, "Fft", FftType);
 

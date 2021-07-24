@@ -5,8 +5,6 @@
 
 #include "module.h"
 
-struct Agc: Module {
-    PyObject* format;
-};
+struct Agc: Module {};
 
 extern PyType_Spec AgcSpec;

@@ -1,4 +1,6 @@
 #include "nfmdeemphasis.h"
+#include "types.h"
+
 #include <csdr/deemphasis.hpp>
 
 static int NfmDeemphasis_init(NfmDeemphasis* self, PyObject* args, PyObject* kwds) {
@@ -9,31 +11,15 @@ static int NfmDeemphasis_init(NfmDeemphasis* self, PyObject* args, PyObject* kwd
         return -1;
     }
 
-    self->module = new Csdr::NfmDeephasis(sampleRate);
+    self->inputFormat = FORMAT_FLOAT;
+    self->outputFormat = FORMAT_FLOAT;
+    self->setModule(new Csdr::NfmDeephasis(sampleRate));
 
     return 0;
 }
 
-static PyMethodDef NfmDeemphasis_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<float, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<float, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
-    {NULL}  /* Sentinel */
-};
-
 static PyType_Slot NfmDeemphasisSlots[] = {
     {Py_tp_init, (void*) NfmDeemphasis_init},
-    {Py_tp_clear, (void*) Module_clear<float>},
-    {Py_tp_methods, NfmDeemphasis_methods},
     {0, 0}
 };
 

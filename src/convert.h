@@ -7,9 +7,6 @@
 
 #include "module.h"
 
-struct Convert: Module {
-    PyObject* inFormat;
-    PyObject* outFormat;
-};
+struct Convert: Module {};
 
 extern PyType_Spec ConvertSpec;

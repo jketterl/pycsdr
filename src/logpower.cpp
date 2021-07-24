@@ -1,4 +1,6 @@
 #include "logpower.h"
+#include "types.h"
+
 #include <csdr/logpower.hpp>
 
 static int LogPower_init(LogPower* self, PyObject* args, PyObject* kwds) {
@@ -9,31 +11,15 @@ static int LogPower_init(LogPower* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
-    self->module = new Csdr::LogPower(add_db);
+    self->inputFormat = FORMAT_COMPLEX_FLOAT;
+    self->outputFormat = FORMAT_FLOAT;
+    self->setModule(new Csdr::LogPower(add_db));
 
     return 0;
 }
 
-static PyMethodDef LogPower_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
-    {NULL}  /* Sentinel */
-};
-
 static PyType_Slot LogPowerSlots[] = {
     {Py_tp_init, (void*) LogPower_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
-    {Py_tp_methods, LogPower_methods},
     {0, 0}
 };
 

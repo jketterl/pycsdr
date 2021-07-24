@@ -1,4 +1,5 @@
 #include "shift.h"
+#include "types.h"
 
 #include <csdr/shift.hpp>
 
@@ -10,7 +11,9 @@ static int Shift_init(Shift* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
-    self->module = new Csdr::ShiftAddfast(rate);
+    self->inputFormat = FORMAT_COMPLEX_FLOAT;
+    self->outputFormat = FORMAT_COMPLEX_FLOAT;
+    self->setModule(new Csdr::ShiftAddfast(rate));
 
     return 0;
 }
@@ -29,18 +32,6 @@ static PyObject* Shift_setRate(Shift* self, PyObject* args, PyObject* kwds){
 }
 
 static PyMethodDef Shift_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
     {"setRate", (PyCFunction) Shift_setRate, METH_VARARGS | METH_KEYWORDS,
      "set shift rate"
     },
@@ -49,7 +40,6 @@ static PyMethodDef Shift_methods[] = {
 
 static PyType_Slot ShiftSlots[] = {
     {Py_tp_init, (void*) Shift_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
     {Py_tp_methods, Shift_methods},
     {0, 0}
 };

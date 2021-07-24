@@ -6,14 +6,18 @@
 static int Agc_init(Agc* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "format", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, FORMAT_TYPE, &self->format)) {
+    PyObject* format;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, FORMAT_TYPE, &format)) {
         return -1;
     }
 
-    if (self->format == FORMAT_FLOAT) {
-        self->module = new Csdr::Agc<float>();
-    } else if (self->format == FORMAT_SHORT) {
-        self->module = new Csdr::Agc<short>();
+    self->inputFormat = format;
+    self->outputFormat = format;
+
+    if (format == FORMAT_FLOAT) {
+        self->setModule(new Csdr::Agc<float>());
+    } else if (format == FORMAT_SHORT) {
+        self->setModule(new Csdr::Agc<short>());
     } else {
         PyErr_SetString(PyExc_ValueError, "unsupported agc format");
         return -1;
@@ -94,58 +98,7 @@ static PyObject* Agc_setInitialGain(Agc* self, PyObject* args, PyObject* kwds) {
     Py_RETURN_NONE;
 }
 
-static PyObject* Agc_setInput(Agc* self, PyObject* args, PyObject* kwds) {
-    if (self->format == FORMAT_FLOAT) {
-        return Module_setInput<float, float>(self, args, kwds);
-    } else if (self->format == FORMAT_SHORT) {
-        return Module_setInput<short, short>(self, args, kwds);
-    } else {
-        PyErr_SetString(PyExc_ValueError, "unsupported agc format");
-        return NULL;
-    }
-}
-
-static PyObject* Agc_setOutput(Agc* self, PyObject* args, PyObject* kwds) {
-    if (self->format == FORMAT_FLOAT) {
-        return Module_setOutput<float, float>(self, args, kwds);
-    } else if (self->format == FORMAT_SHORT) {
-        return Module_setOutput<short, short>(self, args, kwds);
-    } else {
-        PyErr_SetString(PyExc_ValueError, "unsupported agc format");
-        return NULL;
-    }
-}
-
-static PyObject* Agc_getOutputFormat(Agc* self) {
-    Py_INCREF(self->format);
-    return self->format;
-}
-
-static int Agc_clear(Agc* self) {
-    if (self->format == FORMAT_FLOAT) {
-        return Module_clear<float>(self);
-    } else if (self->format == FORMAT_SHORT) {
-        return Module_clear<short>(self);
-    } else {
-        PyErr_SetString(PyExc_ValueError, "unsupported agc format");
-        return -1;
-    }
-}
-
-
 static PyMethodDef Agc_methods[] = {
-    {"setInput", (PyCFunction) Agc_setInput, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Agc_setOutput, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Agc_getOutputFormat, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
     {"setProfile", (PyCFunction) Agc_setProfile, METH_VARARGS | METH_KEYWORDS,
      "set agc profile"
     },
@@ -160,7 +113,6 @@ static PyMethodDef Agc_methods[] = {
 
 static PyType_Slot AgcSlots[] = {
     {Py_tp_init, (void*) Agc_init},
-    {Py_tp_clear, (void*) Agc_clear},
     {Py_tp_methods, Agc_methods},
     {0, 0}
 };

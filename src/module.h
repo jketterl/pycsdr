@@ -6,27 +6,14 @@
 #include <csdr/async.hpp>
 
 #include "buffer.h"
+#include "sink.hpp"
+#include "source.hpp"
 
-struct Module: PyObject {
+struct Module: Sink, Source {
     Csdr::UntypedModule* module;
-    Csdr::UntypedRunner* runner = nullptr;
-    Buffer* input = nullptr;
-    Buffer* output = nullptr;
+    Csdr::UntypedRunner* runner;
+
+    void setModule(Csdr::UntypedModule* module);
 };
 
-template <typename T>
-PyObject* getFormat();
-
-template <typename U>
-PyObject* Module_getOutputFormat(Module* self);
-
-template <typename T, typename U>
-PyObject* Module_setInput(Module* self, PyObject* args, PyObject* kwds);
-
-template <typename T, typename U>
-PyObject* Module_setOutput(Module* self, PyObject* args, PyObject* kwds);
-
-PyObject* Module_stop(Module* self);
-
-template <typename T>
-int Module_clear(Module* self);
+extern PyType_Spec ModuleSpec;

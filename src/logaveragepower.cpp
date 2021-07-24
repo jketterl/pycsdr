@@ -1,4 +1,5 @@
 #include "logaveragepower.h"
+#include "types.h"
 
 #include <csdr/logaveragepower.hpp>
 
@@ -12,7 +13,9 @@ static int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject*
         return -1;
     }
 
-    self->module = new Csdr::LogAveragePower(fftSize, avgNumber, add_db);
+    self->inputFormat = FORMAT_COMPLEX_FLOAT;
+    self->outputFormat = FORMAT_FLOAT;
+    self->setModule(new Csdr::LogAveragePower(fftSize, avgNumber, add_db));
 
     return 0;
 }
@@ -31,18 +34,6 @@ static PyObject* LogAveragePower_setFftAverages(LogAveragePower* self, PyObject*
 }
 
 static PyMethodDef LogAveragePower_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
     {"setAvgNumber", (PyCFunction) LogAveragePower_setFftAverages, METH_VARARGS | METH_KEYWORDS,
      "set fft averageing factor"
     },
@@ -51,7 +42,6 @@ static PyMethodDef LogAveragePower_methods[] = {
 
 static PyType_Slot LogAveragePowerSlots[] = {
     {Py_tp_init, (void*) LogAveragePower_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
     {Py_tp_methods, LogAveragePower_methods},
     {0, 0}
 };

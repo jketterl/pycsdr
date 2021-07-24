@@ -1,4 +1,6 @@
 #include "fft.h"
+#include "types.h"
+
 #include <csdr/fft.hpp>
 #include <csdr/window.hpp>
 
@@ -13,8 +15,11 @@ static int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
 
     // TODO make window available as an argument
     auto window = new Csdr::HammingWindow();
-    self->module = new Csdr::Fft(fftSize, everyNSamples, window);
+    self->setModule(new Csdr::Fft(fftSize, everyNSamples, window));
     delete window;
+
+    self->inputFormat = FORMAT_COMPLEX_FLOAT;
+    self->outputFormat = FORMAT_COMPLEX_FLOAT;
 
     return 0;
 }
@@ -33,18 +38,6 @@ static PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds)
 }
 
 static PyMethodDef Fft_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
     {"setEveryNSamples", (PyCFunction) Fft_setEveryNSamples, METH_VARARGS | METH_KEYWORDS,
      "set repetition interval in samples"
     },
@@ -53,7 +46,6 @@ static PyMethodDef Fft_methods[] = {
 
 static PyType_Slot FftSlots[] = {
     {Py_tp_init, (void*) Fft_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
     {Py_tp_methods, Fft_methods},
     {0, 0}
 };

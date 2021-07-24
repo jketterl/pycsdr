@@ -10,39 +10,48 @@ class Reader:
         pass
 
 
-class Buffer(Writer, Reader):
+class Buffer(Writer):
     def __init__(self, format: Format, size: int=None):
         pass
 
+    def getReader(self) -> BufferReader:
+        pass
+
+
+class BufferReader(Reader):
     def stop(self) -> None:
+        pass
+
+    def read(self) -> bytes:
         pass
 
 
 class Source:
-    def setOutput(self, writer: Writer) -> None:
+    def setWriter(self, writer: Writer) -> None:
         pass
 
     def getOutputFormat(self) -> Format:
         pass
 
-    def stop(self) -> None:
-        pass
-
 
 class Sink:
-    def setInput(self, reader: Reader) -> None:
+    def setReader(self, reader: Reader) -> None:
         pass
 
-    def stop(self) -> None:
+    def getInputFormat(self) -> Format:
         pass
 
 
 class Module(Source, Sink):
-    pass
+    def stop(self) -> None:
+        pass
 
 
 class TcpSource(Source):
-    def __init__(self, port: int):
+    def __init__(self, port: int, format: Format):
+        pass
+
+    def stop(self) -> None:
         pass
 
 

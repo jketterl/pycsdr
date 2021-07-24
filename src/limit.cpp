@@ -1,4 +1,6 @@
 #include "limit.h"
+#include "types.h"
+
 #include <csdr/limit.hpp>
 #include <csdr/window.hpp>
 
@@ -10,31 +12,15 @@ static int Limit_init(Limit* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
-    self->module = new Csdr::Limit(maxAmplitude);
+    self->inputFormat = FORMAT_FLOAT;
+    self->outputFormat = FORMAT_FLOAT;
+    self->setModule(new Csdr::Limit(maxAmplitude));
 
     return 0;
 }
 
-static PyMethodDef Limit_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<float, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<float, float>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<float>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
-    {NULL}  /* Sentinel */
-};
-
 static PyType_Slot LimitSlots[] = {
     {Py_tp_init, (void*) Limit_init},
-    {Py_tp_clear, (void*) Module_clear<float>},
-    {Py_tp_methods, Limit_methods},
     {0, 0}
 };
 

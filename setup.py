@@ -23,7 +23,12 @@ setup(
             name="pycsdr.modules",
             sources=[
                 "src/pycsdr.cpp",
+                "src/writer.cpp",
+                "src/reader.cpp",
+                "src/sink.cpp",
+                "src/source.cpp",
                 "src/buffer.cpp",
+                "src/bufferreader.cpp",
                 "src/tcpsource.cpp",
                 "src/types.cpp",
                 "src/module.cpp",

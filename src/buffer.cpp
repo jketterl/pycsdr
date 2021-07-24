@@ -1,14 +1,12 @@
+#include <csdr/ringbuffer.hpp>
+
+#include "pycsdr.hpp"
 #include "buffer.h"
 #include "types.h"
-
-#include <iostream>
+#include "bufferreader.hpp"
 
 static int Buffer_clear(Buffer* self) {
-    if (self->reader != nullptr) delete self->reader;
-    self->reader = nullptr;
-    if (self->writer != nullptr) delete self->writer;
-    self->writer = nullptr;
-    Py_DECREF(self->format);
+    Py_DECREF(self->writerFormat);
     return 0;
 }
 
@@ -16,88 +14,75 @@ template <typename T>
 static void createBuffer(Buffer* self, uint32_t size) {
     auto buffer = new Csdr::Ringbuffer<T>(size);
     self->writer = buffer;
-    self->reader = new Csdr::RingbufferReader<T>(buffer);
 }
 
 static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
     char* kwlist[] = {(char*) "format", (char*) "size", NULL};
 
     uint32_t size = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", kwlist, FORMAT_TYPE, &self->format, &size)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", kwlist, FORMAT_TYPE, &self->writerFormat, &size)) {
         return -1;
     }
 
-    Py_INCREF(self->format);
+    Py_INCREF(self->writerFormat);
 
     if (size == 0) {
         size = DEFAULT_BUFFER_SIZE;
     }
 
-    if (self->format == FORMAT_CHAR) {
+    if (self->writerFormat == FORMAT_CHAR) {
         createBuffer<unsigned char>(self, size);
-    } else if (self->format == FORMAT_SHORT) {
+    } else if (self->writerFormat == FORMAT_SHORT) {
         createBuffer<short>(self, size);
-    } else if (self->format == FORMAT_FLOAT) {
+    } else if (self->writerFormat == FORMAT_FLOAT) {
         createBuffer<float>(self, size);
-    } else if (self->format == FORMAT_COMPLEX_FLOAT) {
+    } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
         createBuffer<Csdr::complex<float>>(self, size);
     } else {
-        PyErr_SetString(PyExc_ValueError, "invalid format");
+        PyErr_SetString(PyExc_ValueError, "invalid buffer format");
         return -1;
     }
-
-    self->run = true;
 
     return 0;
 }
 
 template <typename T>
-static PyObject* getBytes(Csdr::UntypedReader* reader) {
-    size_t available = reader->available();
-    char* source = (char *) (dynamic_cast<Csdr::Reader<T> *>(reader))->getReadPointer();
-    PyObject* bytes = PyMemoryView_FromMemory(source, available * sizeof(T), PyBUF_READ);
-    reader->advance(available);
-    return bytes;
+static Csdr::UntypedReader* createReader(Buffer* self) {
+    auto buffer = dynamic_cast<Csdr::Ringbuffer<T>*>(self->writer);
+    return new Csdr::RingbufferReader<T>(buffer);
 }
 
-static PyObject* Buffer_read(Buffer* self) {
-    while (self->run && self->reader->available() == 0) {
-        Py_BEGIN_ALLOW_THREADS
-        self->reader->wait();
-        Py_END_ALLOW_THREADS
-    }
-
-    if (!self->run) {
-        Py_RETURN_NONE;
-    }
-
-    if (self->format == FORMAT_CHAR) {
-        return getBytes<unsigned char>(self->reader);
-    } else if (self->format == FORMAT_SHORT) {
-        return getBytes<short>(self->reader);
-    } else if (self->format == FORMAT_FLOAT) {
-        return getBytes<float>(self->reader);
-    } else if (self->format == FORMAT_COMPLEX_FLOAT) {
-        return getBytes<Csdr::complex<float>>(self->reader);
-    } else {
-        PyErr_SetString(PyExc_ValueError, "invalid format");
+static PyObject* Buffer_getReader(Buffer* self) {
+    BufferReader* reader = PyObject_New(BufferReader, BufferReaderType);
+    if (reader == NULL) {
         return NULL;
     }
-}
 
-static PyObject* Buffer_stop(Buffer* self) {
-    self->run = false;
-    self->reader->unblock();
-    Py_RETURN_NONE;
+    if (self->writerFormat == FORMAT_CHAR) {
+        reader->reader = createReader<unsigned char>(self);
+    } else if (self->writerFormat == FORMAT_SHORT) {
+        reader->reader = createReader<short>(self);
+    } else if (self->writerFormat == FORMAT_FLOAT) {
+        reader->reader = createReader<float>(self);
+    } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
+        reader->reader = createReader<Csdr::complex<float>>(self);
+    } else {
+        PyErr_SetString(PyExc_ValueError, "invalid buffer format");
+        return NULL;
+    }
+
+    Py_INCREF(self->writerFormat);
+    reader->readerFormat = self->writerFormat;
+
+    return reader;
 }
 
 static PyMethodDef Buffer_methods[] = {
-    {"read", (PyCFunction) Buffer_read, METH_NOARGS,
-     "read bytes from the buffer"},
-    {"stop", (PyCFunction) Buffer_stop, METH_NOARGS,
-     "stop the buffer and unblock calls to read()"},
+    {"getReader", (PyCFunction) Buffer_getReader, METH_NOARGS,
+     "get a reader instance"},
     {NULL}  /* Sentinel */
 };
+
 
 static PyType_Slot BufferSlots[] = {
     {Py_tp_init, (void*) Buffer_init},
@@ -107,7 +92,7 @@ static PyType_Slot BufferSlots[] = {
 };
 
 PyType_Spec BufferSpec = {
-    "pycsdr.Buffer",
+    "pycsdr.modules.Buffer",
     sizeof(Buffer),
     0,
     Py_TPFLAGS_DEFAULT,

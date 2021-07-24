@@ -1,4 +1,5 @@
 #include "bandpass.h"
+#include "types.h"
 
 #include <csdr/filter.hpp>
 #include <csdr/fir.hpp>
@@ -19,8 +20,12 @@ static int Bandpass_init(Bandpass* self, PyObject* args, PyObject* kwds) {
     } else {
         filter = new Csdr::BandPassFilter<Csdr::complex<float>>(self->low_cut, self->high_cut, self->transition, window);
     }
-    self->module = new Csdr::FilterModule<Csdr::complex<float>>(filter);
+    self->setModule(new Csdr::FilterModule<Csdr::complex<float>>(filter));
     delete window;
+
+    Py_INCREF(FORMAT_COMPLEX_FLOAT);
+    self->inputFormat = FORMAT_COMPLEX_FLOAT;
+    self->outputFormat = FORMAT_COMPLEX_FLOAT;
 
     return 0;
 }
@@ -47,18 +52,6 @@ static PyObject* Bandpass_setBandpass(Bandpass* self, PyObject* args, PyObject* 
 }
 
 static PyMethodDef Bandpass_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
     {"setBandpass", (PyCFunction) Bandpass_setBandpass, METH_VARARGS | METH_KEYWORDS,
      "set bandpass cutoffs"
     },
@@ -67,7 +60,6 @@ static PyMethodDef Bandpass_methods[] = {
 
 static PyType_Slot BandpassSlots[] = {
     {Py_tp_init, (void*) Bandpass_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
     {Py_tp_methods, Bandpass_methods},
     {0, 0}
 };

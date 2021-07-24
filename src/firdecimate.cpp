@@ -1,4 +1,5 @@
 #include "firdecimate.h"
+#include "types.h"
 
 #include <csdr/firdecimate.hpp>
 #include <csdr/window.hpp>
@@ -15,33 +16,17 @@ static int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
+    self->inputFormat = FORMAT_COMPLEX_FLOAT;
+    self->outputFormat = FORMAT_COMPLEX_FLOAT;
     auto window = new Csdr::HammingWindow();
-    self->module = new Csdr::FirDecimate(decimation, transition, window);
+    self->setModule(new Csdr::FirDecimate(decimation, transition, window));
     delete window;
 
     return 0;
 }
 
-static PyMethodDef FirDecimate_methods[] = {
-    {"setInput", (PyCFunction) Module_setInput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the input buffer"
-    },
-    {"setOutput", (PyCFunction) Module_setOutput<Csdr::complex<float>, Csdr::complex<float>>, METH_VARARGS | METH_KEYWORDS,
-     "set the output buffer"
-    },
-    {"getOutputFormat", (PyCFunction) Module_getOutputFormat<Csdr::complex<float>>, METH_NOARGS,
-     "get output format"
-    },
-    {"stop", (PyCFunction) Module_stop, METH_NOARGS,
-     "stop processing"
-    },
-    {NULL}  /* Sentinel */
-};
-
 static PyType_Slot FirDecimateSlots[] = {
     {Py_tp_init, (void*) FirDecimate_init},
-    {Py_tp_clear, (void*) Module_clear<Csdr::complex<float>>},
-    {Py_tp_methods, FirDecimate_methods},
     {0, 0}
 };
 
