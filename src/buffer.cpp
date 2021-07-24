@@ -30,16 +30,21 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
         size = DEFAULT_BUFFER_SIZE;
     }
 
-    if (self->writerFormat == FORMAT_CHAR) {
-        createBuffer<unsigned char>(self, size);
-    } else if (self->writerFormat == FORMAT_SHORT) {
-        createBuffer<short>(self, size);
-    } else if (self->writerFormat == FORMAT_FLOAT) {
-        createBuffer<float>(self, size);
-    } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
-        createBuffer<Csdr::complex<float>>(self, size);
-    } else {
-        PyErr_SetString(PyExc_ValueError, "invalid buffer format");
+    try {
+        if (self->writerFormat == FORMAT_CHAR) {
+            createBuffer<unsigned char>(self, size);
+        } else if (self->writerFormat == FORMAT_SHORT) {
+            createBuffer<short>(self, size);
+        } else if (self->writerFormat == FORMAT_FLOAT) {
+            createBuffer<float>(self, size);
+        } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
+            createBuffer<Csdr::complex<float>>(self, size);
+        } else {
+            PyErr_SetString(PyExc_ValueError, "invalid buffer format");
+            return -1;
+        }
+    } catch (const Csdr::BufferError& e) {
+        PyErr_SetString(PyExc_BufferError, e.what());
         return -1;
     }
 
