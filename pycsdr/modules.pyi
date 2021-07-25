@@ -87,7 +87,7 @@ class FftAdpcm(Module):
 
 
 class FirDecimate(Module):
-    def __init__(self, decimation: int, transition: float = 0.05):
+    def __init__(self, decimation: int, transition: float = 0.05, cutoff: float = 0.5):
         pass
 
 

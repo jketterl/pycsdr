@@ -6,20 +6,21 @@
 
 static int FirDecimate_init(FirDecimate* self, PyObject* args, PyObject* kwds) {
 
-    float transition = 0.05;
+    float transition = 0.05f;
     unsigned int decimation = 0;
+    float cutoff = 0.5f;
 
     // TODO restore window argument
-    static char* kwlist[] = {(char*) "decimation", (char*) "transition", NULL};
+    static char* kwlist[] = {(char*) "decimation", (char*) "transition", (char*) "cutoff", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H|f", kwlist, &decimation, &transition)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H|ff", kwlist, &decimation, &transition, &cutoff)) {
         return -1;
     }
 
     self->inputFormat = FORMAT_COMPLEX_FLOAT;
     self->outputFormat = FORMAT_COMPLEX_FLOAT;
     auto window = new Csdr::HammingWindow();
-    self->setModule(new Csdr::FirDecimate(decimation, transition, window));
+    self->setModule(new Csdr::FirDecimate(decimation, transition, window, cutoff));
     delete window;
 
     return 0;
