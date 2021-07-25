@@ -169,3 +169,8 @@ class DcBlock(Module):
 class RealPart(Module):
     def __init__(self):
         pass
+
+
+class AudioResampler(Module):
+    def __init__(self, inputRate: int, outputRate: int):
+        pass

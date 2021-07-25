@@ -25,6 +25,7 @@
 #include "source.hpp"
 #include "bufferreader.hpp"
 #include "module.h"
+#include "audioresampler.hpp"
 
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
@@ -196,6 +197,12 @@ PyInit_modules(void) {
     PyObject* RealPartType = PyType_FromSpecWithBases(&RealPartSpec, bases);
     if (RealPartType == NULL) return NULL;
 
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* AudioResamplerType = PyType_FromSpecWithBases(&AudioResamplerSpec, bases);
+    if (AudioResamplerType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -252,6 +259,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "DcBlock", DcBlockType);
 
     PyModule_AddObject(m, "RealPart", RealPartType);
+
+    PyModule_AddObject(m, "AudioResampler", AudioResamplerType);
 
     return m;
 }

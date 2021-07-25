@@ -50,6 +50,7 @@ setup(
                 "src/amdemod.cpp",
                 "src/dcblock.cpp",
                 "src/realpart.cpp",
+                "src/audioresampler.cpp",
             ],
             language="c++",
             include_dirs=["src"],
