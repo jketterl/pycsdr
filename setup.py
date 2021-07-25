@@ -46,6 +46,7 @@ setup(
                 "src/fmdemod.cpp",
                 "src/limit.cpp",
                 "src/nfmdeemphasis.cpp",
+                "src/wfmdeemphasis.cpp",
                 "src/agc.cpp",
                 "src/amdemod.cpp",
                 "src/dcblock.cpp",

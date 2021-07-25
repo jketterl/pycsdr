@@ -14,6 +14,7 @@
 #include "fmdemod.h"
 #include "limit.h"
 #include "nfmdeemphasis.h"
+#include "wfmdeemphasis.hpp"
 #include "agc.h"
 #include "convert.h"
 #include "amdemod.h"
@@ -171,6 +172,12 @@ PyInit_modules(void) {
     Py_INCREF(ModuleType);
     bases = PyTuple_Pack(1, ModuleType);
     if (bases == NULL) return NULL;
+    PyObject* WfmDeemphasisType = PyType_FromSpecWithBases(&WfmDeemphasisSpec, bases);
+    if (WfmDeemphasisType == NULL) return NULL;
+
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
     PyObject* AgcType = PyType_FromSpecWithBases(&AgcSpec, bases);
     if (AgcType == NULL) return NULL;
 
@@ -256,6 +263,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "Limit", LimitType);
 
     PyModule_AddObject(m, "NfmDeemphasis", NfmDeemphasisType);
+
+    PyModule_AddObject(m, "WfmDeemphasis", WfmDeemphasisType);
 
     PyModule_AddObject(m, "Agc", AgcType);
 

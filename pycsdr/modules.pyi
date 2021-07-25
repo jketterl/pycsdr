@@ -143,6 +143,11 @@ class NfmDeemphasis(Module):
         pass
 
 
+class WfmDeemphasis(Module):
+    def __init__(self, sampleRate: int, tau: float):
+        pass
+
+
 class Agc(Module):
     def __init__(self, format: Format):
         pass
