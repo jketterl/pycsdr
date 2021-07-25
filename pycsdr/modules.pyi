@@ -124,7 +124,7 @@ class Squelch(Module):
 
 
 class FractionalDecimator(Module):
-    def __init__(self, format: Format, decimation: float, numPolyPoints: int = 12):
+    def __init__(self, format: Format, decimation: float, numPolyPoints: int = 12, prefilter: bool = False):
         pass
 
 
