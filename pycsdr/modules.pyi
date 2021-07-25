@@ -174,3 +174,8 @@ class RealPart(Module):
 class AudioResampler(Module):
     def __init__(self, inputRate: int, outputRate: int):
         pass
+
+
+class AdpcmEncoder(Module):
+    def __init__(self):
+        pass

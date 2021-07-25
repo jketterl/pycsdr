@@ -51,6 +51,7 @@ setup(
                 "src/dcblock.cpp",
                 "src/realpart.cpp",
                 "src/audioresampler.cpp",
+                "src/adpcmencoder.cpp",
             ],
             language="c++",
             include_dirs=["src"],
