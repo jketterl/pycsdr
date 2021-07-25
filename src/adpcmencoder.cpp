@@ -3,9 +3,16 @@
 #include <csdr/adpcm.hpp>
 
 static int AdpcmEncoder_init(AdpcmEncoder* self, PyObject* args, PyObject* kwds) {
+    static char* kwlist[] = {(char*) "sync", NULL};
+
+    bool sync = false;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|b", kwlist, &sync)) {
+        return -1;
+    }
+
     self->inputFormat = FORMAT_SHORT;
     self->outputFormat = FORMAT_CHAR;
-    self->setModule(new Csdr::AdpcmEncoder(false));
+    self->setModule(new Csdr::AdpcmEncoder(sync));
 
     return 0;
 }
