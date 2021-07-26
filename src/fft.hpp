@@ -4,8 +4,8 @@
 #include <Python.h>
 #include <csdr/complex.hpp>
 
-#include "module.h"
+#include "module.hpp"
 
-struct Shift: Module {};
+struct Fft: Module {};
 
-extern PyType_Spec ShiftSpec;
+extern PyType_Spec FftSpec;

@@ -2,12 +2,6 @@
 # -*- coding: UTF-8 -*-
 from setuptools import setup, Extension
 
-try:
-    from setuptools import find_namespace_packages
-except ImportError:
-    from setuptools import PEP420PackageFinder
-    find_namespace_packages = PEP420PackageFinder.find
-
 
 setup(
     name="pycsdr",
@@ -17,6 +11,17 @@ setup(
     package_data={
         "pycsdr": ["**.pyi", "**.py"],
     },
+
+    headers=[
+        "src/pycsdr.hpp",
+        "src/reader.hpp",
+        "src/writer.hpp",
+        "src/source.hpp",
+        "src/sink.hpp",
+        "src/module.hpp",
+        "src/buffer.hpp",
+        "src/bufferreader.hpp",
+    ],
 
     ext_modules=[
         Extension(

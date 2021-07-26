@@ -1,5 +1,5 @@
-#include "squelch.h"
-#include "types.h"
+#include "squelch.hpp"
+#include "types.hpp"
 #include "pycsdr.hpp"
 
 #include <csdr/power.hpp>

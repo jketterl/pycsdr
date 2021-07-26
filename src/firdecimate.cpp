@@ -1,5 +1,5 @@
-#include "firdecimate.h"
-#include "types.h"
+#include "firdecimate.hpp"
+#include "types.hpp"
 
 #include <csdr/firdecimate.hpp>
 #include <csdr/window.hpp>

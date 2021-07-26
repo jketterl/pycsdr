@@ -4,8 +4,8 @@
 #include <Python.h>
 #include <csdr/complex.hpp>
 
-#include "module.h"
+#include "module.hpp"
 
-struct Fft: Module {};
+struct LogPower: Module {};
 
-extern PyType_Spec FftSpec;
+extern PyType_Spec LogPowerSpec;

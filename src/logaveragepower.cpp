@@ -1,5 +1,5 @@
-#include "logaveragepower.h"
-#include "types.h"
+#include "logaveragepower.hpp"
+#include "types.hpp"
 
 #include <csdr/logaveragepower.hpp>
 

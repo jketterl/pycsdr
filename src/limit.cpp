@@ -1,5 +1,5 @@
-#include "limit.h"
-#include "types.h"
+#include "limit.hpp"
+#include "types.hpp"
 
 #include <csdr/limit.hpp>
 #include <csdr/window.hpp>

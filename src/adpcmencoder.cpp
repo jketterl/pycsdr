@@ -1,5 +1,5 @@
 #include "adpcmencoder.hpp"
-#include "types.h"
+#include "types.hpp"
 #include <csdr/adpcm.hpp>
 
 static int AdpcmEncoder_init(AdpcmEncoder* self, PyObject* args, PyObject* kwds) {

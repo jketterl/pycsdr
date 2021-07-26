@@ -5,7 +5,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include "module.h"
+#include "module.hpp"
 
 struct Convert: Module {};
 

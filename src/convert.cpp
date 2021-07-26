@@ -1,5 +1,5 @@
-#include "convert.h"
-#include "types.h"
+#include "convert.hpp"
+#include "types.hpp"
 
 #include <csdr/converter.hpp>
 

@@ -1,5 +1,5 @@
-#include "fftadpcm.h"
-#include "types.h"
+#include "fftadpcm.hpp"
+#include "types.hpp"
 
 #include <csdr/adpcm.hpp>
 

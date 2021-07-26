@@ -1,5 +1,5 @@
-#include "fmdemod.h"
-#include "types.h"
+#include "fmdemod.hpp"
+#include "types.hpp"
 
 #include <csdr/fmdemod.hpp>
 

@@ -1,5 +1,5 @@
-#include "fftswap.h"
-#include "types.h"
+#include "fftswap.hpp"
+#include "types.hpp"
 
 #include <csdr/fftexchangesides.hpp>
 

@@ -1,5 +1,5 @@
-#include "dcblock.h"
-#include "types.h"
+#include "dcblock.hpp"
+#include "types.hpp"
 
 #include <csdr/dcblock.hpp>
 

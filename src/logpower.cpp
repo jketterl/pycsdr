@@ -1,5 +1,5 @@
-#include "logpower.h"
-#include "types.h"
+#include "logpower.hpp"
+#include "types.hpp"
 
 #include <csdr/logpower.hpp>
 

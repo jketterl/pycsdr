@@ -1,5 +1,5 @@
-#include "nfmdeemphasis.h"
-#include "types.h"
+#include "nfmdeemphasis.hpp"
+#include "types.hpp"
 
 #include <csdr/deemphasis.hpp>
 

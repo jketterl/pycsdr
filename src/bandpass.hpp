@@ -4,7 +4,7 @@
 #include <Python.h>
 #include <csdr/complex.hpp>
 
-#include "module.h"
+#include "module.hpp"
 
 struct Bandpass: Module {
     float low_cut = 0.0f;

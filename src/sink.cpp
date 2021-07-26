@@ -1,6 +1,6 @@
 #include "pycsdr.hpp"
 #include "sink.hpp"
-#include "types.h"
+#include "types.hpp"
 
 #include <csdr/complex.hpp>
 

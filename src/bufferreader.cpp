@@ -1,5 +1,5 @@
 #include "bufferreader.hpp"
-#include "types.h"
+#include "types.hpp"
 
 // TODO hookup method
 static int BufferReader_init(BufferReader* reader, PyObject* args, PyObject* kwds) {

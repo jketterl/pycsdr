@@ -4,8 +4,8 @@
 #include <Python.h>
 #include <csdr/complex.hpp>
 
-#include "module.h"
+#include "module.hpp"
 
-struct LogPower: Module {};
+struct FirDecimate: Module {};
 
-extern PyType_Spec LogPowerSpec;
+extern PyType_Spec FirDecimateSpec;

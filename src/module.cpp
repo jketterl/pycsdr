@@ -1,6 +1,6 @@
-#include "module.h"
-#include "types.h"
-#include "buffer.h"
+#include "module.hpp"
+#include "types.hpp"
+#include "buffer.hpp"
 #include <csdr/ringbuffer.hpp>
 
 static PyObject* checkRunner(Module* self) {

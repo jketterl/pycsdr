@@ -1,5 +1,5 @@
-#include "amdemod.h"
-#include "types.h"
+#include "amdemod.hpp"
+#include "types.hpp"
 #include <csdr/amdemod.hpp>
 
 static int AmDemod_init(AmDemod* self, PyObject* args, PyObject* kwds) {

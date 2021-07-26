@@ -4,8 +4,8 @@
 #include <Python.h>
 #include <csdr/complex.hpp>
 
-#include "module.h"
+#include "module.hpp"
 
-struct FirDecimate: Module {};
+struct Shift: Module {};
 
-extern PyType_Spec FirDecimateSpec;
+extern PyType_Spec ShiftSpec;

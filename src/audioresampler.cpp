@@ -1,5 +1,5 @@
 #include "audioresampler.hpp"
-#include "types.h"
+#include "types.hpp"
 #include <csdr/audioresampler.hpp>
 
 static int AudioResampler_init(AudioResampler* self, PyObject* args, PyObject* kwds) {

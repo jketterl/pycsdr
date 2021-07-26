@@ -5,7 +5,7 @@
 #include <csdr/module.hpp>
 #include <csdr/async.hpp>
 
-#include "buffer.h"
+#include "buffer.hpp"
 #include "sink.hpp"
 #include "source.hpp"
 

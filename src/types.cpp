@@ -1,4 +1,4 @@
-#include "types.h"
+#include "types.hpp"
 
 static PyObject* getPyCsdrModule() {
     PyObject* module = PyImport_ImportModule("pycsdr.types");

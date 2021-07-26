@@ -1,5 +1,5 @@
-#include "realpart.h"
-#include "types.h"
+#include "realpart.hpp"
+#include "types.hpp"
 
 #include <csdr/realpart.hpp>
 

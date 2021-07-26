@@ -1,5 +1,5 @@
-#include "shift.h"
-#include "types.h"
+#include "shift.hpp"
+#include "types.hpp"
 
 #include <csdr/shift.hpp>
 

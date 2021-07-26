@@ -1,8 +1,8 @@
 #include <csdr/ringbuffer.hpp>
 
 #include "pycsdr.hpp"
-#include "buffer.h"
-#include "types.h"
+#include "buffer.hpp"
+#include "types.hpp"
 #include "bufferreader.hpp"
 
 static int Buffer_clear(Buffer* self) {

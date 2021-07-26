@@ -1,5 +1,5 @@
-#include "fft.h"
-#include "types.h"
+#include "fft.hpp"
+#include "types.hpp"
 
 #include <csdr/fft.hpp>
 #include <csdr/window.hpp>

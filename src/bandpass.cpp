@@ -1,5 +1,5 @@
-#include "bandpass.h"
-#include "types.h"
+#include "bandpass.hpp"
+#include "types.hpp"
 
 #include <csdr/filter.hpp>
 #include <csdr/fir.hpp>

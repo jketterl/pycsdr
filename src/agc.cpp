@@ -1,5 +1,5 @@
-#include "agc.h"
-#include "types.h"
+#include "agc.hpp"
+#include "types.hpp"
 
 #include <csdr/agc.hpp>
 

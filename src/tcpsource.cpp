@@ -1,5 +1,5 @@
-#include "tcpsource.h"
-#include "types.h"
+#include "tcpsource.hpp"
+#include "types.hpp"
 
 #include <sys/socket.h>
 #include <netinet/in.h>

@@ -4,7 +4,7 @@
 #include <Python.h>
 #include <csdr/sink.hpp>
 
-#include "buffer.h"
+#include "buffer.hpp"
 #include "reader.hpp"
 
 struct Sink: PyObject {

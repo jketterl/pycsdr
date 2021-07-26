@@ -1,5 +1,5 @@
-#include "fractionaldecimator.h"
-#include "types.h"
+#include "fractionaldecimator.hpp"
+#include "types.hpp"
 
 #include <csdr/fractionaldecimator.hpp>
 #include <csdr/window.hpp>
