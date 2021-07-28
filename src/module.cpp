@@ -52,12 +52,6 @@ static int Module_clear(Module* self) {
     return 0;
 }
 
-void Module::setModule(Csdr::UntypedModule* module) {
-    this->module = module;
-    this->source = dynamic_cast<Csdr::UntypedSource*>(module);
-    this->sink = dynamic_cast<Csdr::UntypedSink*>(module);
-}
-
 static PyObject* Module_getOutputFormat(Module* self) {
     Py_INCREF(self->outputFormat);
     return self->outputFormat;
