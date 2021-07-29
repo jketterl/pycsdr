@@ -4,7 +4,7 @@
 
 #include <csdr/complex.hpp>
 
-static int Sink_clear(Sink* self) {
+static int Sink_finalize(Sink* self) {
     if (self->reader != nullptr) {
         Py_DECREF(self->reader);
         self->reader = nullptr;
@@ -75,7 +75,7 @@ static PyMethodDef Sink_methods[] = {
 };
 
 static PyType_Slot SinkSlots[] = {
-    {Py_tp_clear, (void*) Sink_clear},
+    {Py_tp_finalize, (void*) Sink_finalize},
     {Py_tp_methods, Sink_methods},
     {0, 0}
 };
@@ -84,6 +84,6 @@ PyType_Spec SinkSpec = {
     "pycsdr.modules.Sink",
     sizeof(Sink),
     0,
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_FINALIZE,
     SinkSlots
 };

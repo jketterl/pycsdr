@@ -4,7 +4,7 @@
 
 #include <csdr/complex.hpp>
 
-static int Source_clear(Source* self) {
+static int Source_finalize(Source* self) {
     if (self->writer != nullptr) {
         Py_DECREF(self->writer);
         self->writer = nullptr;
@@ -75,7 +75,7 @@ static PyMethodDef Source_methods[] = {
 };
 
 static PyType_Slot SourceSlots[] = {
-    {Py_tp_clear, (void*) Source_clear},
+    {Py_tp_finalize, (void*) Source_finalize},
     {Py_tp_methods, Source_methods},
     {0, 0}
 };
@@ -84,6 +84,6 @@ PyType_Spec SourceSpec = {
     "pycsdr.modules.Source",
     sizeof(Source),
     0,
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_FINALIZE,
     SourceSlots
 };

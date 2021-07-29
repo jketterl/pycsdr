@@ -43,7 +43,7 @@ static PyObject* Module_stop(Module* self) {
     Py_RETURN_NONE;
 }
 
-static int Module_clear(Module* self) {
+static int Module_finalize(Module* self) {
     Module_stop(self);
 
     delete self->module;
@@ -82,7 +82,7 @@ static PyMethodDef Module_methods[] = {
 };
 
 static PyType_Slot ModuleSlots[] = {
-    {Py_tp_clear, (void*) Module_clear},
+    {Py_tp_finalize, (void*) Module_finalize},
     {Py_tp_methods, Module_methods},
     {0, 0}
 };
@@ -91,6 +91,6 @@ PyType_Spec ModuleSpec = {
     "pycsdr.modules.Module",
     sizeof(Module),
     0,
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_FINALIZE,
     ModuleSlots
 };

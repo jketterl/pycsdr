@@ -5,7 +5,7 @@
 #include "types.hpp"
 #include "bufferreader.hpp"
 
-static int Buffer_clear(Buffer* self) {
+static int Buffer_finalize(Buffer* self) {
     Py_DECREF(self->writerFormat);
     return 0;
 }
@@ -91,7 +91,7 @@ static PyMethodDef Buffer_methods[] = {
 
 static PyType_Slot BufferSlots[] = {
     {Py_tp_init, (void*) Buffer_init},
-    {Py_tp_clear, (void*) Buffer_clear},
+    {Py_tp_finalize, (void*) Buffer_finalize},
     {Py_tp_methods, Buffer_methods},
     {0, 0}
 };
@@ -100,6 +100,6 @@ PyType_Spec BufferSpec = {
     "pycsdr.modules.Buffer",
     sizeof(Buffer),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     BufferSlots
 };
