@@ -5,11 +5,6 @@
 #include "types.hpp"
 #include "bufferreader.hpp"
 
-static int Buffer_finalize(Buffer* self) {
-    Py_DECREF(self->writerFormat);
-    return 0;
-}
-
 template <typename T>
 static void createBuffer(Buffer* self, uint32_t size) {
     auto buffer = new Csdr::Ringbuffer<T>(size);
@@ -48,6 +43,12 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
+    return 0;
+}
+
+static int Buffer_finalize(Buffer* self) {
+    Py_DECREF(self->writerFormat);
+    delete self->writer;
     return 0;
 }
 
