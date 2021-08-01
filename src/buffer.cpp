@@ -59,7 +59,7 @@ static Csdr::UntypedReader* createReader(Buffer* self) {
 }
 
 static PyObject* Buffer_getReader(Buffer* self) {
-    BufferReader* reader = PyObject_New(BufferReader, BufferReaderType);
+    BufferReader* reader = (BufferReader*) PyObject_CallObject((PyObject*) BufferReaderType, NULL);
     if (reader == NULL) {
         return NULL;
     }
