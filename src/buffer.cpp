@@ -80,7 +80,7 @@ static PyObject* Buffer_getReader(Buffer* self) {
     Py_INCREF(self->writerFormat);
     reader->readerFormat = self->writerFormat;
 
-    return reader;
+    return (PyObject*) reader;
 }
 
 static PyMethodDef Buffer_methods[] = {

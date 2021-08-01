@@ -6,7 +6,8 @@
 
 #include "writer.hpp"
 
-struct Source: PyObject {
+struct Source {
+    PyObject_HEAD
     PyObject* outputFormat;
     Writer* writer;
     Csdr::UntypedSource* source;

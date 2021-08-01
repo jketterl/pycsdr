@@ -4,7 +4,8 @@
 #include <Python.h>
 #include <csdr/writer.hpp>
 
-struct Writer: PyObject {
+struct Writer {
+    PyObject_HEAD
     Csdr::UntypedWriter* writer;
     PyObject* writerFormat;
 };

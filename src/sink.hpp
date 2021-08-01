@@ -7,7 +7,8 @@
 #include "buffer.hpp"
 #include "reader.hpp"
 
-struct Sink: PyObject {
+struct Sink {
+    PyObject_HEAD
     PyObject* inputFormat;
     Reader* reader;
     Csdr::UntypedSink* sink;

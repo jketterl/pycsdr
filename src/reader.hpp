@@ -4,7 +4,8 @@
 #include <Python.h>
 #include <csdr/reader.hpp>
 
-struct Reader: PyObject {
+struct Reader {
+    PyObject_HEAD
     Csdr::UntypedReader* reader;
     PyObject* readerFormat;
 };
