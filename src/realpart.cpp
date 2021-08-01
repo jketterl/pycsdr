@@ -20,6 +20,6 @@ PyType_Spec RealPartSpec = {
     "pycsdr.modules.RealPart",
     sizeof(RealPart),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     RealPartSlots
 };

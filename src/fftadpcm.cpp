@@ -28,6 +28,6 @@ PyType_Spec FftAdpcmSpec = {
     "pycsdr.modules.FftAdpcm",
     sizeof(FftAdpcm),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     FftAdpcmSlots
 };

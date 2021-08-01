@@ -122,7 +122,7 @@ PyType_Spec AgcSpec = {
     "pycsdr.modules.Agc",
     sizeof(Agc),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     AgcSlots
 };
 

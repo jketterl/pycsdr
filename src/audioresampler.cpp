@@ -27,6 +27,6 @@ PyType_Spec AudioResamplerSpec = {
         "pycsdr.modules.AudioResampler",
         sizeof(AudioResampler),
         0,
-        Py_TPFLAGS_DEFAULT,
+        Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
         AudioResamplerSlots
 };

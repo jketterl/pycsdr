@@ -57,6 +57,6 @@ PyType_Spec TcpSourceSpec = {
     "pycsdr.modules.TcpSource",
     sizeof(TcpSource),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     TcpSourceSlots
 };

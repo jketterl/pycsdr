@@ -68,6 +68,6 @@ PyType_Spec BandpassSpec = {
     "pycsdr.modules.Bandpass",
     sizeof(Bandpass),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     BandpassSlots
 };

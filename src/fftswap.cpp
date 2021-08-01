@@ -27,7 +27,7 @@ PyType_Spec FftSwapSpec = {
     "pycsdr.modules.FftSwap",
     sizeof(FftSwap),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     FftSwapSlots
 };
 

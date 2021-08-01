@@ -20,6 +20,6 @@ PyType_Spec FmDemodSpec = {
     "pycsdr.modules.FmDemod",
     sizeof(FmDemod),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     FmDemodSlots
 };

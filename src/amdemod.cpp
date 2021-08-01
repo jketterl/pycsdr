@@ -19,6 +19,6 @@ PyType_Spec AmDemodSpec = {
     "pycsdr.modules.AmDemod",
     sizeof(AmDemod),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     AmDemodSlots
 };

@@ -48,6 +48,6 @@ PyType_Spec ShiftSpec = {
     "pycsdr.modules.Shift",
     sizeof(Shift),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     ShiftSlots
 };

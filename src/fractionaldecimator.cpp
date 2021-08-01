@@ -50,6 +50,6 @@ PyType_Spec FractionalDecimatorSpec = {
     "pycsdr.modules.FractionalDecimator",
     sizeof(FractionalDecimator),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     FractionalDecimatorSlots
 };

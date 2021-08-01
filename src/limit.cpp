@@ -28,6 +28,6 @@ PyType_Spec LimitSpec = {
     "pycsdr.modules.Limit",
     sizeof(Limit),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     LimitSlots
 };

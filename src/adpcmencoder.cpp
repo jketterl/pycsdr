@@ -26,6 +26,6 @@ PyType_Spec AdpcmEncoderSpec = {
     "pycsdr.modules.AdpcmEncoder",
     sizeof(AdpcmEncoder),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     AdpcmEncoderSlots
 };

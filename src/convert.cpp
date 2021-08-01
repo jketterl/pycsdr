@@ -42,7 +42,7 @@ PyType_Spec ConvertSpec = {
     "pycsdr.modules.Convert",
     sizeof(Convert),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     ConvertSlots
 };
 

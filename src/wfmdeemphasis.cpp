@@ -28,6 +28,6 @@ PyType_Spec WfmDeemphasisSpec = {
         "pycsdr.modules.WfmDeemphasis",
         sizeof(WfmDeemphasis),
         0,
-        Py_TPFLAGS_DEFAULT,
+        Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
         WfmDeemphasisSlots
 };

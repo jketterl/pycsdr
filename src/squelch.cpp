@@ -89,6 +89,6 @@ PyType_Spec SquelchSpec = {
     "pycsdr.modules.Squelch",
     sizeof(Squelch),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     SquelchSlots
 };

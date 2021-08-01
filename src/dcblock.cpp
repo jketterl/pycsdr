@@ -22,6 +22,6 @@ PyType_Spec DcBlockSpec = {
     "pycsdr.modules.DcBlock",
     sizeof(DcBlock),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     DcBlockSlots
 };

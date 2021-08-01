@@ -27,6 +27,6 @@ PyType_Spec LogPowerSpec = {
     "pycsdr.modules.LogPower",
     sizeof(LogPower),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     LogPowerSlots
 };

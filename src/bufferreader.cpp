@@ -66,6 +66,6 @@ PyType_Spec BufferReaderSpec = {
     "pycsdr.modules.BufferReader",
     sizeof(BufferReader),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     BufferReaderSlots
 };

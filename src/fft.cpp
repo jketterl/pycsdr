@@ -54,6 +54,6 @@ PyType_Spec FftSpec = {
     "pycsdr.modules.Fft",
     sizeof(Fft),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     FftSlots
 };

@@ -35,7 +35,7 @@ PyType_Spec FirDecimateSpec = {
     "pycsdr.modules.FirDecimate",
     sizeof(FirDecimate),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     FirDecimateSlots
 };
 

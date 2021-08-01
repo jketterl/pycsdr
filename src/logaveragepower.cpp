@@ -50,6 +50,6 @@ PyType_Spec LogAveragePowerSpec = {
     "pycsdr.modules.LogAveragePower",
     sizeof(LogAveragePower),
     0,
-    Py_TPFLAGS_DEFAULT,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_FINALIZE,
     LogAveragePowerSlots
 };
