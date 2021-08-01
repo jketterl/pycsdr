@@ -46,6 +46,14 @@ static PyObject* Module_stop(Module* self) {
 static int Module_finalize(Module* self) {
     Module_stop(self);
 
+    if (Sink_finalize(self) != 0) {
+        return -1;
+    }
+
+    if (Source_finalize(self) != 0) {
+        return -1;
+    }
+
     delete self->module;
     self->setModule(nullptr);
 

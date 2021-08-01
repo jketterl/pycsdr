@@ -15,4 +15,6 @@ struct Source {
 
 PyObject* Source_setWriter(Source* self, PyObject* args, PyObject* kwds);
 
+int Source_finalize(Source* self);
+
 extern PyType_Spec SourceSpec;

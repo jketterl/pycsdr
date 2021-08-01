@@ -4,7 +4,7 @@
 
 #include <csdr/complex.hpp>
 
-static int Sink_finalize(Sink* self) {
+int Sink_finalize(Sink* self) {
     if (self->reader != nullptr) {
         Py_DECREF(self->reader);
         self->reader = nullptr;

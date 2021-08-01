@@ -16,4 +16,6 @@ struct Sink {
 
 PyObject* Sink_setReader(Sink* self, PyObject* args, PyObject* kwds);
 
+int Sink_finalize(Sink* self);
+
 extern PyType_Spec SinkSpec;

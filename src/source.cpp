@@ -4,7 +4,7 @@
 
 #include <csdr/complex.hpp>
 
-static int Source_finalize(Source* self) {
+int Source_finalize(Source* self) {
     if (self->writer != nullptr) {
         Py_DECREF(self->writer);
         self->writer = nullptr;
