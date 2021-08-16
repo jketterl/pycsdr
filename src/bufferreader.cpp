@@ -1,6 +1,8 @@
 #include "bufferreader.hpp"
 #include "types.hpp"
 
+#include <csdr/ringbuffer.hpp>
+
 // TODO hookup method
 static int BufferReader_init(BufferReader* reader, PyObject* args, PyObject* kwds) {
     reader->run = true;
@@ -28,17 +30,21 @@ static PyObject* BufferReader_read(BufferReader* self) {
         Py_RETURN_NONE;
     }
 
-    if (self->readerFormat == FORMAT_CHAR) {
-        return getBytes<unsigned char>(self->reader);
-    } else if (self->readerFormat == FORMAT_SHORT) {
-        return getBytes<short>(self->reader);
-    } else if (self->readerFormat == FORMAT_FLOAT) {
-        return getBytes<float>(self->reader);
-    } else if (self->readerFormat == FORMAT_COMPLEX_FLOAT) {
-        return getBytes<Csdr::complex<float>>(self->reader);
-    } else {
-        PyErr_SetString(PyExc_ValueError, "invalid format");
-        return NULL;
+    try {
+        if (self->readerFormat == FORMAT_CHAR) {
+            return getBytes<unsigned char>(self->reader);
+        } else if (self->readerFormat == FORMAT_SHORT) {
+            return getBytes<short>(self->reader);
+        } else if (self->readerFormat == FORMAT_FLOAT) {
+            return getBytes<float>(self->reader);
+        } else if (self->readerFormat == FORMAT_COMPLEX_FLOAT) {
+            return getBytes<Csdr::complex<float>>(self->reader);
+        } else {
+            PyErr_SetString(PyExc_ValueError, "invalid format");
+            return NULL;
+        }
+    } catch (const Csdr::BufferError&) {
+        Py_RETURN_NONE;
     }
 }
 
