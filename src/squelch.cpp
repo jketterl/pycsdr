@@ -71,7 +71,7 @@ static PyObject* Squelch_setPowerWriter(Squelch* self, PyObject* args, PyObject*
 
 static PyMethodDef Squelch_methods[] = {
     {"setSquelchLevel", (PyCFunction) Squelch_setSquelchLevel, METH_VARARGS | METH_KEYWORDS,
-     "set squelch level in dB"
+     "set squelch level"
     },
     {"setPowerWriter", (PyCFunction) Squelch_setPowerWriter, METH_VARARGS | METH_KEYWORDS,
      "set a writer that will receive power level readouts"
