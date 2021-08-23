@@ -5,7 +5,8 @@
 
 static PyObject* checkRunner(Module* self) {
     if (self->reader != nullptr && self->writer != nullptr) {
-        if (self->runner == nullptr) {
+        if (self->runner == nullptr || !self->runner->isRunning()) {
+            delete self->runner;
             self->runner = new Csdr::AsyncRunner(self->module);
         }
     } else {
