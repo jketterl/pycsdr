@@ -69,12 +69,27 @@ static PyObject* Squelch_setPowerWriter(Squelch* self, PyObject* args, PyObject*
     Py_RETURN_NONE;
 }
 
+static PyObject* Squelch_setReportInterval(Squelch* self, PyObject* args, PyObject* kwds) {
+    static char* kwlist[] = {(char*) "reportInterval", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwlist, &self->reportInterval)) {
+        return NULL;
+    }
+    // reset since this may contain excessively high values
+    self->reportCounter = self->reportInterval;
+
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef Squelch_methods[] = {
     {"setSquelchLevel", (PyCFunction) Squelch_setSquelchLevel, METH_VARARGS | METH_KEYWORDS,
      "set squelch level"
     },
     {"setPowerWriter", (PyCFunction) Squelch_setPowerWriter, METH_VARARGS | METH_KEYWORDS,
      "set a writer that will receive power level readouts"
+    },
+    {"setReportInterval", (PyCFunction) Squelch_setReportInterval, METH_VARARGS | METH_KEYWORDS,
+     "set the report interval"
     },
     {NULL}  /* Sentinel */
 };

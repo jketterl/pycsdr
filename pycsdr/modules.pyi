@@ -122,6 +122,9 @@ class Squelch(Module):
     def setPowerWriter(self, writer: Writer) -> None:
         ...
 
+    def setReportInterval(self, reportInterval: int) -> None:
+        ...
+
 
 class FractionalDecimator(Module):
     def __init__(self, format: Format, decimation: float, numPolyPoints: int = 12, prefilter: bool = False):
