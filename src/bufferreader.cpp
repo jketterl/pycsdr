@@ -20,17 +20,17 @@ static PyObject* getBytes(Csdr::UntypedReader* reader) {
 }
 
 static PyObject* BufferReader_read(BufferReader* self) {
-    while (self->run && self->reader->available() == 0) {
-        Py_BEGIN_ALLOW_THREADS
-        self->reader->wait();
-        Py_END_ALLOW_THREADS
-    }
-
-    if (!self->run) {
-        Py_RETURN_NONE;
-    }
-
     try {
+        while (self->run && self->reader->available() == 0) {
+            Py_BEGIN_ALLOW_THREADS
+            self->reader->wait();
+            Py_END_ALLOW_THREADS
+        }
+
+        if (!self->run) {
+            Py_RETURN_NONE;
+        }
+
         if (self->readerFormat == FORMAT_CHAR) {
             return getBytes<unsigned char>(self->reader);
         } else if (self->readerFormat == FORMAT_SHORT) {
