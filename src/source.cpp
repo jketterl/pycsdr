@@ -12,6 +12,13 @@ int Source_finalize(Source* self) {
     return 0;
 }
 
+template <typename T>
+static void setWriter(Source* self) {
+    Csdr::Writer<T>* w = nullptr;
+    if (self->writer != nullptr) w = dynamic_cast<Csdr::Writer<T>*>(self->writer->writer);
+    dynamic_cast<Csdr::Source<T>*>(self->source)->setWriter(w);
+}
+
 PyObject* Source_setWriter(Source* self, PyObject* args, PyObject* kwds) {
     Writer* writer;
 
@@ -25,35 +32,35 @@ PyObject* Source_setWriter(Source* self, PyObject* args, PyObject* kwds) {
         return NULL;
     }
 
-    if (self->writer != nullptr) {
-        Py_DECREF(self->writer);
-        self->writer = nullptr;
-    }
+    // do not DECREF the writer yet, it may still be in use by the module in another thread
+    auto oldWriter = self->writer;
 
     if ((PyObject*) writer != Py_None) {
         self->writer = writer;
         Py_INCREF(self->writer);
+    } else {
+        self->writer = nullptr;
     }
 
     if (self->outputFormat == FORMAT_CHAR) {
-        dynamic_cast<Csdr::Source<unsigned char>*>(self->source)->setWriter(
-                dynamic_cast<Csdr::Writer<unsigned char>*>(self->writer->writer)
-        );
+        setWriter<unsigned char>(self);
     } else if (self->outputFormat == FORMAT_SHORT) {
-        dynamic_cast<Csdr::Source<short>*>(self->source)->setWriter(
-                dynamic_cast<Csdr::Writer<short>*>(self->writer->writer)
-        );
+        setWriter<short>(self);
     } else if (self->outputFormat == FORMAT_FLOAT) {
-        dynamic_cast<Csdr::Source<float>*>(self->source)->setWriter(
-                dynamic_cast<Csdr::Writer<float>*>(self->writer->writer)
-        );
+        setWriter<float>(self);
     } else if (self->outputFormat == FORMAT_COMPLEX_FLOAT) {
-        dynamic_cast<Csdr::Source<Csdr::complex<float>>*>(self->source)->setWriter(
-                dynamic_cast<Csdr::Writer<Csdr::complex<float>>*>(self->writer->writer)
-        );
+        setWriter<Csdr::complex<float>>(self);
     } else {
+        if (self->writer != nullptr) {
+            Py_DECREF(self->writer);
+            self->writer = nullptr;
+        }
         PyErr_SetString(PyExc_ValueError, "invalid writer format");
         return NULL;
+    }
+
+    if (oldWriter != nullptr) {
+        Py_DECREF(oldWriter);
     }
 
     Py_RETURN_NONE;

@@ -12,6 +12,13 @@ int Sink_finalize(Sink* self) {
     return 0;
 }
 
+template <typename T>
+static void setReader(Sink* self) {
+    Csdr::Reader<T>* r = nullptr;
+    if (self->reader != nullptr) r = dynamic_cast<Csdr::Reader<T>*>(self->reader->reader);
+    dynamic_cast<Csdr::Sink<T>*>(self->sink)->setReader(r);
+}
+
 PyObject* Sink_setReader(Sink* self, PyObject* args, PyObject* kwds) {
     Reader* reader;
 
@@ -30,31 +37,25 @@ PyObject* Sink_setReader(Sink* self, PyObject* args, PyObject* kwds) {
     if ((PyObject*) reader != Py_None) {
         self->reader = reader;
         Py_INCREF(self->reader);
-
-        if (self->inputFormat == FORMAT_CHAR) {
-            dynamic_cast<Csdr::Sink<unsigned char>*>(self->sink)->setReader(
-                    dynamic_cast<Csdr::Reader<unsigned char>*>(self->reader->reader)
-            );
-        } else if (self->inputFormat == FORMAT_SHORT) {
-            dynamic_cast<Csdr::Sink<short>*>(self->sink)->setReader(
-                    dynamic_cast<Csdr::Reader<short>*>(self->reader->reader)
-            );
-        } else if (self->inputFormat == FORMAT_FLOAT) {
-            dynamic_cast<Csdr::Sink<float>*>(self->sink)->setReader(
-                    dynamic_cast<Csdr::Reader<float>*>(self->reader->reader)
-            );
-        } else if (self->inputFormat == FORMAT_COMPLEX_FLOAT) {
-            dynamic_cast<Csdr::Sink<Csdr::complex<float>>*>(self->sink)->setReader(
-                    dynamic_cast<Csdr::Reader<Csdr::complex<float>>*>(self->reader->reader)
-            );
-        } else {
-            Py_DECREF(self->reader);
-            self->reader = nullptr;
-            PyErr_SetString(PyExc_ValueError, "invalid writer format");
-            return NULL;
-        }
     } else {
         self->reader = nullptr;
+    }
+
+    if (self->inputFormat == FORMAT_CHAR) {
+        setReader<unsigned char>(self);
+    } else if (self->inputFormat == FORMAT_SHORT) {
+        setReader<short>(self);
+    } else if (self->inputFormat == FORMAT_FLOAT) {
+        setReader<float>(self);
+    } else if (self->inputFormat == FORMAT_COMPLEX_FLOAT) {
+        setReader<Csdr::complex<float>>(self);
+    } else {
+        if (self->reader != nullptr) {
+            Py_DECREF(self->reader);
+            self->reader = nullptr;
+        }
+        PyErr_SetString(PyExc_ValueError, "invalid writer format");
+        return NULL;
     }
 
     if (oldReader != nullptr) {
