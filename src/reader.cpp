@@ -1,6 +1,6 @@
 #include "reader.hpp"
 
-static int Reader_finalize(Reader* self) {
+int Reader_finalize(Reader* self) {
     delete self->reader;
     return 0;
 }

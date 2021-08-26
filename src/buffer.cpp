@@ -52,33 +52,17 @@ static int Buffer_finalize(Buffer* self) {
     return 0;
 }
 
-template <typename T>
-static Csdr::UntypedReader* createReader(Buffer* self) {
-    auto buffer = dynamic_cast<Csdr::Ringbuffer<T>*>(self->writer);
-    return new Csdr::RingbufferReader<T>(buffer);
-}
-
 static PyObject* Buffer_getReader(Buffer* self) {
-    BufferReader* reader = (BufferReader*) PyObject_CallObject((PyObject*) BufferReaderType, NULL);
+    PyObject* args = PyTuple_Pack(1, self);
+    if (args == NULL) {
+        return NULL;
+    }
+
+    BufferReader* reader = (BufferReader*) PyObject_CallObject((PyObject*) BufferReaderType, args);
+    Py_DECREF(args);
     if (reader == NULL) {
         return NULL;
     }
-
-    if (self->writerFormat == FORMAT_CHAR) {
-        reader->reader = createReader<unsigned char>(self);
-    } else if (self->writerFormat == FORMAT_SHORT) {
-        reader->reader = createReader<short>(self);
-    } else if (self->writerFormat == FORMAT_FLOAT) {
-        reader->reader = createReader<float>(self);
-    } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
-        reader->reader = createReader<Csdr::complex<float>>(self);
-    } else {
-        PyErr_SetString(PyExc_ValueError, "invalid buffer format");
-        return NULL;
-    }
-
-    Py_INCREF(self->writerFormat);
-    reader->readerFormat = self->writerFormat;
 
     return (PyObject*) reader;
 }

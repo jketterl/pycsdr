@@ -10,4 +10,6 @@ struct Reader {
     PyObject* readerFormat;
 };
 
+int Reader_finalize(Reader* self);
+
 extern PyType_Spec ReaderSpec;

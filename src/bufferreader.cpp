@@ -1,13 +1,55 @@
 #include "bufferreader.hpp"
 #include "types.hpp"
+#include "pycsdr.hpp"
 
 #include <csdr/ringbuffer.hpp>
 
-// TODO hookup method
-static int BufferReader_init(BufferReader* reader, PyObject* args, PyObject* kwds) {
-    reader->run = true;
+template <typename T>
+static Csdr::UntypedReader* createReader(BufferReader* self) {
+    auto buffer = dynamic_cast<Csdr::Ringbuffer<T>*>(self->buffer->writer);
+    return new Csdr::RingbufferReader<T>(buffer);
+}
+
+static int BufferReader_init(BufferReader* self, PyObject* args, PyObject* kwds) {
+    char* kwlist[] = {(char*) "buffer", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, BufferType, &self->buffer)) {
+        return -1;
+    }
+    Py_INCREF(self->buffer);
+
+    self->readerFormat = self->buffer->writerFormat;
+    Py_INCREF(self->readerFormat);
+
+    if (self->readerFormat == FORMAT_CHAR) {
+        self->reader = createReader<unsigned char>(self);
+    } else if (self->readerFormat == FORMAT_SHORT) {
+        self->reader = createReader<short>(self);
+    } else if (self->readerFormat == FORMAT_FLOAT) {
+        self->reader = createReader<float>(self);
+    } else if (self->readerFormat == FORMAT_COMPLEX_FLOAT) {
+        self->reader = createReader<Csdr::complex<float>>(self);
+    } else {
+        Py_DECREF(self->buffer);
+        self->buffer = nullptr;
+        PyErr_SetString(PyExc_ValueError, "invalid buffer format");
+        return -1;
+    }
+
+    self->run = true;
 
     return 0;
+}
+
+static int BufferReader_finalize(BufferReader* self) {
+    if (self->buffer != nullptr) {
+        Py_DECREF(self->buffer);
+        self->buffer = nullptr;
+    }
+
+    Py_DECREF(self->readerFormat);
+
+    return Reader_finalize(self);
 }
 
 template <typename T>
@@ -64,6 +106,7 @@ static PyMethodDef BufferReader_methods[] = {
 
 static PyType_Slot BufferReaderSlots[] = {
     {Py_tp_init, (void*) BufferReader_init},
+    {Py_tp_finalize, (void*) BufferReader_finalize},
     {Py_tp_methods, BufferReader_methods},
     {0, 0}
 };

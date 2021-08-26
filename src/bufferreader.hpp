@@ -4,8 +4,10 @@
 #include <Python.h>
 
 #include "reader.hpp"
+#include "buffer.hpp"
 
 struct BufferReader: Reader {
+    Buffer* buffer;
     bool run;
 };
 

@@ -19,6 +19,9 @@ class Buffer(Writer):
 
 
 class BufferReader(Reader):
+    def __init__(self, buffer: Buffer):
+        ...
+
     def stop(self) -> None:
         ...
 
