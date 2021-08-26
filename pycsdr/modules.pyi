@@ -6,7 +6,7 @@ class Writer:
 
 
 class Reader:
-    def read(self) -> bytes:
+    def read(self) -> memoryview:
         ...
 
 
