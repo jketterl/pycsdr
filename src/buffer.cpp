@@ -1,4 +1,5 @@
 #include <csdr/ringbuffer.hpp>
+#include <cstring>
 
 #include "pycsdr.hpp"
 #include "buffer.hpp"
@@ -72,11 +73,61 @@ static PyObject* Buffer_getFormat(Buffer* self) {
     return self->writerFormat;
 }
 
+template <typename T>
+static int writeToBuffer(Buffer* self, char* data, size_t len) {
+    auto writer = dynamic_cast<Csdr::Writer<T>*>(self->writer);
+    size_t compensated_len = len / sizeof(T);
+    if (writer->writeable() < len) {
+        PyErr_SetString(PyExc_BufferError, "insufficient buffer space");
+        return -1;
+    }
+    std::memcpy(writer->getWritePointer(), data, compensated_len);
+    writer->advance(compensated_len);
+    return 0;
+}
+
+static PyObject* Buffer_write(Buffer* self, PyObject* args, PyObject* kwds) {
+    char* kwlist[] = {(char*) "data", NULL};
+
+    PyObject* bytes;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S", kwlist, &bytes)) {
+        return NULL;
+    }
+
+    char* data;
+    Py_ssize_t len;
+    if (PyBytes_AsStringAndSize(bytes, &data, &len) == -1) {
+        return NULL;
+    }
+
+    int r = -1;
+    if (self->writerFormat == FORMAT_CHAR) {
+        r = writeToBuffer<unsigned char>(self, data, len);
+    } else if (self->writerFormat == FORMAT_SHORT) {
+        r = writeToBuffer<short>(self, data, len);
+    } else if (self->writerFormat == FORMAT_FLOAT) {
+        r = writeToBuffer<float>(self, data, len);
+    } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
+        r = writeToBuffer<Csdr::complex<float>>(self, data, len);
+    } else {
+        PyErr_SetString(PyExc_ValueError, "invalid buffer format");
+        return NULL;
+    }
+
+    if (r == -1) {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef Buffer_methods[] = {
     {"getReader", (PyCFunction) Buffer_getReader, METH_NOARGS,
      "get a reader instance"},
     {"getFormat", (PyCFunction) Buffer_getFormat, METH_NOARGS,
      "get the buffer format"},
+    {"write", (PyCFunction) Buffer_write, METH_VARARGS | METH_KEYWORDS,
+     "write to the buffer"},
     {NULL}  /* Sentinel */
 };
 

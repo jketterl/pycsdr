@@ -20,6 +20,9 @@ class Buffer(Writer):
     def getReader(self) -> BufferReader:
         ...
 
+    def write(self, data: bytes) -> None:
+        ...
+
 
 class BufferReader(Reader):
     def __init__(self, buffer: Buffer):
