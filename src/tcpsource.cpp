@@ -20,6 +20,8 @@ static int TcpSource_init(TcpSource* self, PyObject* args, PyObject* kwds) {
             self->source = new Csdr::TcpSource<short>(inet_addr("127.0.0.1"), port);
         } else if (self->outputFormat == FORMAT_FLOAT) {
             self->source = new Csdr::TcpSource<float>(inet_addr("127.0.0.1"), port);
+        } else if (self->outputFormat == FORMAT_COMPLEX_SHORT) {
+            self->source = new Csdr::TcpSource<Csdr::complex<short>>(inet_addr("127.0.0.1"), port);
         } else if (self->outputFormat == FORMAT_COMPLEX_FLOAT) {
             self->source = new Csdr::TcpSource<Csdr::complex<float>>(inet_addr("127.0.0.1"), port);
         } else {

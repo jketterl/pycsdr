@@ -48,6 +48,8 @@ PyObject* Source_setWriter(Source* self, PyObject* args, PyObject* kwds) {
         setWriter<short>(self);
     } else if (self->outputFormat == FORMAT_FLOAT) {
         setWriter<float>(self);
+    } else if (self->outputFormat == FORMAT_COMPLEX_SHORT) {
+        setWriter<Csdr::complex<short>>(self);
     } else if (self->outputFormat == FORMAT_COMPLEX_FLOAT) {
         setWriter<Csdr::complex<float>>(self);
     } else {

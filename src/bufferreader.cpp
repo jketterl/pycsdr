@@ -27,6 +27,8 @@ static int BufferReader_init(BufferReader* self, PyObject* args, PyObject* kwds)
         self->reader = createReader<short>(self);
     } else if (self->readerFormat == FORMAT_FLOAT) {
         self->reader = createReader<float>(self);
+    } else if (self->readerFormat == FORMAT_COMPLEX_SHORT) {
+        self->reader = createReader<Csdr::complex<short>>(self);
     } else if (self->readerFormat == FORMAT_COMPLEX_FLOAT) {
         self->reader = createReader<Csdr::complex<float>>(self);
     } else {
@@ -79,6 +81,8 @@ static PyObject* BufferReader_read(BufferReader* self) {
             return getBytes<short>(self->reader);
         } else if (self->readerFormat == FORMAT_FLOAT) {
             return getBytes<float>(self->reader);
+        } else if (self->readerFormat == FORMAT_COMPLEX_SHORT) {
+            return getBytes<Csdr::complex<short>>(self->reader);
         } else if (self->readerFormat == FORMAT_COMPLEX_FLOAT) {
             return getBytes<Csdr::complex<float>>(self->reader);
         } else {

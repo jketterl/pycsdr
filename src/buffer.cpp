@@ -33,6 +33,8 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
             createBuffer<short>(self, size);
         } else if (self->writerFormat == FORMAT_FLOAT) {
             createBuffer<float>(self, size);
+        } else if (self->writerFormat == FORMAT_COMPLEX_SHORT) {
+            createBuffer<Csdr::complex<short>>(self, size);
         } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
             createBuffer<Csdr::complex<float>>(self, size);
         } else {
@@ -107,6 +109,8 @@ static PyObject* Buffer_write(Buffer* self, PyObject* args, PyObject* kwds) {
         r = writeToBuffer<short>(self, data, len);
     } else if (self->writerFormat == FORMAT_FLOAT) {
         r = writeToBuffer<float>(self, data, len);
+    } else if (self->writerFormat == FORMAT_COMPLEX_SHORT) {
+        r = writeToBuffer<Csdr::complex<short>>(self, data, len);
     } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
         r = writeToBuffer<Csdr::complex<float>>(self, data, len);
     } else {
