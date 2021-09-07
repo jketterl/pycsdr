@@ -4,6 +4,7 @@
 #include <csdr/ringbuffer.hpp>
 
 static PyObject* checkRunner(Module* self) {
+    std::lock_guard<std::mutex> lock(self->runnerMutex);
     if (self->reader != nullptr && self->writer != nullptr) {
         if (self->runner == nullptr || !self->runner->isRunning()) {
             delete self->runner;
@@ -36,6 +37,7 @@ static PyObject* Module_setWriter(Module* self, PyObject* args, PyObject* kwds) 
 }
 
 static PyObject* Module_stop(Module* self) {
+    std::lock_guard<std::mutex> lock(self->runnerMutex);
     if (self->runner != nullptr) {
         self->runner->stop();
         delete self->runner;

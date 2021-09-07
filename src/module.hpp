@@ -4,6 +4,7 @@
 #include <Python.h>
 #include <csdr/module.hpp>
 #include <csdr/async.hpp>
+#include <mutex>
 
 #include "buffer.hpp"
 #include "sink.hpp"
@@ -12,6 +13,7 @@
 struct Module: Sink, Source {
     Csdr::UntypedModule* module;
     Csdr::AsyncRunner* runner;
+    std::mutex runnerMutex;
 
     void setModule(Csdr::UntypedModule* module) {
         this->module = module;
