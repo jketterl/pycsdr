@@ -5,7 +5,7 @@
 static int AdpcmEncoder_init(AdpcmEncoder* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "sync", NULL};
 
-    bool sync = false;
+    int sync = false;
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|b", kwlist, &sync)) {
         return -1;
     }

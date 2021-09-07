@@ -9,9 +9,11 @@
 static int Bandpass_init(Bandpass* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "low_cut", (char*) "high_cut", (char*) "transition", (char*) "use_fft", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fffp", kwlist, &self->low_cut, &self->high_cut, &self->transition, &self->use_fft)) {
+    int use_fft = true;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fffp", kwlist, &self->low_cut, &self->high_cut, &self->transition, &use_fft)) {
         return -1;
     }
+    self->use_fft = use_fft;
 
     Csdr::Filter<Csdr::complex<float>>* filter;
     auto window = new Csdr::HammingWindow();

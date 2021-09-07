@@ -21,7 +21,7 @@ static int FractionalDecimator_init(FractionalDecimator* self, PyObject* args, P
     PyObject* format;
     float decimation = 0.0f;
     unsigned int numPolyPoints = 12;
-    bool prefilter = false;
+    int prefilter = false;
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!f|Ib", kwlist, FORMAT_TYPE, &format, &decimation, &numPolyPoints, &prefilter)) {
         return -1;
     }
