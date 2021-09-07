@@ -14,6 +14,9 @@ class Buffer(Writer):
     def __init__(self, format: Format, size: int=None):
         ...
 
+    def getFormat(self) -> Format:
+        ...
+
     def getReader(self) -> BufferReader:
         ...
 

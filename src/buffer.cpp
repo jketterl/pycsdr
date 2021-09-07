@@ -67,9 +67,16 @@ static PyObject* Buffer_getReader(Buffer* self) {
     return (PyObject*) reader;
 }
 
+static PyObject* Buffer_getFormat(Buffer* self) {
+    Py_INCREF(self->writerFormat);
+    return self->writerFormat;
+}
+
 static PyMethodDef Buffer_methods[] = {
     {"getReader", (PyCFunction) Buffer_getReader, METH_NOARGS,
      "get a reader instance"},
+    {"getFormat", (PyCFunction) Buffer_getFormat, METH_NOARGS,
+     "get the buffer format"},
     {NULL}  /* Sentinel */
 };
 
