@@ -68,7 +68,7 @@ static PyObject* Module_getOutputFormat(Module* self) {
 
 static PyObject* Module_getInputFormat(Module* self) {
     Py_INCREF(self->inputFormat);
-    return self->outputFormat;
+    return self->inputFormat;
 }
 
 static PyMethodDef Module_methods[] = {
