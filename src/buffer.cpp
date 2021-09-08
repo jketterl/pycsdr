@@ -78,13 +78,13 @@ static PyObject* Buffer_getFormat(Buffer* self) {
 template <typename T>
 static int writeToBuffer(Buffer* self, char* data, size_t len) {
     auto writer = dynamic_cast<Csdr::Writer<T>*>(self->writer);
-    size_t compensated_len = len / sizeof(T);
-    if (writer->writeable() < len) {
+    if (writer->writeable() < len / sizeof(T)) {
         PyErr_SetString(PyExc_BufferError, "insufficient buffer space");
         return -1;
     }
-    std::memcpy(writer->getWritePointer(), data, compensated_len);
-    writer->advance(compensated_len);
+    std::memcpy(writer->getWritePointer() + self->writeOverhang, data, len);
+    writer->advance((len + self->writeOverhang) / sizeof(T));
+    self->writeOverhang = (len + self->writeOverhang) % sizeof(T);
     return 0;
 }
 

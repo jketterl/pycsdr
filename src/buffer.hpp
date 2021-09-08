@@ -5,7 +5,9 @@
 
 #include "writer.hpp"
 
-struct Buffer: Writer {};
+struct Buffer: Writer {
+    size_t writeOverhang;
+};
 
 // 256kb
 #define DEFAULT_BUFFER_SIZE 262144
