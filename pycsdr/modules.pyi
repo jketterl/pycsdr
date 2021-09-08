@@ -196,3 +196,8 @@ class AudioResampler(Module):
 class AdpcmEncoder(Module):
     def __init__(self, sync: bool = False):
         ...
+
+
+class Downmix(Module):
+    def __init__(self, channels: int = 2):
+        ...

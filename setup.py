@@ -58,6 +58,7 @@ setup(
                 "src/realpart.cpp",
                 "src/audioresampler.cpp",
                 "src/adpcmencoder.cpp",
+                "src/downmix.cpp",
             ],
             language="c++",
             include_dirs=["src"],
