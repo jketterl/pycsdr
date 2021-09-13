@@ -57,8 +57,13 @@ static int Module_finalize(Module* self) {
         return -1;
     }
 
-    delete self->module;
+    auto old = self->module;
     self->setModule(nullptr);
+
+    // deletion of a module may perform blocking I/O
+    Py_BEGIN_ALLOW_THREADS
+    delete old;
+    Py_END_ALLOW_THREADS
 
     return 0;
 }
