@@ -30,6 +30,8 @@
 #include "adpcmencoder.hpp"
 #include "downmix.hpp"
 
+#include <csdr/version.hpp>
+
 static PyModuleDef pycsdrmodule = {
         PyModuleDef_HEAD_INIT,
         .m_name = "pycsdr.modules",
@@ -288,6 +290,14 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "AdpcmEncoder", AdpcmEncoderType);
 
     PyModule_AddObject(m, "Downmix", DownmixType);
+
+    PyObject* csdrVersion = PyUnicode_FromStringAndSize(Csdr::version.c_str(), Csdr::version.length());
+    if (csdrVersion == NULL) return NULL;
+    PyModule_AddObject(m, "csdr_version", csdrVersion);
+
+    PyObject* version = PyUnicode_FromString(VERSION);
+    if (version == NULL) return NULL;
+    PyModule_AddObject(m, "version", version);
 
     return m;
 }

@@ -3,9 +3,11 @@
 from setuptools import setup, Extension
 
 
+version = "0.18.0-dev"
+
 setup(
     name="pycsdr",
-    version="0.18.0-dev",
+    version=version,
     packages=["pycsdr"],
 
     package_data={
@@ -63,6 +65,7 @@ setup(
             language="c++",
             include_dirs=["src"],
             libraries=['csdr++', 'fftw3f'],
+            define_macros=[("VERSION", '"{}"'.format(version))],
         )
     ],
 )
