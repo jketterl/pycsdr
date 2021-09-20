@@ -204,3 +204,8 @@ class AdpcmEncoder(Module):
 class Downmix(Module):
     def __init__(self, channels: int = 2):
         ...
+
+
+class Gain(Module):
+    def __init__(self, format: Format, gain: float):
+        ...
