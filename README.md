@@ -9,7 +9,7 @@ It is primarily used for demodulation of radio signals in the OpenWebRX project,
 Please install `libcsdr` and its dependencies before compiling this project.
 
 ```
-sudo ./setup.py install
+sudo ./setup.py install install_headers
 ```
 
 # TODO
