@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 10), dh-python, python3-all (>= 3.5), libpython3-de
 
 Package: python3-csdr
 Architecture: any
-Depends: libcsdr0 (>= 0.18), ${shlibs:Depends}, ${misc:Depends}
+Depends: libcsdr0 (>= 0.18), ${python3:Depends}, ${shlibs:Depends}, ${misc:Depends}
 Description: Python bindings for libcsdr
  Offers a variety of modules from the csdr software defined radio library for
  digital processing of radio transmission.
