@@ -6,8 +6,8 @@
 static int VaricodeDecoder_init(VaricodeDecoder* self, PyObject* args, PyObject* kwds) {
     self->setModule(new Csdr::VaricodeDecoder());
 
-    self->inputFormat = FORMAT_FLOAT;
-    self->outputFormat = FORMAT_FLOAT;
+    self->inputFormat = FORMAT_CHAR;
+    self->outputFormat = FORMAT_CHAR;
 
     return 0;
 }
