@@ -30,6 +30,7 @@
 #include "adpcmencoder.hpp"
 #include "downmix.hpp"
 #include "gain.hpp"
+#include "timingrecovery.hpp"
 
 #include <csdr/version.hpp>
 
@@ -233,6 +234,12 @@ PyInit_modules(void) {
     PyObject* GainType = PyType_FromSpecWithBases(&GainSpec, bases);
     if (GainType == NULL) return NULL;
 
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* TimingRecoveryType = PyType_FromSpecWithBases(&TimingRecoverySpec, bases);
+    if (TimingRecoveryType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -299,6 +306,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "Downmix", DownmixType);
 
     PyModule_AddObject(m, "Gain", GainType);
+
+    PyModule_AddObject(m, "TimingRecovery", TimingRecoveryType);
 
     PyObject* csdrVersion = PyUnicode_FromStringAndSize(Csdr::version.c_str(), Csdr::version.length());
     if (csdrVersion == NULL) return NULL;

@@ -62,6 +62,7 @@ setup(
                 "src/adpcmencoder.cpp",
                 "src/downmix.cpp",
                 "src/gain.cpp",
+                "src/timingrecovery.cpp",
             ],
             language="c++",
             include_dirs=["src"],

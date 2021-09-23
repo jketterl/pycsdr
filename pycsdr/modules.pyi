@@ -209,3 +209,8 @@ class Downmix(Module):
 class Gain(Module):
     def __init__(self, format: Format, gain: float):
         ...
+
+
+class TimingRecovery(Module):
+    def __init(self, decimation: int, loopGain: float, maxError: float, useQ: bool):
+        ...
