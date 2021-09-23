@@ -219,3 +219,8 @@ class TimingRecovery(Module):
 class DBPskDecoder(Module):
     def __init__(self):
         ...
+
+
+class VaricodeDecoder(Module):
+    def __init__(self):
+        ...

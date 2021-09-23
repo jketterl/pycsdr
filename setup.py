@@ -64,6 +64,7 @@ setup(
                 "src/gain.cpp",
                 "src/timingrecovery.cpp",
                 "src/dbpskdecoder.cpp",
+                "src/varicodedecoder.cpp",
             ],
             language="c++",
             include_dirs=["src"],
