@@ -212,7 +212,7 @@ class Gain(Module):
 
 
 class TimingRecovery(Module):
-    def __init(self, decimation: int, loopGain: float, maxError: float, useQ: bool):
+    def __init__(self, decimation: int, loopGain: float, maxError: float, useQ: bool):
         ...
 
 
