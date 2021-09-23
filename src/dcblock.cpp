@@ -6,7 +6,6 @@
 static int DcBlock_init(DcBlock* self, PyObject* args, PyObject* kwds) {
     self->setModule(new Csdr::DcBlock());
 
-    Py_INCREF(FORMAT_FLOAT);
     self->inputFormat = FORMAT_FLOAT;
     self->outputFormat = FORMAT_FLOAT;
 

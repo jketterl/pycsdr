@@ -63,6 +63,7 @@ setup(
                 "src/downmix.cpp",
                 "src/gain.cpp",
                 "src/timingrecovery.cpp",
+                "src/dbpskdecoder.cpp",
             ],
             language="c++",
             include_dirs=["src"],

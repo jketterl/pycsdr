@@ -214,3 +214,8 @@ class Gain(Module):
 class TimingRecovery(Module):
     def __init(self, decimation: int, loopGain: float, maxError: float, useQ: bool):
         ...
+
+
+class DBPskDecoder(Module):
+    def __init__(self):
+        ...
