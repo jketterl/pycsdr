@@ -27,8 +27,8 @@ static int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
 static PyObject* Fft_setEveryNSamples(Fft* self, PyObject* args, PyObject* kwds){
     static char* kwlist[] = {(char*) "every_n_samples", NULL};
 
-    uint16_t everyNSamples = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist, &everyNSamples)) {
+    unsigned int everyNSamples = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwlist, &everyNSamples)) {
         return NULL;
     }
 
