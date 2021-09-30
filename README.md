@@ -8,6 +8,8 @@ It is primarily used for demodulation of radio signals in the OpenWebRX project,
 
 Please install `libcsdr` and its dependencies before compiling this project.
 
+Please also install the python development files (`libpython3-dev` on most Debian-based distributions).
+
 ```
 sudo ./setup.py install install_headers
 ```
