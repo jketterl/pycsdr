@@ -101,6 +101,19 @@ static PyObject* Agc_setInitialGain(Agc* self, PyObject* args, PyObject* kwds) {
     Py_RETURN_NONE;
 }
 
+static PyObject* Agc_setReference(Agc* self, PyObject* args, PyObject* kwds) {
+    static char* kwlist[] = {(char*) "reference", NULL};
+
+    float reference = 0.0f;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "f", kwlist, &reference)) {
+        return NULL;
+    }
+
+    dynamic_cast<Csdr::UntypedAgc*>(self->module)->setReference(reference);
+
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef Agc_methods[] = {
     {"setProfile", (PyCFunction) Agc_setProfile, METH_VARARGS | METH_KEYWORDS,
      "set agc profile"
@@ -110,6 +123,9 @@ static PyMethodDef Agc_methods[] = {
     },
     {"setInitialGain", (PyCFunction) Agc_setInitialGain, METH_VARARGS | METH_KEYWORDS,
      "set initial / momentary gain value"
+    },
+    {"setReference", (PyCFunction) Agc_setReference, METH_VARARGS | METH_KEYWORDS,
+     "set agc reference level"
     },
     {NULL}  /* Sentinel */
 };

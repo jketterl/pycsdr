@@ -176,6 +176,10 @@ class Agc(Module):
     def setInitialGain(self, gain: float) -> None:
         ...
 
+    def setReference(self, reference: float) -> None:
+        ...
+
+
 class AmDemod(Module):
     def __init__(self):
         ...
