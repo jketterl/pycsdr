@@ -100,11 +100,18 @@ static PyObject* BufferReader_stop(BufferReader* self) {
     Py_RETURN_NONE;
 }
 
+static PyObject* BufferReader_resume(BufferReader* self) {
+    self->run = true;
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef BufferReader_methods[] = {
     {"read", (PyCFunction) BufferReader_read, METH_NOARGS,
      "read bytes from the buffer"},
     {"stop", (PyCFunction) BufferReader_stop, METH_NOARGS,
      "stop the reader and unblock calls to read()"},
+    {"resume", (PyCFunction) BufferReader_resume, METH_NOARGS,
+     "resume reading after a call to stop()"},
     {NULL}  /* Sentinel */
 };
 

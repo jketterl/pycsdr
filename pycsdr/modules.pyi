@@ -34,6 +34,9 @@ class BufferReader(Reader):
     def stop(self) -> None:
         ...
 
+    def resume(self) -> None:
+        ...
+
     def read(self) -> bytes:
         ...
 
