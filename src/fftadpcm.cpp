@@ -6,8 +6,8 @@
 static int FftAdpcm_init(FftAdpcm* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "fft_size", NULL};
 
-    uint16_t fftSize = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "H", kwlist, &fftSize)) {
+    uint32_t fftSize = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwlist, &fftSize)) {
         return -1;
     }
 
