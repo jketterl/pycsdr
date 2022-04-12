@@ -3,6 +3,19 @@
 #include "buffer.hpp"
 #include <csdr/ringbuffer.hpp>
 
+static void stopRunner(Module* self) {
+    if (self->runner == nullptr) return;
+
+    // avoid deadlocks
+    // other threads may need the GIL for whatever they do before they shut down
+    Py_BEGIN_ALLOW_THREADS
+    self->runner->stop();
+    Py_END_ALLOW_THREADS
+
+    delete self->runner;
+    self->runner = nullptr;
+}
+
 static PyObject* checkRunner(Module* self) {
     std::lock_guard<std::mutex> lock(self->runnerMutex);
     if (self->reader != nullptr && self->writer != nullptr) {
@@ -11,11 +24,7 @@ static PyObject* checkRunner(Module* self) {
             self->runner = new Csdr::AsyncRunner(self->module);
         }
     } else {
-        if (self->runner != nullptr) {
-            self->runner->stop();
-            delete self->runner;
-            self->runner = nullptr;
-        }
+        stopRunner(self);
     }
     Py_RETURN_NONE;
 }
@@ -38,11 +47,7 @@ static PyObject* Module_setWriter(Module* self, PyObject* args, PyObject* kwds) 
 
 static PyObject* Module_stop(Module* self) {
     std::lock_guard<std::mutex> lock(self->runnerMutex);
-    if (self->runner != nullptr) {
-        self->runner->stop();
-        delete self->runner;
-        self->runner = nullptr;
-    }
+    stopRunner(self);
     Py_RETURN_NONE;
 }
 
