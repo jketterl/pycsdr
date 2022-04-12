@@ -9,11 +9,11 @@ static void stopRunner(Module* self) {
     // avoid deadlocks
     // other threads may need the GIL for whatever they do before they shut down
     Py_BEGIN_ALLOW_THREADS
-    self->runner->stop();
-    Py_END_ALLOW_THREADS
-
-    delete self->runner;
+    auto old = self->runner;
     self->runner = nullptr;
+    old->stop();
+    delete old;
+    Py_END_ALLOW_THREADS
 }
 
 static PyObject* checkRunner(Module* self) {
