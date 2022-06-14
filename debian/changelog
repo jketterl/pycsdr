@@ -1,5 +1,5 @@
-pycsdr (0.18.0) UNRELEASED; urgency=low
+pycsdr (0.18.0) bullseye jammy; urgency=low
 
   * First release
 
- -- Jakob Ketterl <jakob.ketterl@gmx.de>  Mon, 20 Sep 2021 17:00:00 +0000
+ -- Jakob Ketterl <jakob.ketterl@gmx.de>  Tue, 14 Jun 2022 19:39:00 +0000
