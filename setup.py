@@ -3,7 +3,7 @@
 from setuptools import setup, Extension
 
 
-version = "0.18.0"
+version = "0.19.0-dev"
 
 setup(
     name="pycsdr",
