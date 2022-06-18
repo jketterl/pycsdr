@@ -65,6 +65,7 @@ setup(
                 "src/timingrecovery.cpp",
                 "src/dbpskdecoder.cpp",
                 "src/varicodedecoder.cpp",
+                "src/opusencoder.cpp",
             ],
             language="c++",
             include_dirs=["src"],

@@ -208,6 +208,11 @@ class AdpcmEncoder(Module):
         ...
 
 
+class OpusEncoder(Module):
+    def __init__(self):
+        ...
+
+
 class Downmix(Module):
     def __init__(self, channels: int = 2):
         ...
