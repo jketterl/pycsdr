@@ -1,3 +1,9 @@
+pycsdr (0.18.1) bullseye jammy; urgency=low
+
+  * fix shutdown of tcp sources for format other than complex float
+
+ -- Jakob Ketterl <jakob.ketterl@gmx.de>  Thu, 16 Jun 2022 17:39:00 +0000
+
 pycsdr (0.18.0) bullseye jammy; urgency=low
 
   * First release
