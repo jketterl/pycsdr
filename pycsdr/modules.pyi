@@ -193,6 +193,20 @@ class DcBlock(Module):
         ...
 
 
+class NoiseFilter(Module):
+    def __init__(self, threshold: int, wndSize: int, fftSize: int):
+        ...
+
+    def setThreshold(self, threshold: int) -> None:
+        ...
+
+    def setWndSize(self, wndSize: int) -> None:
+        ...
+
+    def setFftSize(self, fftSize: int) -> None:
+        ...
+
+
 class RealPart(Module):
     def __init__(self):
         ...
