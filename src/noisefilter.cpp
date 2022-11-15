@@ -6,10 +6,10 @@
 
 static int NoiseFilter_init(NoiseFilter* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {
-      (char*)"threshold", (char*)"wndSize", (char*)"fftSize", NULL
+        (char*)"threshold", (char*)"wndSize", (char*)"fftSize", NULL
     };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|ddd", kwlist, &self->threshold, &self->wndSize, &self->fftSize)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|iii", kwlist, &self->threshold, &self->wndSize, &self->fftSize)) {
         return -1;
     }
 
