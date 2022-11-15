@@ -194,7 +194,7 @@ class DcBlock(Module):
 
 
 class NoiseFilter(Module):
-    def __init__(self, threshold: int, wndSize: int, fftSize: int):
+    def __init__(self, threshold: int, fftSize: int, wndSize: int):
         ...
 
     def setThreshold(self, threshold: int) -> None:

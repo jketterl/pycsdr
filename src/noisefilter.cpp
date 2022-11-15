@@ -6,15 +6,19 @@
 
 static int NoiseFilter_init(NoiseFilter* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {
-        (char*)"threshold", (char*)"wndSize", (char*)"fftSize", NULL
+        (char*)"threshold", (char*)"fftSize", (char*)"wndSize", NULL
     };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|iII", kwlist, &self->threshold, &self->wndSize, &self->fftSize)) {
+    self->threshold = 10;
+    self->fftSize = 4096;
+    self->wndSize = 32;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|iII", kwlist, &self->threshold, &self->fftSize, &self->wndSize)) {
         return -1;
     }
 
     Csdr::Filter<float>* filter =
-        new Csdr::AFNoiseFilter(self->threshold, self->wndSize, self->fftSize);
+        new Csdr::AFNoiseFilter(self->threshold, self->fftSize, self->wndSize);
 
     self->setModule(new Csdr::FilterModule<float>(filter));
 
@@ -33,7 +37,7 @@ static PyObject* NoiseFilter_setThreshold(NoiseFilter* self, PyObject* args, PyO
     }
 
     Csdr::Filter<float>* filter =
-        new Csdr::AFNoiseFilter(self->threshold, self->wndSize, self->fftSize);
+        new Csdr::AFNoiseFilter(self->threshold, self->fftSize, self->wndSize);
 
     dynamic_cast<Csdr::FilterModule<float>*>(self->module)->setFilter(filter);
 
@@ -48,7 +52,7 @@ static PyObject* NoiseFilter_setWndSize(NoiseFilter* self, PyObject* args, PyObj
     }
 
     Csdr::Filter<float>* filter =
-        new Csdr::AFNoiseFilter(self->threshold, self->wndSize, self->fftSize);
+        new Csdr::AFNoiseFilter(self->threshold, self->fftSize, self->wndSize);
 
     dynamic_cast<Csdr::FilterModule<float>*>(self->module)->setFilter(filter);
 
@@ -63,7 +67,7 @@ static PyObject* NoiseFilter_setFftSize(NoiseFilter* self, PyObject* args, PyObj
     }
 
     Csdr::Filter<float>* filter =
-        new Csdr::AFNoiseFilter(self->threshold, self->wndSize, self->fftSize);
+        new Csdr::AFNoiseFilter(self->threshold, self->fftSize, self->wndSize);
 
     dynamic_cast<Csdr::FilterModule<float>*>(self->module)->setFilter(filter);
 

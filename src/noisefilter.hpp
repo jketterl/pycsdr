@@ -8,8 +8,8 @@
 
 struct NoiseFilter: Module {
     int threshold = 10;
-    int wndSize = 32;
-    int fftSize = 4096;
+    uint32_t wndSize = 32;
+    uint32_t fftSize = 4096;
 };
 
 extern PyType_Spec NoiseFilterSpec;
