@@ -6,10 +6,10 @@
 
 static int NoiseFilter_init(NoiseFilter* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {
-      (char*)"threshold", (char*)"wndSize", (char*)"fftSize", NULL
+        (char*)"threshold", (char*)"wndSize", (char*)"fftSize", NULL
     };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|ddd", kwlist, &self->threshold, &self->wndSize, &self->fftSize)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|iII", kwlist, &self->threshold, &self->wndSize, &self->fftSize)) {
         return -1;
     }
 
@@ -28,7 +28,7 @@ static int NoiseFilter_init(NoiseFilter* self, PyObject* args, PyObject* kwds) {
 static PyObject* NoiseFilter_setThreshold(NoiseFilter* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = { (char*)"threshold", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "d", kwlist, &self->threshold)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &self->threshold)) {
         return NULL;
     }
 
@@ -43,7 +43,7 @@ static PyObject* NoiseFilter_setThreshold(NoiseFilter* self, PyObject* args, PyO
 static PyObject* NoiseFilter_setWndSize(NoiseFilter* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = { (char*)"wndSize", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "d", kwlist, &self->wndSize)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwlist, &self->wndSize)) {
         return NULL;
     }
 
@@ -58,7 +58,7 @@ static PyObject* NoiseFilter_setWndSize(NoiseFilter* self, PyObject* args, PyObj
 static PyObject* NoiseFilter_setFftSize(NoiseFilter* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = { (char*)"fftSize", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "d", kwlist, &self->fftSize)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwlist, &self->fftSize)) {
         return NULL;
     }
 
@@ -80,7 +80,7 @@ static PyMethodDef NoiseFilter_methods[] = {
 static PyType_Slot NoiseFilterSlots[] = {
     { Py_tp_init, (void*) NoiseFilter_init },
     { Py_tp_methods, NoiseFilter_methods },
-    { 0, 0}
+    { 0, 0 }
 };
 
 PyType_Spec NoiseFilterSpec = {
