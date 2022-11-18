@@ -7,7 +7,7 @@
 #include "module.hpp"
 
 struct NoiseFilter: Module {
-    int threshold = 10;
+    int threshold = 0;
     uint32_t wndSize = 32;
     uint32_t fftSize = 4096;
 };

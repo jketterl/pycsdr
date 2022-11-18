@@ -9,7 +9,7 @@ static int NoiseFilter_init(NoiseFilter* self, PyObject* args, PyObject* kwds) {
         (char*)"threshold", (char*)"fftSize", (char*)"wndSize", NULL
     };
 
-    self->threshold = 10;
+    self->threshold = 0;
     self->fftSize = 4096;
     self->wndSize = 32;
 
