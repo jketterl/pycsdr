@@ -68,7 +68,7 @@ setup(
             ],
             language="c++",
             include_dirs=["src"],
-            libraries=['csdr++', 'fftw3f'],
+            libraries=['csdr', 'fftw3f'],
             define_macros=[("VERSION", '"{}"'.format(version))],
         )
     ],
