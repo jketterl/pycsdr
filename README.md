@@ -6,6 +6,10 @@ It is primarily used for demodulation of radio signals in the OpenWebRX project,
 
 # Installation
 
+The OpenWebRX project is hosting pycsdr packages in their repositories. Please click the respective link for [Debian](https://www.openwebrx.de/download/debian.php) or [Ubuntu](https://www.openwebrx.de/download/ubuntu.php). Due to naming conventions, the repository package is called `python3-csdr`.
+
+# Compiling from source
+
 Please install `libcsdr` and its dependencies before compiling this project.
 
 Please also install the python development files (`libpython3-dev` on most Debian-based distributions).
