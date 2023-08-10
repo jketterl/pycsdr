@@ -4,19 +4,27 @@
 #include <csdr/timingrecovery.hpp>
 
 static int TimingRecovery_init(TimingRecovery* self, PyObject* args, PyObject* kwds) {
-    static char* kwlist[] = {(char*) "decimation", (char*) "loopGain", (char*) "maxError", (char*) "useQ", NULL};
+    static char* kwlist[] = {(char*) "format", (char*) "decimation", (char*) "loopGain", (char*) "maxError", NULL};
 
+    PyObject* format;
     unsigned int decimation = 0;
     float loopGain = 0.0f;
     float maxError = 0.0f;
-    int useQ = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Iffp", kwlist, &decimation, &loopGain, &maxError, &useQ)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!Iff", kwlist, FORMAT_TYPE, &format, &decimation, &loopGain, &maxError)) {
         return -1;
     }
 
-    self->inputFormat = FORMAT_COMPLEX_FLOAT;
-    self->outputFormat = FORMAT_COMPLEX_FLOAT;
-    self->setModule(new Csdr::GardnerTimingRecovery(decimation, loopGain, maxError, useQ));
+    if (format == FORMAT_FLOAT) {
+        self->setModule(new Csdr::GardnerTimingRecovery<float>(decimation, loopGain, maxError));
+    } else if (format == FORMAT_COMPLEX_FLOAT) {
+        self->setModule(new Csdr::GardnerTimingRecovery<Csdr::complex<float>>(decimation, loopGain, maxError));
+    } else {
+        Py_DECREF(format);
+        PyErr_SetString(PyExc_ValueError, "unsupported timing recovery format");
+        return -1;
+    }
+    self->inputFormat = format;
+    self->outputFormat = format;
 
     return 0;
 }
