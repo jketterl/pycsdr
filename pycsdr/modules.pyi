@@ -231,3 +231,7 @@ class DBPskDecoder(Module):
 class VaricodeDecoder(Module):
     def __init__(self):
         ...
+
+class PhaseDemod(Module):
+    def __init__(self):
+        ...
