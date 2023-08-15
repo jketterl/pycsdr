@@ -66,6 +66,8 @@ setup(
                 "src/dbpskdecoder.cpp",
                 "src/varicodedecoder.cpp",
                 "src/phasedemod.cpp",
+                "src/rtty.cpp",
+                "src/baudot.cpp",
             ],
             language="c++",
             include_dirs=["src"],

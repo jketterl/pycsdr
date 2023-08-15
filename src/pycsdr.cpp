@@ -34,6 +34,8 @@
 #include "dbpskdecoder.hpp"
 #include "varicodedecoder.hpp"
 #include "phasedemod.hpp"
+#include "rtty.hpp"
+#include "baudot.hpp"
 
 #include <csdr/version.hpp>
 
@@ -261,6 +263,18 @@ PyInit_modules(void) {
     PyObject* PhaseDemodType = PyType_FromSpecWithBases(&PhaseDemodSpec, bases);
     if (PhaseDemodType == NULL) return NULL;
 
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* RttyDecoderType = PyType_FromSpecWithBases(&RttyDecoderSpec, bases);
+    if (RttyDecoderType == NULL) return NULL;
+
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* BaudotDecoderType = PyType_FromSpecWithBases(&BaudotDecoderSpec, bases);
+    if (BaudotDecoderType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -335,6 +349,10 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "VaricodeDecoder", VaricodeDecoderType);
 
     PyModule_AddObject(m, "PhaseDemod", PhaseDemodType);
+
+    PyModule_AddObject(m, "RttyDecoder", RttyDecoderType);
+
+    PyModule_AddObject(m, "BaudotDecoder", BaudotDecoderType);
 
     PyObject* csdrVersion = PyUnicode_FromStringAndSize(Csdr::version.c_str(), Csdr::version.length());
     if (csdrVersion == NULL) return NULL;

@@ -235,3 +235,11 @@ class VaricodeDecoder(Module):
 class PhaseDemod(Module):
     def __init__(self):
         ...
+
+class RttyDecoder(Module):
+    def __init__(self, invert: bool = False):
+        ...
+
+class BaudotDecoder(Module):
+    def __init__(self):
+        ...
