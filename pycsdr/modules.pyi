@@ -243,3 +243,7 @@ class RttyDecoder(Module):
 class BaudotDecoder(Module):
     def __init__(self):
         ...
+
+class Lowpass(Module):
+    def __init__(self, format: Format, cutoff: float, transition: float = 0.05):
+        ...

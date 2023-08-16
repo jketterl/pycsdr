@@ -36,6 +36,7 @@
 #include "phasedemod.hpp"
 #include "rtty.hpp"
 #include "baudot.hpp"
+#include "lowpass.hpp"
 
 #include <csdr/version.hpp>
 
@@ -275,6 +276,12 @@ PyInit_modules(void) {
     PyObject* BaudotDecoderType = PyType_FromSpecWithBases(&BaudotDecoderSpec, bases);
     if (BaudotDecoderType == NULL) return NULL;
 
+    Py_INCREF(ModuleType);
+    bases = PyTuple_Pack(1, ModuleType);
+    if (bases == NULL) return NULL;
+    PyObject* LowpassType = PyType_FromSpecWithBases(&LowpassSpec, bases);
+    if (LowpassType == NULL) return NULL;
+
     PyObject *m = PyModule_Create(&pycsdrmodule);
     if (m == NULL) {
         return NULL;
@@ -353,6 +360,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "RttyDecoder", RttyDecoderType);
 
     PyModule_AddObject(m, "BaudotDecoder", BaudotDecoderType);
+
+    PyModule_AddObject(m, "Lowpass", LowpassType);
 
     PyObject* csdrVersion = PyUnicode_FromStringAndSize(Csdr::version.c_str(), Csdr::version.length());
     if (csdrVersion == NULL) return NULL;

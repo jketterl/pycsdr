@@ -68,6 +68,7 @@ setup(
                 "src/phasedemod.cpp",
                 "src/rtty.cpp",
                 "src/baudot.cpp",
+                "src/lowpass.cpp",
             ],
             language="c++",
             include_dirs=["src"],
