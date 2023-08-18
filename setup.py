@@ -69,6 +69,7 @@ setup(
                 "src/rtty.cpp",
                 "src/baudot.cpp",
                 "src/lowpass.cpp",
+                "src/exec.cpp",
             ],
             language="c++",
             include_dirs=["src"],

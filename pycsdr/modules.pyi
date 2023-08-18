@@ -247,3 +247,7 @@ class BaudotDecoder(Module):
 class Lowpass(Module):
     def __init__(self, format: Format, cutoff: float, transition: float = 0.05):
         ...
+
+class ExecModule(Module):
+    def __init__(self, args: list[str]):
+        ...
