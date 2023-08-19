@@ -6,10 +6,12 @@
 #include <iostream>
 
 static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
-    static char* kwlist[] = {(char*) "args", NULL};
+    static char* kwlist[] = {(char*) "args", (char*) "inFormat", (char*) "outFormat", NULL};
 
+    PyObject* inFormat;
+    PyObject* outFormat;
     PyObject* args_python = NULL;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, &PyList_Type, &args_python)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O!", kwlist, FORMAT_TYPE, &inFormat, FORMAT_TYPE, &outFormat, &PyList_Type, &args_python)) {
         return -1;
     }
     std::vector<std::string> args_vector;
@@ -19,11 +21,13 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
     for (Py_ssize_t i = 0; i < size; i++) {
         PyObject* arg = PyList_GetItem(args_python, i);
         if (!PyUnicode_Check(arg)) {
+            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "argument is not a unicode object");
             return -1;
         }
         PyObject* ascii_arg = PyUnicode_AsASCIIString(arg);
         if (ascii_arg == NULL) {
+            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "could not handle argument as ascii");
             return -1;
         }
@@ -34,9 +38,31 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
 
     Py_DECREF(args_python);
 
-    self->inputFormat = FORMAT_SHORT;
-    self->outputFormat = FORMAT_SHORT;
-    self->setModule(new Csdr::ExecModule<short, short>(args_vector));
+    if (inFormat == FORMAT_SHORT) {
+        if (outFormat == FORMAT_SHORT) {
+            self->setModule(new Csdr::ExecModule<short, short>(args_vector));
+        } else if (outFormat == FORMAT_CHAR) {
+            self->setModule(new Csdr::ExecModule<short, unsigned char>(args_vector));
+        } else {
+            Py_DECREF(inFormat); Py_DECREF(outFormat);
+            PyErr_SetString(PyExc_ValueError, "invalid output format");
+            return -1;
+        }
+    } else if (inFormat == FORMAT_COMPLEX_SHORT) {
+        if (outFormat == FORMAT_SHORT) {
+            self->setModule(new Csdr::ExecModule<Csdr::complex<short>, short>(args_vector));
+        } else {
+            Py_DECREF(inFormat); Py_DECREF(outFormat);
+            PyErr_SetString(PyExc_ValueError, "invalid output format");
+            return -1;
+        }
+    } else {
+        Py_DECREF(inFormat); Py_DECREF(outFormat);
+        PyErr_SetString(PyExc_ValueError, "invalid input format");
+        return -1;
+    }
+    self->inputFormat = inFormat;
+    self->outputFormat = outFormat;
 
     return 0;
 }

@@ -249,5 +249,5 @@ class Lowpass(Module):
         ...
 
 class ExecModule(Module):
-    def __init__(self, args: list[str]):
+    def __init__(self, inFormat: Format, outFormat: Format, args: list[str]):
         ...
