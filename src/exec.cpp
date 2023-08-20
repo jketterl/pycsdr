@@ -3,8 +3,6 @@
 
 #include <csdr/exec.hpp>
 
-#include <iostream>
-
 static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "args", (char*) "inFormat", (char*) "outFormat", NULL};
 
@@ -16,7 +14,6 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
     }
     std::vector<std::string> args_vector;
     Py_ssize_t size = PyList_Size(args_python);
-    std::cerr << "parsing argument list of length " << size << "\n";
 
     for (Py_ssize_t i = 0; i < size; i++) {
         PyObject* arg = PyList_GetItem(args_python, i);
@@ -32,7 +29,6 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
             return -1;
         }
         char* str = PyBytes_AsString(ascii_arg);
-        std::cerr << "arg " << i << ": \"" << str << "\"\n";
         args_vector.push_back(std::string(str));
     }
 
@@ -67,8 +63,29 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
     return 0;
 }
 
+static PyObject* ExecModule_reload(ExecModule* self) {
+    dynamic_cast<Csdr::UntypedExecModule*>(self->module)->reload();
+    Py_RETURN_NONE;
+}
+
+static PyObject* ExecModule_restart(ExecModule* self) {
+    dynamic_cast<Csdr::UntypedExecModule*>(self->module)->restart();
+    Py_RETURN_NONE;
+}
+static PyMethodDef ExecModule_methods[] = {
+    {"reload", (PyCFunction) ExecModule_reload, METH_NOARGS,
+     "sends a SIGHUP to the child process. check if this feature is available on the program in use."
+    },
+    {"restart", (PyCFunction) ExecModule_restart, METH_NOARGS,
+     "if SIGHUP is not available, you can perform a hard restart."
+    },
+    {NULL}  /* Sentinel */
+};
+
+
 static PyType_Slot ExecModuleSlots[] = {
     {Py_tp_init, (void*) ExecModule_init},
+    {Py_tp_methods, ExecModule_methods},
     {0, 0}
 };
 
