@@ -70,6 +70,7 @@ setup(
                 "src/baudot.cpp",
                 "src/lowpass.cpp",
                 "src/exec.cpp",
+                "src/callbackwriter.cpp",
             ],
             language="c++",
             include_dirs=["src"],

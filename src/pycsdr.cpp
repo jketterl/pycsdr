@@ -38,6 +38,7 @@
 #include "baudot.hpp"
 #include "lowpass.hpp"
 #include "exec.hpp"
+#include "callbackwriter.hpp"
 
 #include <csdr/version.hpp>
 
@@ -90,6 +91,12 @@ PyInit_modules(void) {
     if (bases == NULL) return NULL;
     BufferType = (PyTypeObject*) PyType_FromSpecWithBases(&BufferSpec, bases);
     if (BufferType == NULL) return NULL;
+
+    Py_INCREF(WriterType);
+    bases = PyTuple_Pack(1, WriterType);
+    if (bases == NULL) return NULL;
+    PyObject* CallbackWriterType = PyType_FromSpecWithBases(&CallbackWriterSpec, bases);
+    if (CallbackWriterType == NULL) return NULL;
 
     Py_INCREF(ReaderType);
     bases = PyTuple_Pack(1, ReaderType);
@@ -297,6 +304,8 @@ PyInit_modules(void) {
     PyModule_AddObject(m, "Reader", (PyObject*) ReaderType);
 
     PyModule_AddObject(m, "Writer", (PyObject*) WriterType);
+
+    PyModule_AddObject(m, "CallbackWriter", (PyObject*) CallbackWriterType);
 
     PyModule_AddObject(m, "Sink", (PyObject*) SinkType);
 

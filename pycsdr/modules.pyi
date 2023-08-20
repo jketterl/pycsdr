@@ -41,6 +41,14 @@ class BufferReader(Reader):
         ...
 
 
+class CallbackWriter(Writer):
+    def __init__(self, format: Format):
+        ...
+
+    def write(self, data: bytes) -> None:
+        ...
+
+
 class Source:
     def setWriter(self, writer: Writer) -> None:
         ...
