@@ -1,13 +1,24 @@
 #include "callbackwriter.hpp"
 #include "types.hpp"
 
-#include <iostream>
-
 
 template <typename T>
-static PyObject* getBytes(T* data, size_t size) {
-    PyObject* bytes = PyMemoryView_FromMemory((char*) data, size * sizeof(T), PyBUF_READ);
-    return bytes;
+static std::function<void (T* data, size_t size)> getCallback(CallbackWriter* self) {
+    return [self] (T* data, size_t size) {
+        // acquire GIL
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
+
+        PyObject* bytes = PyMemoryView_FromMemory((char*) data, size * sizeof(T), PyBUF_READ);
+        // if bytes is NULL, that actually represents an error. unfortunately, we cannot report that anywhere...
+        if (bytes != NULL) {
+            PyObject_CallMethod((PyObject*) self, "write", "O", bytes);
+            Py_DECREF(bytes);
+        }
+
+        /* Release the thread. No Python API allowed beyond this point. */
+        PyGILState_Release(gstate);
+    };
 }
 
 static int CallbackWriter_init(CallbackWriter* self, PyObject* args, PyObject* kwds) {
@@ -18,24 +29,15 @@ static int CallbackWriter_init(CallbackWriter* self, PyObject* args, PyObject* k
     }
 
     if (self->writerFormat == FORMAT_CHAR) {
-        self->writer = new ProxyWriter<unsigned char>([self] (unsigned char* data, size_t size) {
-            // acquire GIL
-            PyGILState_STATE gstate;
-            gstate = PyGILState_Ensure();
-
-            PyObject* bytes = NULL;
-            if (self->writerFormat == FORMAT_CHAR) {
-                bytes = getBytes<unsigned char>(data, size);
-            }
-            if (bytes != NULL) {
-                PyObject_CallMethod((PyObject*) self, "write", "O", bytes);
-                Py_DECREF(bytes);
-            }
-
-            /* Release the thread. No Python API allowed beyond this point. */
-            PyGILState_Release(gstate);
-
-        });
+        self->writer = new ProxyWriter<unsigned char>(getCallback<unsigned char>(self));
+    } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
+        self->writer = new ProxyWriter<Csdr::complex<float>>(getCallback<Csdr::complex<float>>(self));
+    } else if (self->writerFormat == FORMAT_COMPLEX_SHORT) {
+        self->writer = new ProxyWriter<Csdr::complex<short>>(getCallback<Csdr::complex<short>>(self));
+    } else if (self->writerFormat == FORMAT_FLOAT) {
+        self->writer = new ProxyWriter<float>(getCallback<float>(self));
+    } else if (self->writerFormat == FORMAT_SHORT) {
+        self->writer = new ProxyWriter<short>(getCallback<short>(self));
     } else {
         Py_DECREF(self->writerFormat);
         PyErr_SetString(PyExc_ValueError, "unsupported writer format");
