@@ -9,6 +9,10 @@ int Sink_finalize(Sink* self) {
         Py_DECREF(self->reader);
         self->reader = nullptr;
     }
+    if (self->sink != nullptr) {
+        delete self->sink;
+        self->sink = nullptr;
+    }
     return 0;
 }
 

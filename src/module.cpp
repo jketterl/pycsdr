@@ -58,14 +58,6 @@ static PyObject* Module_stop(Module* self) {
 static int Module_finalize(Module* self) {
     stopRunner(self);
 
-    if (Sink_finalize(self) != 0) {
-        return -1;
-    }
-
-    if (Source_finalize(self) != 0) {
-        return -1;
-    }
-
     auto old = self->module;
     self->setModule(nullptr);
 
@@ -73,6 +65,14 @@ static int Module_finalize(Module* self) {
     Py_BEGIN_ALLOW_THREADS
     delete old;
     Py_END_ALLOW_THREADS
+
+    if (Sink_finalize(self) != 0) {
+        return -1;
+    }
+
+    if (Source_finalize(self) != 0) {
+        return -1;
+    }
 
     return 0;
 }
