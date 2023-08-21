@@ -9,6 +9,10 @@ int Source_finalize(Source* self) {
         Py_DECREF(self->writer);
         self->writer = nullptr;
     }
+    if (self->source != nullptr) {
+        delete self->source;
+        self->source = nullptr;
+    }
     return 0;
 }
 
