@@ -47,6 +47,8 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
     } else if (inFormat == FORMAT_COMPLEX_SHORT) {
         if (outFormat == FORMAT_SHORT) {
             self->setModule(new Csdr::ExecModule<Csdr::complex<short>, short>(args_vector));
+        } else if (outFormat == FORMAT_CHAR) {
+            self->setModule(new Csdr::ExecModule<Csdr::complex<short>, unsigned char>(args_vector));
         } else {
             Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
