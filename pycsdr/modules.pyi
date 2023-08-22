@@ -45,7 +45,7 @@ class CallbackWriter(Writer):
     def __init__(self, format: Format):
         ...
 
-    def write(self, data: bytes) -> None:
+    def write(self, data: memoryview) -> None:
         ...
 
 
