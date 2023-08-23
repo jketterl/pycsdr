@@ -13,7 +13,14 @@ static int NfmDeemphasis_init(NfmDeemphasis* self, PyObject* args, PyObject* kwd
 
     self->inputFormat = FORMAT_FLOAT;
     self->outputFormat = FORMAT_FLOAT;
-    self->setModule(new Csdr::NfmDeephasis(sampleRate));
+    Csdr::NfmDeephasis* module;
+    try {
+        module = new Csdr::NfmDeephasis(sampleRate);
+    } catch (const std::runtime_error& e) {
+        PyErr_SetString(PyExc_ValueError, e.what());
+        return -1;
+    }
+    self->setModule(module);
 
     return 0;
 }
