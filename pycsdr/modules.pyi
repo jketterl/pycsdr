@@ -257,7 +257,7 @@ class Lowpass(Module):
         ...
 
 class ExecModule(Module):
-    def __init__(self, inFormat: Format, outFormat: Format, args: list[str]):
+    def __init__(self, inFormat: Format, outFormat: Format, args: list[str], flushSize: int = 0):
         ...
 
     # sends a SIGHUP to the child process. check if this feature is available on the program in use.

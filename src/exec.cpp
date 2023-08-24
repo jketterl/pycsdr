@@ -4,12 +4,13 @@
 #include <csdr/exec.hpp>
 
 static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
-    static char* kwlist[] = {(char*) "args", (char*) "inFormat", (char*) "outFormat", NULL};
+    static char* kwlist[] = {(char*) "args", (char*) "inFormat", (char*) "outFormat", (char*) "flushSize", NULL};
 
     PyObject* inFormat;
     PyObject* outFormat;
     PyObject* args_python = NULL;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O!", kwlist, FORMAT_TYPE, &inFormat, FORMAT_TYPE, &outFormat, &PyList_Type, &args_python)) {
+    unsigned int flushSize = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O!|I", kwlist, FORMAT_TYPE, &inFormat, FORMAT_TYPE, &outFormat, &PyList_Type, &args_python, &flushSize)) {
         return -1;
     }
     std::vector<std::string> args_vector;
@@ -36,9 +37,9 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
 
     if (inFormat == FORMAT_SHORT) {
         if (outFormat == FORMAT_SHORT) {
-            self->setModule(new Csdr::ExecModule<short, short>(args_vector));
+            self->setModule(new Csdr::ExecModule<short, short>(args_vector, flushSize));
         } else if (outFormat == FORMAT_CHAR) {
-            self->setModule(new Csdr::ExecModule<short, unsigned char>(args_vector));
+            self->setModule(new Csdr::ExecModule<short, unsigned char>(args_vector, flushSize));
         } else {
             Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
@@ -46,9 +47,9 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
         }
     } else if (inFormat == FORMAT_COMPLEX_SHORT) {
         if (outFormat == FORMAT_SHORT) {
-            self->setModule(new Csdr::ExecModule<Csdr::complex<short>, short>(args_vector));
+            self->setModule(new Csdr::ExecModule<Csdr::complex<short>, short>(args_vector, flushSize));
         } else if (outFormat == FORMAT_CHAR) {
-            self->setModule(new Csdr::ExecModule<Csdr::complex<short>, unsigned char>(args_vector));
+            self->setModule(new Csdr::ExecModule<Csdr::complex<short>, unsigned char>(args_vector, flushSize));
         } else {
             Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
@@ -56,7 +57,7 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
         }
     } else if (inFormat == FORMAT_CHAR) {
         if (outFormat == FORMAT_CHAR) {
-            self->setModule(new Csdr::ExecModule<unsigned char, unsigned char>(args_vector));
+            self->setModule(new Csdr::ExecModule<unsigned char, unsigned char>(args_vector, flushSize));
         } else {
             Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
