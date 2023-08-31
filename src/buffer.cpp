@@ -37,6 +37,8 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
             createBuffer<Csdr::complex<short>>(self, size);
         } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
             createBuffer<Csdr::complex<float>>(self, size);
+        } else if (self->writerFormat == FORMAT_COMPLEX_CHAR) {
+            createBuffer<Csdr::complex<unsigned char>>(self, size);
         } else {
             PyErr_SetString(PyExc_ValueError, "invalid buffer format");
             return -1;
@@ -113,6 +115,8 @@ static PyObject* Buffer_write(Buffer* self, PyObject* args, PyObject* kwds) {
         r = writeToBuffer<Csdr::complex<short>>(self, data, len);
     } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
         r = writeToBuffer<Csdr::complex<float>>(self, data, len);
+    } else if (self->writerFormat == FORMAT_COMPLEX_CHAR) {
+        r = writeToBuffer<Csdr::complex<unsigned char>>(self, data, len);
     } else {
         PyErr_SetString(PyExc_ValueError, "invalid buffer format");
         return NULL;

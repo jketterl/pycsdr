@@ -49,6 +49,8 @@ static PyObject* TcpSource_stop(TcpSource* self) {
         dynamic_cast<Csdr::TcpSource<Csdr::complex<short>>*>(self->source)->stop();
     } else if (self->outputFormat == FORMAT_COMPLEX_FLOAT) {
         dynamic_cast<Csdr::TcpSource<Csdr::complex<float>>*>(self->source)->stop();
+    } else if (self->outputFormat == FORMAT_COMPLEX_CHAR) {
+        dynamic_cast<Csdr::TcpSource<Csdr::complex<unsigned char>>*>(self->source)->stop();
     } else {
         PyErr_SetString(PyExc_ValueError, "unsupported tcpsource format");
         return NULL;

@@ -55,6 +55,8 @@ PyObject* Sink_setReader(Sink* self, PyObject* args, PyObject* kwds) {
         setReader<Csdr::complex<short>>(self);
     } else if (self->inputFormat == FORMAT_COMPLEX_FLOAT) {
         setReader<Csdr::complex<float>>(self);
+    } else if (self->inputFormat == FORMAT_COMPLEX_CHAR) {
+        setReader<Csdr::complex<unsigned char>>(self);
     } else {
         if (self->reader != nullptr) {
             Py_DECREF(self->reader);

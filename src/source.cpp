@@ -56,6 +56,8 @@ PyObject* Source_setWriter(Source* self, PyObject* args, PyObject* kwds) {
         setWriter<Csdr::complex<short>>(self);
     } else if (self->outputFormat == FORMAT_COMPLEX_FLOAT) {
         setWriter<Csdr::complex<float>>(self);
+    } else if (self->outputFormat == FORMAT_COMPLEX_CHAR) {
+        setWriter<Csdr::complex<unsigned char>>(self);
     } else {
         if (self->writer != nullptr) {
             Py_DECREF(self->writer);
