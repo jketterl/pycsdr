@@ -48,13 +48,6 @@ static int Convert_init(Convert* self, PyObject* args, PyObject* kwds) {
             PyErr_SetString(PyExc_ValueError, "unsupported conversion");
             return -1;
         }
-    } else if (self->inputFormat == FORMAT_COMPLEX_CHAR) {
-        if (self->outputFormat == FORMAT_COMPLEX_FLOAT) {
-            self->setModule(new Csdr::Converter<Csdr::complex<unsigned char>, Csdr::complex<float>>());
-        } else {
-            PyErr_SetString(PyExc_ValueError, "unsupported conversion");
-            return -1;
-        }
     } else {
         PyErr_SetString(PyExc_ValueError, "unsupported conversion");
         return -1;
