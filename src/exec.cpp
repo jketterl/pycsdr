@@ -71,6 +71,14 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
             PyErr_SetString(PyExc_ValueError, "invalid output format");
             return -1;
         }
+    } else if (inFormat == FORMAT_COMPLEX_CHAR) {
+        if (outFormat == FORMAT_SHORT) {
+            self->setModule(new Csdr::ExecModule<Csdr::complex<unsigned char>, short>(args_vector, flushSize));
+        } else {
+            Py_DECREF(inFormat); Py_DECREF(outFormat);
+            PyErr_SetString(PyExc_ValueError, "invalid output format");
+            return -1;
+        }
     } else {
         Py_DECREF(inFormat); Py_DECREF(outFormat);
         PyErr_SetString(PyExc_ValueError, "invalid input format");
