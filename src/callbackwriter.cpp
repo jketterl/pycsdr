@@ -2,25 +2,6 @@
 #include "types.hpp"
 
 
-template <typename T>
-static std::function<void (T* data, size_t size)> getCallback(CallbackWriter* self) {
-    return [self] (T* data, size_t size) {
-        // acquire GIL
-        PyGILState_STATE gstate;
-        gstate = PyGILState_Ensure();
-
-        PyObject* bytes = PyMemoryView_FromMemory((char*) data, size * sizeof(T), PyBUF_READ);
-        // if bytes is NULL, that actually represents an error. unfortunately, we cannot report that anywhere...
-        if (bytes != NULL) {
-            PyObject_CallMethod((PyObject*) self, "write", "O", bytes);
-            Py_DECREF(bytes);
-        }
-
-        /* Release the thread. No Python API allowed beyond this point. */
-        PyGILState_Release(gstate);
-    };
-}
-
 static int CallbackWriter_init(CallbackWriter* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "format", NULL};
 
@@ -29,15 +10,15 @@ static int CallbackWriter_init(CallbackWriter* self, PyObject* args, PyObject* k
     }
 
     if (self->writerFormat == FORMAT_CHAR) {
-        self->writer = new ProxyWriter<unsigned char>(getCallback<unsigned char>(self));
+        self->writer = new ProxyWriter<unsigned char>(self);
     } else if (self->writerFormat == FORMAT_COMPLEX_FLOAT) {
-        self->writer = new ProxyWriter<Csdr::complex<float>>(getCallback<Csdr::complex<float>>(self));
+        self->writer = new ProxyWriter<Csdr::complex<float>>(self);
     } else if (self->writerFormat == FORMAT_COMPLEX_SHORT) {
-        self->writer = new ProxyWriter<Csdr::complex<short>>(getCallback<Csdr::complex<short>>(self));
+        self->writer = new ProxyWriter<Csdr::complex<short>>(self);
     } else if (self->writerFormat == FORMAT_FLOAT) {
-        self->writer = new ProxyWriter<float>(getCallback<float>(self));
+        self->writer = new ProxyWriter<float>(self);
     } else if (self->writerFormat == FORMAT_SHORT) {
-        self->writer = new ProxyWriter<short>(getCallback<short>(self));
+        self->writer = new ProxyWriter<short>(self);
     } else {
         Py_DECREF(self->writerFormat);
         PyErr_SetString(PyExc_ValueError, "unsupported writer format");
@@ -74,9 +55,9 @@ PyType_Spec CallbackWriterSpec = {
 };
 
 template <typename T>
-ProxyWriter<T>::ProxyWriter(std::function<void(T* data, size_t size)> callback):
+ProxyWriter<T>::ProxyWriter(CallbackWriter* writer):
     Csdr::Writer<T>(),
-    callback(callback)
+    writer(writer)
 {
     buffer = (T*) malloc(sizeof(T) * bufferSize);
 }
@@ -98,5 +79,19 @@ T* ProxyWriter<T>::getWritePointer() {
 
 template <typename T>
 void ProxyWriter<T>::advance(size_t how_much) {
-    callback(buffer, how_much);
+    // acquire GIL
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
+    PyObject* bytes = PyMemoryView_FromMemory((char*) buffer, how_much * sizeof(T), PyBUF_READ);
+    // if bytes is NULL, that actually represents an error. unfortunately, we cannot report that anywhere...
+    if (bytes != NULL) {
+        PyObject* result = PyObject_CallMethod((PyObject*) writer, "write", "O", bytes);
+        Py_DECREF(bytes);
+        // not interested in the result
+        Py_DECREF(result);
+    }
+
+    /* Release the thread. No Python API allowed beyond this point. */
+    PyGILState_Release(gstate);
 }
