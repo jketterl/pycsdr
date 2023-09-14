@@ -22,6 +22,7 @@ static int CallbackWriter_init(CallbackWriter* self, PyObject* args, PyObject* k
     } else {
         Py_DECREF(self->writerFormat);
         PyErr_SetString(PyExc_ValueError, "unsupported writer format");
+        return -1;
     }
 
     return 0;
