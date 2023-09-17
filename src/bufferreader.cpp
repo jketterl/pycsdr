@@ -16,29 +16,31 @@ static int BufferReader_init(BufferReader* self, PyObject* args, PyObject* kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", kwlist, BufferType, &self->buffer)) {
         return -1;
     }
-    Py_INCREF(self->buffer);
 
-    self->readerFormat = self->buffer->writerFormat;
-    Py_INCREF(self->readerFormat);
+    PyObject* format = self->buffer->writerFormat;
 
-    if (self->readerFormat == FORMAT_CHAR) {
+    if (format == FORMAT_CHAR) {
         self->reader = createReader<unsigned char>(self);
-    } else if (self->readerFormat == FORMAT_SHORT) {
+    } else if (format == FORMAT_SHORT) {
         self->reader = createReader<short>(self);
-    } else if (self->readerFormat == FORMAT_FLOAT) {
+    } else if (format == FORMAT_FLOAT) {
         self->reader = createReader<float>(self);
-    } else if (self->readerFormat == FORMAT_COMPLEX_SHORT) {
+    } else if (format == FORMAT_COMPLEX_SHORT) {
         self->reader = createReader<Csdr::complex<short>>(self);
-    } else if (self->readerFormat == FORMAT_COMPLEX_FLOAT) {
+    } else if (format == FORMAT_COMPLEX_FLOAT) {
         self->reader = createReader<Csdr::complex<float>>(self);
-    } else if (self->readerFormat == FORMAT_COMPLEX_CHAR) {
+    } else if (format == FORMAT_COMPLEX_CHAR) {
         self->reader = createReader<Csdr::complex<unsigned char>>(self);
     } else {
-        Py_DECREF(self->buffer);
         self->buffer = nullptr;
         PyErr_SetString(PyExc_ValueError, "invalid buffer format");
         return -1;
     }
+
+    Py_INCREF(self->buffer);
+
+    Py_INCREF(format);
+    self->readerFormat = format;
 
     self->run = true;
 

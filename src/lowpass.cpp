@@ -21,11 +21,13 @@ static int Lowpass_init(Lowpass* self, PyObject* args, PyObject* kwds) {
         auto window = new Csdr::HammingWindow();
         self->setModule(new Csdr::FilterModule<Csdr::complex<float>>(new Csdr::LowPassFilter<Csdr::complex<float>>(cutoff, transition, window)));
     } else {
-        Py_DECREF(format);
         PyErr_SetString(PyExc_ValueError, "unsupported lowpass format");
         return -1;
     }
+
+    Py_INCREF(format);
     self->inputFormat = format;
+    Py_INCREF(format);
     self->outputFormat = format;
 
     return 0;

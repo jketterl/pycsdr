@@ -19,13 +19,11 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
     for (Py_ssize_t i = 0; i < size; i++) {
         PyObject* arg = PyList_GetItem(args_python, i);
         if (!PyUnicode_Check(arg)) {
-            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "argument is not a unicode object");
             return -1;
         }
         PyObject* ascii_arg = PyUnicode_AsASCIIString(arg);
         if (ascii_arg == NULL) {
-            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "could not handle argument as ascii");
             return -1;
         }
@@ -33,15 +31,12 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
         args_vector.push_back(std::string(str));
     }
 
-    Py_DECREF(args_python);
-
     if (inFormat == FORMAT_SHORT) {
         if (outFormat == FORMAT_SHORT) {
             self->setModule(new Csdr::ExecModule<short, short>(args_vector, flushSize));
         } else if (outFormat == FORMAT_CHAR) {
             self->setModule(new Csdr::ExecModule<short, unsigned char>(args_vector, flushSize));
         } else {
-            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
             return -1;
         }
@@ -51,7 +46,6 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
         } else if (outFormat == FORMAT_CHAR) {
             self->setModule(new Csdr::ExecModule<Csdr::complex<short>, unsigned char>(args_vector, flushSize));
         } else {
-            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
             return -1;
         }
@@ -59,7 +53,6 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
         if (outFormat == FORMAT_CHAR) {
             self->setModule(new Csdr::ExecModule<unsigned char, unsigned char>(args_vector, flushSize));
         } else {
-            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
             return -1;
         }
@@ -67,7 +60,6 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
         if (outFormat == FORMAT_CHAR) {
             self->setModule(new Csdr::ExecModule<Csdr::complex<float>, unsigned char>(args_vector, flushSize));
         } else {
-            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
             return -1;
         }
@@ -75,16 +67,17 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
         if (outFormat == FORMAT_SHORT) {
             self->setModule(new Csdr::ExecModule<Csdr::complex<unsigned char>, short>(args_vector, flushSize));
         } else {
-            Py_DECREF(inFormat); Py_DECREF(outFormat);
             PyErr_SetString(PyExc_ValueError, "invalid output format");
             return -1;
         }
     } else {
-        Py_DECREF(inFormat); Py_DECREF(outFormat);
         PyErr_SetString(PyExc_ValueError, "invalid input format");
         return -1;
     }
+
+    Py_INCREF(inFormat);
     self->inputFormat = inFormat;
+    Py_INCREF(outFormat);
     self->outputFormat = outFormat;
 
     return 0;

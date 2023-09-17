@@ -19,11 +19,13 @@ static int TimingRecovery_init(TimingRecovery* self, PyObject* args, PyObject* k
     } else if (format == FORMAT_COMPLEX_FLOAT) {
         self->setModule(new Csdr::GardnerTimingRecovery<Csdr::complex<float>>(decimation, loopGain, maxError));
     } else {
-        Py_DECREF(format);
         PyErr_SetString(PyExc_ValueError, "unsupported timing recovery format");
         return -1;
     }
+
+    Py_INCREF(format);
     self->inputFormat = format;
+    Py_INCREF(format);
     self->outputFormat = format;
 
     return 0;

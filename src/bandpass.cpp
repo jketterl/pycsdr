@@ -25,7 +25,6 @@ static int Bandpass_init(Bandpass* self, PyObject* args, PyObject* kwds) {
     self->setModule(new Csdr::FilterModule<Csdr::complex<float>>(filter));
     delete window;
 
-    Py_INCREF(FORMAT_COMPLEX_FLOAT);
     self->inputFormat = FORMAT_COMPLEX_FLOAT;
     self->outputFormat = FORMAT_COMPLEX_FLOAT;
 

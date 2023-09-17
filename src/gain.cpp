@@ -17,11 +17,13 @@ static int Gain_init(Gain* self, PyObject* args, PyObject* kwds) {
     } else if (format == FORMAT_COMPLEX_FLOAT) {
         self->setModule(new Csdr::Gain<Csdr::complex<float>>(gain));
     } else {
-        Py_DECREF(format);
         PyErr_SetString(PyExc_ValueError, "unsupported gain format");
         return -1;
     }
+
+    Py_INCREF(format);
     self->inputFormat = format;
+    Py_INCREF(format);
     self->outputFormat = format;
 
     return 0;

@@ -53,6 +53,9 @@ static int Convert_init(Convert* self, PyObject* args, PyObject* kwds) {
         return -1;
     }
 
+    Py_INCREF(self->inputFormat);
+    Py_INCREF(self->outputFormat);
+
     return 0;
 }
 
