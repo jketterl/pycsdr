@@ -1,7 +1,11 @@
 #include "reader.hpp"
 
 int Reader_finalize(Reader* self) {
-    delete self->reader;
+    if (self->reader != nullptr) {
+        self->reader->unblock();
+        delete self->reader;
+        self->reader = nullptr;
+    }
     return 0;
 }
 

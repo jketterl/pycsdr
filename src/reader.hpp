@@ -6,7 +6,7 @@
 
 struct Reader {
     PyObject_HEAD
-    Csdr::UntypedReader* reader;
+    Csdr::UntypedReader* reader = nullptr;
     PyObject* readerFormat;
 };
 
