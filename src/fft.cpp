@@ -7,9 +7,9 @@
 static int Fft_init(Fft* self, PyObject* args, PyObject* kwds) {
     static char* kwlist[] = {(char*) "size", (char*) "every_n_samples", NULL};
 
-    uint32_t fftSize = 0;
-    uint16_t everyNSamples = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "IH", kwlist, &fftSize, &everyNSamples)) {
+    unsigned int fftSize = 0;
+    unsigned int everyNSamples = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "II", kwlist, &fftSize, &everyNSamples)) {
         return -1;
     }
 

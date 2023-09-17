@@ -7,9 +7,9 @@ static int LogAveragePower_init(LogAveragePower* self, PyObject* args, PyObject*
     static char* kwlist[] = {(char*) "add_db", (char*) "fft_size", (char*) "avg_number", NULL};
 
     float add_db = 0.0;
-    uint32_t fftSize = 0;
-    uint16_t avgNumber = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "fIH", kwlist, &add_db, &fftSize, &avgNumber)) {
+    unsigned int fftSize = 0;
+    unsigned int avgNumber = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "fII", kwlist, &add_db, &fftSize, &avgNumber)) {
         return -1;
     }
 
