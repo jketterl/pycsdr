@@ -18,17 +18,21 @@ static int ExecModule_init(ExecModule* self, PyObject* args, PyObject* kwds) {
 
     for (Py_ssize_t i = 0; i < size; i++) {
         PyObject* arg = PyList_GetItem(args_python, i);
+        if (arg == NULL) {
+            // error is already set by PyList_GetItem()
+            return -1;
+        }
         if (!PyUnicode_Check(arg)) {
             PyErr_SetString(PyExc_ValueError, "argument is not a unicode object");
             return -1;
         }
-        PyObject* ascii_arg = PyUnicode_AsASCIIString(arg);
-        if (ascii_arg == NULL) {
-            PyErr_SetString(PyExc_ValueError, "could not handle argument as ascii");
+        Py_ssize_t str_len;
+        const char* str = PyUnicode_AsUTF8AndSize(arg, &str_len);
+        if (str == NULL) {
+            // error is already set by PyUnicode_AsUTF8AndSize()
             return -1;
         }
-        char* str = PyBytes_AsString(ascii_arg);
-        args_vector.push_back(std::string(str));
+        args_vector.push_back(std::string(str, str_len));
     }
 
     if (inFormat == FORMAT_SHORT) {
