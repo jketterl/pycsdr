@@ -2,6 +2,12 @@ pycsdr (0.19.0) UNRELEASED; urgency=low
 
  -- Jakob Ketterl <jakob.ketterl@gmx.de>  Tue, 20 Sep 2022 16:11:00 +0000
 
+pycsdr (0.18.2) bullseye jammy; urgency=low
+
+  * fix a resource like caused by missed object dealloction on finalize
+
+ -- Jakob Ketterl <jakob.ketterl@gmx.de>  Sun, 08 Oct 2023 21:39:00 +0000
+
 pycsdr (0.18.1) bullseye jammy; urgency=low
 
   * fix shutdown of tcp sources for format other than complex float
