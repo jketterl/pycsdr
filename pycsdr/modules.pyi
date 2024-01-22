@@ -209,7 +209,7 @@ class AdpcmEncoder(Module):
 
 
 class Downmix(Module):
-    def __init__(self, channels: int = 2):
+    def __init__(self, format: Format, channels: int = 2):
         ...
 
 

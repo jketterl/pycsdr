@@ -3,16 +3,27 @@
 #include <csdr/downmix.hpp>
 
 static int Downmix_init(Downmix* self, PyObject* args, PyObject* kwds) {
-    static char* kwlist[] = {(char*) "channels", NULL};
+    static char* kwlist[] = {(char*) "format", (char*) "channels", NULL};
 
     unsigned int channels = 2;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|I", kwlist, &channels)) {
+    PyObject* format;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", kwlist, FORMAT_TYPE, &format, &channels)) {
         return -1;
     }
 
-    self->inputFormat = FORMAT_SHORT;
-    self->outputFormat = FORMAT_SHORT;
-    self->setModule(new Csdr::Downmix<short>(channels));
+    if (format == FORMAT_SHORT) {
+        self->setModule(new Csdr::Downmix<short>(channels));
+    } else if (format == FORMAT_FLOAT) {
+        self->setModule(new Csdr::Downmix<float>(channels));
+    } else {
+        PyErr_SetString(PyExc_ValueError, "unsupported downmix format");
+        return -1;
+    }
+
+    Py_INCREF(format);
+    self->inputFormat = format;
+    Py_INCREF(format);
+    self->outputFormat = format;
 
     return 0;
 }
