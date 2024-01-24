@@ -252,6 +252,9 @@ class ExecModule(Module):
     def __init__(self, inFormat: Format, outFormat: Format, args: list[str], flushSize: int = 0):
         ...
 
+    def setArgs(self, args: list[str]) -> None:
+        ...
+
     # sends a SIGHUP to the child process. check if this feature is available on the program in use.
     def reload(self) -> None:
         ...
