@@ -52,7 +52,10 @@ static int Buffer_init(Buffer* self, PyObject* args, PyObject* kwds) {
 }
 
 static int Buffer_finalize(Buffer* self) {
-    Py_DECREF(self->writerFormat);
+    // can be null if an error occured during Buffer_init()
+    if (self->writerFormat != NULL) {
+        Py_DECREF(self->writerFormat);
+    }
     delete self->writer;
     return 0;
 }
